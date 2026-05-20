@@ -1,0 +1,218 @@
+/* ============================================================
+   Aetheris Design System — Tokens
+   Elegant, restrained, eye-friendly. Dual-platform: iOS + Android.
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   1. UNIFIED BRAND TOKENS — shared across iOS and Android
+   ------------------------------------------------------------ */
+:root {
+  /* ----- Ink scale (warm neutrals — the soul of the brand) ----- */
+  --ink-0:   #FFFFFF;    /* reserved — never used as page bg */
+  --ink-50:  #FAF8F4;    /* page background, warm paper */
+  --ink-100: #F4F1EB;    /* subtle surface, secondary bg */
+  --ink-150: #EDE9E1;    /* hover surface */
+  --ink-200: #E5E1D8;    /* hairline border, divider */
+  --ink-300: #CFC9BD;    /* disabled, scrim */
+  --ink-400: #A8A299;    /* placeholder text */
+  --ink-500: #7A746B;    /* muted / secondary text */
+  --ink-600: #5E5851;    /* tertiary headings */
+  --ink-700: #3E3A35;    /* body text — max comfort */
+  --ink-800: #2A2825;    /* strong text */
+  --ink-900: #1C1B19;    /* highest emphasis (never pure black) */
+
+  /* ----- Accent: warm amber — the only chromatic note ----- */
+  --accent-50:  #F8F0E6;
+  --accent-100: #EFDCC4;
+  --accent-200: #E0BD96;
+  --accent-300: #CC9961;
+  --accent-400: #BE8341;
+  --accent-500: #B5703A;   /* primary accent */
+  --accent-600: #985B2C;
+  --accent-700: #7A4822;
+
+  /* ----- Semantic, all muted ----- */
+  --success: #7A9A7E;
+  --warning: #B89968;
+  --danger:  #B07868;
+  --info:    #6B7E96;
+
+  /* ----- Spacing scale (4px base) ----- */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* ----- Semantic role tokens (light mode default) ----- */
+  --bg:           var(--ink-50);
+  --bg-elevated:  var(--ink-100);
+  --bg-hover:     var(--ink-150);
+  --border:       var(--ink-200);
+  --fg:           var(--ink-700);
+  --fg-strong:    var(--ink-900);
+  --fg-muted:     var(--ink-500);
+  --fg-faint:     var(--ink-400);
+  --accent:       var(--accent-500);
+  --accent-fg:    var(--ink-50);
+}
+
+/* ----- Dark mode — never pure black, never high contrast ----- */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg:           #1C1B19;
+    --bg-elevated:  #25231F;
+    --bg-hover:     #2D2A26;
+    --border:       #34312C;
+    --fg:           #D9D4CB;
+    --fg-strong:    #ECE7DD;
+    --fg-muted:     #8A847A;
+    --fg-faint:     #5E5851;
+    --accent:       #CC9961;
+    --accent-fg:    #1C1B19;
+  }
+}
+.dark {
+  --bg:           #1C1B19;
+  --bg-elevated:  #25231F;
+  --bg-hover:     #2D2A26;
+  --border:       #34312C;
+  --fg:           #D9D4CB;
+  --fg-strong:    #ECE7DD;
+  --fg-muted:     #8A847A;
+  --fg-faint:     #5E5851;
+  --accent:       #CC9961;
+  --accent-fg:    #1C1B19;
+}
+
+/* ============================================================
+   2. iOS — SF Pro family, Apple HIG type ramp
+   System font stack so the browser falls through to SF on macOS/iOS.
+   ============================================================ */
+.platform-ios {
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text",
+               "SF Pro Display", "Helvetica Neue", sans-serif;
+  --font-rounded: ui-rounded, "SF Pro Rounded", -apple-system, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, monospace;
+
+  /* iOS type ramp — sizes in px, line-heights tuned for reading */
+  --type-large-title-size: 34px; --type-large-title-lh: 41px; --type-large-title-weight: 700; --type-large-title-tracking: 0.37px;
+  --type-title-1-size: 28px;     --type-title-1-lh: 34px;     --type-title-1-weight: 700; --type-title-1-tracking: 0.36px;
+  --type-title-2-size: 22px;     --type-title-2-lh: 28px;     --type-title-2-weight: 700; --type-title-2-tracking: 0.35px;
+  --type-title-3-size: 20px;     --type-title-3-lh: 25px;     --type-title-3-weight: 600; --type-title-3-tracking: 0.38px;
+  --type-headline-size: 17px;    --type-headline-lh: 22px;    --type-headline-weight: 600; --type-headline-tracking: -0.41px;
+  --type-body-size: 17px;        --type-body-lh: 22px;        --type-body-weight: 400; --type-body-tracking: -0.41px;
+  --type-callout-size: 16px;     --type-callout-lh: 21px;     --type-callout-weight: 400; --type-callout-tracking: -0.32px;
+  --type-subhead-size: 15px;     --type-subhead-lh: 20px;     --type-subhead-weight: 400; --type-subhead-tracking: -0.24px;
+  --type-footnote-size: 13px;    --type-footnote-lh: 18px;    --type-footnote-weight: 400; --type-footnote-tracking: -0.08px;
+  --type-caption-1-size: 12px;   --type-caption-1-lh: 16px;   --type-caption-1-weight: 400; --type-caption-1-tracking: 0;
+  --type-caption-2-size: 11px;   --type-caption-2-lh: 13px;   --type-caption-2-weight: 400; --type-caption-2-tracking: 0.07px;
+
+  /* iOS continuous squircle radii (use border-radius + smooth corners via mask in production) */
+  --radius-xs: 6px;
+  --radius-sm: 10px;     /* small controls */
+  --radius-md: 14px;     /* cards, sheets */
+  --radius-lg: 22px;     /* large sheets, modal */
+  --radius-xl: 28px;
+  --radius-full: 9999px;
+
+  /* iOS elevation — almost no shadow; rely on blur + bg differentiation */
+  --shadow-0: none;
+  --shadow-1: 0 0.5px 1.5px rgba(28, 27, 25, 0.04);
+  --shadow-2: 0 1px 4px rgba(28, 27, 25, 0.06);
+  --shadow-modal: 0 8px 32px rgba(28, 27, 25, 0.10);
+  --blur-bg: saturate(180%) blur(20px);
+
+  /* Press / hover — opacity only */
+  --press-opacity: 0.6;
+  --hover-opacity: 0.85;
+
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ============================================================
+   3. Android — Roboto, simplified MD3
+   ============================================================ */
+.platform-android {
+  --font-sans: "Roboto", "Roboto Flex", "Noto Sans", system-ui, sans-serif;
+  --font-mono: "Roboto Mono", ui-monospace, monospace;
+
+  /* MD3 type ramp — sizes in px */
+  --type-display-large-size: 57px;   --type-display-large-lh: 64px;   --type-display-large-weight: 400; --type-display-large-tracking: -0.25px;
+  --type-display-medium-size: 45px;  --type-display-medium-lh: 52px;  --type-display-medium-weight: 400;
+  --type-display-small-size: 36px;   --type-display-small-lh: 44px;   --type-display-small-weight: 400;
+  --type-headline-large-size: 32px;  --type-headline-large-lh: 40px;  --type-headline-large-weight: 400;
+  --type-headline-medium-size: 28px; --type-headline-medium-lh: 36px; --type-headline-medium-weight: 400;
+  --type-headline-small-size: 24px;  --type-headline-small-lh: 32px;  --type-headline-small-weight: 400;
+  --type-title-large-size: 22px;     --type-title-large-lh: 28px;     --type-title-large-weight: 500;
+  --type-title-medium-size: 16px;    --type-title-medium-lh: 24px;    --type-title-medium-weight: 500; --type-title-medium-tracking: 0.15px;
+  --type-title-small-size: 14px;     --type-title-small-lh: 20px;     --type-title-small-weight: 500; --type-title-small-tracking: 0.1px;
+  --type-body-large-size: 16px;      --type-body-large-lh: 24px;      --type-body-large-weight: 400; --type-body-large-tracking: 0.5px;
+  --type-body-medium-size: 14px;     --type-body-medium-lh: 20px;     --type-body-medium-weight: 400; --type-body-medium-tracking: 0.25px;
+  --type-body-small-size: 12px;      --type-body-small-lh: 16px;      --type-body-small-weight: 400; --type-body-small-tracking: 0.4px;
+  --type-label-large-size: 14px;     --type-label-large-lh: 20px;     --type-label-large-weight: 500; --type-label-large-tracking: 0.1px;
+  --type-label-medium-size: 12px;    --type-label-medium-lh: 16px;    --type-label-medium-weight: 500; --type-label-medium-tracking: 0.5px;
+  --type-label-small-size: 11px;     --type-label-small-lh: 16px;     --type-label-small-weight: 500; --type-label-small-tracking: 0.5px;
+
+  /* Android geometric radii — squared edges, pill buttons */
+  --radius-xs: 4px;
+  --radius-sm: 8px;       /* default cards */
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 28px;      /* large cards */
+  --radius-full: 9999px;  /* pill buttons */
+
+  /* Android elevation — MD3 reduced to whisper level */
+  --shadow-0: none;
+  --shadow-1: 0 1px 2px rgba(28, 27, 25, 0.04), 0 1px 3px rgba(28, 27, 25, 0.03);
+  --shadow-2: 0 1px 3px rgba(28, 27, 25, 0.05), 0 4px 8px rgba(28, 27, 25, 0.03);
+  --shadow-3: 0 2px 6px rgba(28, 27, 25, 0.06), 0 6px 14px rgba(28, 27, 25, 0.04);
+  --outline-1: 1px solid var(--border);
+
+  /* Ripple — low-saturation tint of the warm-amber accent */
+  --ripple: rgba(181, 112, 58, 0.14);
+  --press-state: rgba(28, 27, 25, 0.06);
+
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ============================================================
+   4. Semantic typography classes — write once, switch by platform
+   ============================================================ */
+
+/* --- iOS classes --- */
+.platform-ios .t-large-title { font-size: var(--type-large-title-size); line-height: var(--type-large-title-lh); font-weight: var(--type-large-title-weight); letter-spacing: var(--type-large-title-tracking); }
+.platform-ios .t-title-1     { font-size: var(--type-title-1-size);    line-height: var(--type-title-1-lh);    font-weight: var(--type-title-1-weight);    letter-spacing: var(--type-title-1-tracking); }
+.platform-ios .t-title-2     { font-size: var(--type-title-2-size);    line-height: var(--type-title-2-lh);    font-weight: var(--type-title-2-weight); }
+.platform-ios .t-title-3     { font-size: var(--type-title-3-size);    line-height: var(--type-title-3-lh);    font-weight: var(--type-title-3-weight); }
+.platform-ios .t-headline    { font-size: var(--type-headline-size);   line-height: var(--type-headline-lh);   font-weight: var(--type-headline-weight); letter-spacing: var(--type-headline-tracking); }
+.platform-ios .t-body        { font-size: var(--type-body-size);       line-height: var(--type-body-lh);       font-weight: var(--type-body-weight); letter-spacing: var(--type-body-tracking); }
+.platform-ios .t-callout     { font-size: var(--type-callout-size);    line-height: var(--type-callout-lh);    font-weight: var(--type-callout-weight); }
+.platform-ios .t-subhead     { font-size: var(--type-subhead-size);    line-height: var(--type-subhead-lh);    font-weight: var(--type-subhead-weight); }
+.platform-ios .t-footnote    { font-size: var(--type-footnote-size);   line-height: var(--type-footnote-lh);   font-weight: var(--type-footnote-weight); }
+.platform-ios .t-caption-1   { font-size: var(--type-caption-1-size);  line-height: var(--type-caption-1-lh);  font-weight: var(--type-caption-1-weight); }
+.platform-ios .t-caption-2   { font-size: var(--type-caption-2-size);  line-height: var(--type-caption-2-lh);  font-weight: var(--type-caption-2-weight); }
+
+/* --- Android (MD3) classes --- */
+.platform-android .t-display-l  { font-size: var(--type-display-large-size);  line-height: var(--type-display-large-lh);  font-weight: var(--type-display-large-weight); letter-spacing: var(--type-display-large-tracking); }
+.platform-android .t-display-m  { font-size: var(--type-display-medium-size); line-height: var(--type-display-medium-lh); font-weight: var(--type-display-medium-weight); }
+.platform-android .t-display-s  { font-size: var(--type-display-small-size);  line-height: var(--type-display-small-lh);  font-weight: var(--type-display-small-weight); }
+.platform-android .t-headline-l { font-size: var(--type-headline-large-size); line-height: var(--type-headline-large-lh); font-weight: var(--type-headline-large-weight); }
+.platform-android .t-headline-m { font-size: var(--type-headline-medium-size); line-height: var(--type-headline-medium-lh); font-weight: var(--type-headline-medium-weight); }
+.platform-android .t-headline-s { font-size: var(--type-headline-small-size); line-height: var(--type-headline-small-lh); font-weight: var(--type-headline-small-weight); }
+.platform-android .t-title-l    { font-size: var(--type-title-large-size);    line-height: var(--type-title-large-lh);    font-weight: var(--type-title-large-weight); }
+.platform-android .t-title-m    { font-size: var(--type-title-medium-size);   line-height: var(--type-title-medium-lh);   font-weight: var(--type-title-medium-weight); letter-spacing: var(--type-title-medium-tracking); }
+.platform-android .t-title-s    { font-size: var(--type-title-small-size);    line-height: var(--type-title-small-lh);    font-weight: var(--type-title-small-weight); letter-spacing: var(--type-title-small-tracking); }
+.platform-android .t-body-l     { font-size: var(--type-body-large-size);     line-height: var(--type-body-large-lh);     font-weight: var(--type-body-large-weight); letter-spacing: var(--type-body-large-tracking); }
+.platform-android .t-body-m     { font-size: var(--type-body-medium-size);    line-height: var(--type-body-medium-lh);    font-weight: var(--type-body-medium-weight); letter-spacing: var(--type-body-medium-tracking); }
+.platform-android .t-body-s     { font-size: var(--type-body-small-size);     line-height: var(--type-body-small-lh);     font-weight: var(--type-body-small-weight); letter-spacing: var(--type-body-small-tracking); }
+.platform-android .t-label-l    { font-size: var(--type-label-large-size);    line-height: var(--type-label-large-lh);    font-weight: var(--type-label-large-weight); letter-spacing: var(--type-label-large-tracking); }
+.platform-android .t-label-m    { font-size: var(--type-label-medium-size);   line-height: var(--type-label-medium-lh);   font-weight: var(--type-label-medium-weight); letter-spacing: var(--type-label-medium-tracking); }
+.platform-android .t-label-s    { font-size: var(--type-label-small-size);    line-height: var(--type-label-small-lh);    font-weight: var(--type-label-small-weight); letter-spacing: var(--type-label-small-tracking); }

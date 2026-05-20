@@ -1,0 +1,543 @@
+/* Tianjin Property Atlas — extensions to ios-kit.css
+   Covers: design-canvas hosting, compound/school detail, polygon editor,
+   settings, onboarding, empty / iCloud-gate / offline states. */
+
+/* ============================================================
+   Canvas host overrides
+   The ios-kit body styles assume a single iPad; for the design
+   canvas we let DesignCanvas own the page background.
+   ============================================================ */
+html, body { background: transparent; padding: 0; min-height: 100vh; }
+
+/* The .ipad bezel is too heavy inside canvas artboards — we render
+   directly into .ipad-glass-flat which mimics .ipad-glass but sized
+   to the artboard. */
+.frame {
+  width: 100%;
+  height: 100%;
+  background: var(--ink-50);
+  border-radius: 20px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  border: 1px solid #DCD4C4;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", sans-serif;
+  color: var(--ink-700);
+}
+
+/* ============================================================
+   COMPOUND DETAIL — fills the drawer when a pin is selected
+   ============================================================ */
+.cd-header {
+  padding: 16px 18px 12px;
+  border-bottom: 1px solid var(--border);
+  display: flex; gap: 12px; align-items: flex-start;
+  background: var(--ink-50);
+  flex-shrink: 0;
+}
+.cd-back { padding: 4px; margin: -4px 0 0 -4px; cursor: pointer; color: var(--accent-500); display: inline-flex; }
+.cd-title { font-size: 22px; font-weight: 600; color: var(--ink-900); letter-spacing: -0.4px; line-height: 1.15; }
+.cd-sub { font-size: 12px; color: var(--ink-500); margin-top: 4px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.cd-sub .dot { width: 2.5px; height: 2.5px; background: var(--ink-300); border-radius: 50%; }
+.cd-status-pill {
+  font-size: 11px; padding: 3px 9px; border-radius: 9999px;
+  font-weight: 500; letter-spacing: 0.2px; display: inline-flex; align-items: center; gap: 5px;
+  color: #FAF8F4;
+}
+.cd-status-pill .dot-i { width: 6px; height: 6px; background: rgba(255,255,255,0.85); border-radius: 50%; }
+
+.cd-segments {
+  display: flex; gap: 4px; padding: 8px 18px 0 18px;
+  border-bottom: 1px solid var(--border);
+  background: var(--ink-50);
+  flex-shrink: 0;
+}
+.cd-segment {
+  padding: 8px 0; margin-right: 18px;
+  font-size: 13px; color: var(--ink-500); font-weight: 500;
+  background: transparent; border: none; cursor: pointer;
+  position: relative; font-family: inherit; letter-spacing: -0.08px;
+}
+.cd-segment.active { color: var(--ink-900); }
+.cd-segment.active::after {
+  content: ''; position: absolute; bottom: -1px; left: 0; right: 0;
+  height: 2px; background: var(--accent-500); border-radius: 1px;
+}
+
+.cd-body { flex: 1; overflow-y: auto; padding: 14px 18px 24px; display: flex; flex-direction: column; gap: 18px; }
+.cd-body::-webkit-scrollbar { width: 6px; }
+.cd-body::-webkit-scrollbar-thumb { background: var(--ink-200); border-radius: 3px; }
+
+.cd-section-label {
+  font-size: 10px; font-weight: 600; color: var(--ink-500);
+  text-transform: uppercase; letter-spacing: 1.2px;
+  margin-bottom: 8px;
+}
+.cd-keyvals { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 24px; }
+.cd-kv-label { font-size: 11px; color: var(--ink-500); margin-bottom: 2px; }
+.cd-kv-value { font-size: 14px; color: var(--ink-800); font-weight: 500; }
+.cd-kv-value.muted { color: var(--ink-500); font-weight: 400; }
+
+.cd-stat-row { display: flex; gap: 12px; }
+.cd-stat {
+  flex: 1; padding: 12px 14px; background: var(--ink-50);
+  border: 1px solid var(--border); border-radius: 10px;
+}
+.cd-stat-label { font-size: 10px; color: var(--ink-500); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
+.cd-stat-value { font-size: 17px; font-weight: 600; color: var(--ink-900); letter-spacing: -0.3px; }
+.cd-stat-sub { font-size: 11px; color: var(--ink-500); margin-top: 2px; }
+
+.cd-school-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px; border: 1px solid var(--border); border-radius: 12px;
+  background: var(--ink-50); cursor: pointer;
+}
+.cd-school-row:hover { background: var(--ink-100); }
+.cd-school-row .sr-icon {
+  width: 36px; height: 36px; border-radius: 9px; background: var(--accent-100);
+  color: var(--accent-700); display: flex; align-items: center; justify-content: center;
+}
+.cd-school-row .sr-body { flex: 1; min-width: 0; }
+.cd-school-row .sr-name { font-size: 14px; font-weight: 600; color: var(--ink-900); }
+.cd-school-row .sr-sub { font-size: 11px; color: var(--ink-500); margin-top: 1px; }
+.cd-school-row .sr-arrow { color: var(--ink-400); }
+
+/* Visit history items */
+.cd-visit {
+  padding: 14px; background: var(--ink-50);
+  border: 1px solid var(--border); border-radius: 12px;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.cd-visit-h { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.cd-visit-date { font-size: 13px; font-weight: 600; color: var(--ink-900); }
+.cd-visit-meta { font-size: 11px; color: var(--ink-500); }
+.cd-rate-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.cd-rate { display: flex; flex-direction: column; gap: 3px; }
+.cd-rate-label { font-size: 10px; color: var(--ink-500); }
+.cd-visit-note {
+  font-size: 13px; color: var(--ink-700); line-height: 1.5;
+  background: var(--ink-100); padding: 10px 12px; border-radius: 8px;
+}
+.cd-thumb-strip { display: flex; gap: 4px; }
+
+/* ============================================================
+   SCHOOL DETAIL
+   ============================================================ */
+.sd-rank-bar {
+  display: flex; gap: 8px; padding: 12px; border-radius: 12px;
+  background: var(--ink-50); border: 1px solid var(--border);
+}
+.sd-rank-cell { flex: 1; text-align: left; }
+.sd-rank-year { font-size: 10px; color: var(--ink-500); text-transform: uppercase; letter-spacing: 1px; }
+.sd-rank-num { font-size: 18px; font-weight: 600; color: var(--ink-900); letter-spacing: -0.3px; margin-top: 2px; }
+.sd-rank-sub { font-size: 10px; color: var(--ink-500); margin-top: 1px; }
+
+.sd-compound-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; border-bottom: 1px solid var(--border);
+  cursor: pointer;
+}
+.sd-compound-row:hover { background: var(--ink-100); }
+.sd-compound-row:last-child { border-bottom: none; }
+.sd-compound-row .pin-tile {
+  width: 22px; height: 22px; border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  color: #FAF8F4;
+}
+.sd-compound-row .pin-tile svg { width: 11px; height: 11px; stroke-width: 2.5; }
+.sd-compound-row .name { flex: 1; font-size: 13px; color: var(--ink-800); font-weight: 500; }
+.sd-compound-row .meta { font-size: 11px; color: var(--ink-500); }
+
+/* ============================================================
+   POLYGON EDITOR overlay
+   ============================================================ */
+.pe-banner {
+  position: absolute; top: 14px; left: 50%; transform: translateX(-50%);
+  background: rgba(28,27,25,0.92); color: var(--ink-50);
+  padding: 8px 16px; border-radius: 14px;
+  font-size: 13px; font-weight: 500;
+  display: flex; gap: 10px; align-items: center;
+  z-index: 12; box-shadow: 0 4px 12px rgba(28,27,25,.18);
+}
+.pe-banner .mode-toggle {
+  background: rgba(255,255,255,0.12); border-radius: 8px;
+  padding: 2px; display: inline-flex; gap: 2px;
+}
+.pe-banner .mode-toggle button {
+  background: transparent; border: none; color: rgba(250,248,244,0.6);
+  padding: 4px 10px; border-radius: 6px; font-size: 12px;
+  cursor: pointer; font-family: inherit;
+}
+.pe-banner .mode-toggle button.on { background: var(--accent-500); color: #FAF8F4; }
+
+.pe-action-bar {
+  position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
+  background: rgba(250,248,244,0.96); backdrop-filter: saturate(180%) blur(20px);
+  border: 1px solid var(--border); border-radius: 16px;
+  padding: 6px; display: flex; gap: 4px;
+  box-shadow: 0 8px 24px rgba(28,27,25,.12);
+  z-index: 12;
+}
+.pe-action-bar button {
+  border: none; background: transparent;
+  padding: 9px 14px; border-radius: 10px;
+  font-size: 13px; color: var(--ink-700); font-weight: 500;
+  display: inline-flex; align-items: center; gap: 6px;
+  cursor: pointer; font-family: inherit;
+}
+.pe-action-bar button:hover { background: var(--ink-100); }
+.pe-action-bar button.primary { background: var(--accent-500); color: #FAF8F4; }
+.pe-action-bar .sep { width: 1px; background: var(--border); margin: 4px 2px; }
+
+/* ============================================================
+   ICLOUD GATE (covers drawer, map remains visible)
+   ============================================================ */
+.cloud-gate {
+  position: absolute; inset: 0;
+  background: rgba(250,248,244,0.96);
+  backdrop-filter: saturate(180%) blur(20px);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 32px;
+  text-align: center;
+  z-index: 20;
+}
+.cloud-gate .icon-tile {
+  width: 56px; height: 56px; border-radius: 16px;
+  background: var(--accent-100); color: var(--accent-700);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 18px;
+}
+.cloud-gate .icon-tile svg { width: 26px; height: 26px; stroke-width: 1.5; }
+.cloud-gate h2 { font-size: 19px; font-weight: 600; color: var(--ink-900); letter-spacing: -0.3px; }
+.cloud-gate p { font-size: 13px; color: var(--ink-500); line-height: 1.55; margin-top: 8px; max-width: 280px; }
+.cloud-gate .actions { display: flex; flex-direction: column; gap: 8px; margin-top: 22px; width: 100%; max-width: 240px; }
+
+/* Inline banner (offline / icloud-full) under toolbar */
+.banner {
+  padding: 10px 16px; flex-shrink: 0;
+  display: flex; align-items: center; gap: 10px;
+  font-size: 12px; border-bottom: 1px solid var(--border);
+}
+.banner.offline { background: rgba(91,124,156,0.10); color: #3E5468; }
+.banner.warning { background: rgba(201,155,44,0.10); color: #7A5418; }
+.banner svg { width: 14px; height: 14px; stroke-width: 1.5; flex-shrink: 0; }
+.banner .b-action { margin-left: auto; color: inherit; font-weight: 500; cursor: pointer; }
+
+/* Map-area inline offline chip */
+.offline-chip {
+  position: absolute; top: 14px; left: 16px;
+  background: rgba(91,124,156,0.92);
+  color: #FAF8F4; padding: 6px 12px; border-radius: 9999px;
+  font-size: 12px; font-weight: 500;
+  display: inline-flex; align-items: center; gap: 6px;
+  z-index: 10; backdrop-filter: blur(12px);
+}
+.offline-chip svg { width: 12px; height: 12px; stroke-width: 1.8; }
+
+/* ============================================================
+   SEED IMPORT (full-screen dark)
+   ============================================================ */
+.seed-screen {
+  background: #1C1B19;
+  color: #D9D4CB;
+  width: 100%; height: 100%;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 60px;
+  border-radius: 20px;
+  position: relative;
+}
+.seed-mark {
+  width: 64px; height: 64px; border-radius: 18px;
+  background: rgba(181,112,58,0.16);
+  color: var(--accent-500);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 24px;
+}
+.seed-mark svg { width: 32px; height: 32px; stroke-width: 1.5; }
+.seed-title { font-size: 26px; font-weight: 600; color: #F2EDDF; letter-spacing: -0.5px; }
+.seed-sub { font-size: 14px; color: #8A857A; margin-top: 8px; max-width: 360px; text-align: center; line-height: 1.5; }
+
+.seed-steps {
+  margin-top: 36px; display: flex; flex-direction: column; gap: 14px;
+  width: 100%; max-width: 320px;
+}
+.seed-step { display: flex; align-items: center; gap: 12px; font-size: 14px; color: #8A857A; }
+.seed-step.done { color: #D9D4CB; }
+.seed-step.active { color: #F2EDDF; }
+.seed-step .badge {
+  width: 22px; height: 22px; border-radius: 50%;
+  border: 1.5px solid #4A463F;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; color: transparent;
+}
+.seed-step.done .badge { background: var(--accent-500); border-color: var(--accent-500); color: #FAF8F4; }
+.seed-step.active .badge {
+  border-color: var(--accent-500);
+  border-top-color: transparent;
+  animation: spin 900ms linear infinite;
+}
+.seed-step .name { flex: 1; }
+.seed-step .count { font-size: 11px; color: #6F6A60; font-variant-numeric: tabular-nums; }
+@keyframes spin { from { transform: rotate(0); } to { transform: rotate(360deg); } }
+
+.seed-progress {
+  margin-top: 40px; width: 100%; max-width: 320px;
+  height: 4px; background: rgba(255,255,255,0.06); border-radius: 2px; overflow: hidden;
+}
+.seed-progress > div { height: 100%; background: var(--accent-500); border-radius: 2px; }
+.seed-percent { font-size: 12px; color: #8A857A; margin-top: 12px; font-variant-numeric: tabular-nums; }
+
+/* ============================================================
+   SETTINGS (fills drawer)
+   ============================================================ */
+.set-group {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--ink-50);
+  overflow: hidden;
+}
+.set-row {
+  padding: 13px 14px;
+  display: flex; align-items: center; gap: 12px;
+  border-bottom: 1px solid var(--border);
+}
+.set-row:last-child { border-bottom: none; }
+.set-row .icon-tile {
+  width: 28px; height: 28px; border-radius: 7px;
+  background: var(--ink-150); color: var(--ink-600);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.set-row .icon-tile.accent { background: var(--accent-100); color: var(--accent-700); }
+.set-row .icon-tile svg { width: 14px; height: 14px; stroke-width: 1.5; }
+.set-row .body { flex: 1; min-width: 0; }
+.set-row .label { font-size: 13px; color: var(--ink-800); }
+.set-row .sub { font-size: 11px; color: var(--ink-500); margin-top: 1px; }
+.set-row .value { font-size: 13px; color: var(--ink-500); }
+.set-row .chev { color: var(--ink-400); }
+
+.set-quota {
+  padding: 14px;
+  background: var(--ink-50);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+.quota-row { display: flex; align-items: baseline; justify-content: space-between; }
+.quota-used { font-size: 22px; font-weight: 600; color: var(--ink-900); letter-spacing: -0.4px; }
+.quota-of { font-size: 12px; color: var(--ink-500); }
+.quota-bar { height: 6px; background: var(--ink-150); border-radius: 3px; overflow: hidden; margin-top: 10px; }
+.quota-bar > div { height: 100%; background: var(--accent-500); border-radius: 3px; }
+.quota-breakdown { display: flex; gap: 14px; margin-top: 12px; font-size: 11px; color: var(--ink-500); }
+.quota-dot { width: 8px; height: 8px; border-radius: 2px; display: inline-block; margin-right: 5px; vertical-align: middle; }
+
+/* ============================================================
+   EMPTY / NO-RESULTS state inside drawer-list
+   ============================================================ */
+.empty-state {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 48px 24px 24px; text-align: center;
+}
+.empty-state .icon {
+  width: 56px; height: 56px; border-radius: 16px;
+  background: var(--ink-100); color: var(--ink-400);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 14px;
+}
+.empty-state .icon svg { width: 28px; height: 28px; stroke-width: 1.25; }
+.empty-state .title { font-size: 15px; font-weight: 500; color: var(--ink-800); }
+.empty-state .body { font-size: 12px; color: var(--ink-500); line-height: 1.5; margin-top: 6px; max-width: 240px; }
+.empty-state .chips { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; margin-top: 16px; }
+.empty-state .actions { display: flex; flex-direction: column; gap: 8px; margin-top: 18px; width: 100%; max-width: 200px; }
+
+.history-chip {
+  font-size: 12px; padding: 5px 10px; border-radius: 9999px;
+  background: var(--ink-100); color: var(--ink-700);
+  display: inline-flex; align-items: center; gap: 4px;
+  cursor: pointer;
+}
+.history-chip svg { width: 11px; height: 11px; stroke-width: 1.5; color: var(--ink-400); }
+
+.suggest-row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 12px;
+  background: var(--accent-50);
+  border: 1px dashed var(--accent-300);
+  border-radius: 10px;
+  font-size: 12px;
+  color: var(--ink-800);
+}
+.suggest-row .accent { color: var(--accent-700); font-weight: 500; cursor: pointer; }
+
+/* ============================================================
+   PHOTO MOSAIC BACKGROUND (visit wizard active)
+   Diverse SVG scenes evoking apartment photos — no scrim, slight
+   desaturation so the wizard sheet on the right still reads as primary.
+   ============================================================ */
+.photo-mosaic {
+  position: absolute; inset: 0;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+  gap: 0;
+  filter: saturate(0.85);
+}
+.photo-tile {
+  position: relative;
+  overflow: hidden;
+}
+.photo-tile svg { width: 100%; height: 100%; display: block; }
+
+/* ============================================================
+   Compound popover (small floating, when pin clicked but before
+   opening full detail)
+   ============================================================ */
+.pin-popover {
+  position: absolute;
+  background: rgba(250,248,244,0.96);
+  backdrop-filter: saturate(180%) blur(20px);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 14px;
+  width: 256px;
+  box-shadow: 0 8px 32px rgba(28,27,25,.10);
+  z-index: 14;
+}
+.pin-popover .tip {
+  position: absolute; top: -6px; left: 50%; transform: translateX(-50%) rotate(45deg);
+  width: 12px; height: 12px; background: rgba(250,248,244,0.96);
+  border-left: 1px solid var(--border); border-top: 1px solid var(--border);
+}
+.pin-popover h4 { font-size: 15px; font-weight: 600; color: var(--ink-900); letter-spacing: -0.24px; }
+.pin-popover .sub { font-size: 11px; color: var(--ink-500); margin-top: 2px; }
+.pin-popover .kvs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 12px; margin-top: 10px; }
+.pin-popover .kvs .k { font-size: 10px; color: var(--ink-500); text-transform: uppercase; letter-spacing: 0.8px; }
+.pin-popover .kvs .v { font-size: 12px; color: var(--ink-800); margin-top: 1px; font-weight: 500; }
+.pin-popover .actions { margin-top: 12px; display: flex; gap: 6px; }
+.pin-popover .actions button { flex: 1; padding: 7px 8px; font-size: 12px; }
+
+/* ============================================================
+   Misc layout adjustments — FLOATING (map = ground, chrome floats above)
+   The original ios-kit.css used a strict 61.8/38.2 grid; we now
+   reposition .toolbar + .drawer + .wizard as absolute floating cards
+   so the map is visible in the gaps. Apple-Maps-iPadOS feel.
+   ============================================================ */
+.frame .split {
+  flex: 1;
+  display: block;
+  position: relative;
+  min-height: 0;
+  grid-template-columns: none;
+}
+.frame .map-pane,
+.frame .drawer { min-height: 0; }
+
+/* Map fills the whole frame area under the status bar */
+.frame .map-pane {
+  position: absolute;
+  inset: 0;
+  border-right: none;
+  border-radius: 0;
+}
+
+/* Toolbar — single floating pill across the top */
+.frame .toolbar {
+  position: absolute;
+  top: 40px;
+  left: 16px;
+  right: 16px;
+  height: 52px;
+  border-bottom: none;
+  border: 1px solid rgba(28,27,25,0.06);
+  border-radius: 16px;
+  background: rgba(250,248,244,0.78);
+  backdrop-filter: saturate(180%) blur(24px);
+  box-shadow: 0 6px 22px rgba(28,27,25,.10), 0 1px 0 rgba(255,255,255,0.4) inset;
+  z-index: 30;
+}
+
+/* Drawer — floating right card */
+.frame .drawer {
+  position: absolute;
+  top: 108px;
+  bottom: 16px;
+  right: 16px;
+  width: calc(38.2% - 16px);
+  background: rgba(250,248,244,0.92);
+  backdrop-filter: saturate(180%) blur(22px);
+  border: 1px solid rgba(28,27,25,0.06);
+  border-radius: 20px;
+  box-shadow: 0 12px 36px rgba(28,27,25,.12), 0 1px 0 rgba(255,255,255,0.4) inset;
+  overflow: hidden;
+  z-index: 5;
+}
+
+/* Round the drawer's internal tabs strip to match outer radius */
+.frame .drawer-tabs { padding-top: 16px; }
+
+/* Visit wizard — same floating treatment as drawer */
+.frame .wizard {
+  top: 108px;
+  bottom: 16px;
+  right: 16px;
+  width: calc(38.2% - 16px);
+  border-left: none;
+  border: 1px solid rgba(28,27,25,0.06);
+  border-radius: 20px;
+  background: rgba(250,248,244,0.96);
+  backdrop-filter: saturate(180%) blur(22px);
+  box-shadow: 0 18px 44px rgba(28,27,25,.18), 0 1px 0 rgba(255,255,255,0.4) inset;
+  overflow: hidden;
+  z-index: 12;  /* above drawer (z:5) so wizard occludes the underlying list */
+}
+.frame .wizard-shade { display: none; }  /* killed: original 2px blur was visually wrecking the entire artboard */
+
+/* Top inline banner — also floating, only over map area */
+.frame .banner {
+  position: absolute;
+  top: 108px;
+  left: 16px;
+  right: calc(38.2% + 16px);
+  border-radius: 14px;
+  border: 1px solid;
+  padding: 11px 14px;
+  z-index: 20;
+  backdrop-filter: saturate(180%) blur(20px);
+  box-shadow: 0 4px 14px rgba(28,27,25,.08);
+}
+.frame .banner.offline { background: rgba(174,196,212,0.55); border-color: rgba(91,124,156,0.35); color: #2E4660; }
+.frame .banner.warning { background: rgba(232,210,160,0.55); border-color: rgba(201,155,44,0.35); color: #6B4810; }
+
+/* Selection chip — push below floating toolbar */
+.frame .map-selection { top: 108px; }
+
+/* Offline chip — move to bottom-left so it doesn't fight the banner */
+.frame .offline-chip {
+  top: auto; bottom: 96px; left: 16px;
+}
+
+/* Popovers anchor under their floating toolbar buttons */
+.frame .popover { top: 100px !important; }
+.frame .popover.popover-layer { left: 32px !important; }
+.frame .popover.popover-filter { left: 126px !important; }
+
+/* Pin popover — keep its absolute positioning */
+.frame .pin-popover { z-index: 14; }
+
+/* Slight glow on chip behind it for readability vs map */
+.frame .legend { box-shadow: 0 4px 14px rgba(28,27,25,.10); }
+.frame .map-fab { box-shadow: 0 4px 12px rgba(28,27,25,.10); }
+
+/* When wizard is open, drawer content is hidden beneath the wizard sheet;
+   we don't render drawer in that case to simplify. */
+
+/* iCloud sync indicator in toolbar */
+.sync-pill {
+  font-size: 11px; color: var(--ink-500);
+  display: inline-flex; align-items: center; gap: 4px;
+}
+.sync-pill svg { width: 14px; height: 14px; stroke-width: 1.5; }
+.sync-pill.offline { color: #3E5468; }
+.sync-pill.warning { color: #7A5418; }
