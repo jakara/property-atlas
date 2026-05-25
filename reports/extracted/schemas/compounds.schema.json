@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tianjin-house.local/schemas/compounds.schema.json",
+  "title": "Compounds / 楼盘",
+  "type": "object",
+  "required": ["version", "count", "items"],
+  "additionalProperties": true,
+  "properties": {
+    "version":          { "$ref": "_common.schema.json#/$defs/version" },
+    "count":            { "type": "integer", "minimum": 0 },
+    "sensitive":        { "type": "boolean", "description": "true=整个数据集敏感, 公开导出时整体剔除" },
+    "sensitive_reason": { "type": "string" },
+    "source_codes":     { "$ref": "_common.schema.json#/$defs/source_codes_dict" },
+    "items": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/Compound" }
+    }
+  },
+  "$defs": {
+    "Compound": {
+      "type": "object",
+      "required": ["id", "name", "district", "source", "is_new_house"],
+      "additionalProperties": false,
+      "properties": {
+        "id":             { "$ref": "_common.schema.json#/$defs/id_compound" },
+        "name":           { "type": "string", "minLength": 1 },
+        "district_group": {
+          "type": ["string", "null"],
+          "enum": ["市内六区", "环城四区", "远郊五区", "滨海新区", null]
+        },
+        "district":       { "$ref": "_common.schema.json#/$defs/district_any" },
+        "is_new_house":   { "type": "boolean", "const": true },
+        "source":         { "$ref": "_common.schema.json#/$defs/source_code" },
+        "source_row":     { "type": ["integer", "null"] },
+        "available_units": {
+          "type": ["object", "null"],
+          "additionalProperties": false,
+          "properties": {
+            "bucket": { "type": "string", "enum": [">50", "10-50", "<10", "unknown"] },
+            "raw":    { "type": "string" }
+          }
+        },
+        "area_segments":  { "type": ["string", "null"] },
+        "price_segments": { "type": ["string", "null"] },
+        "finish_type":    { "type": ["string", "null"] },
+        "delivery_time":  { "type": ["string", "null"] },
+        "sensitive":      { "$ref": "#/$defs/CompoundSensitive" }
+      }
+    },
+    "CompoundSensitive": {
+      "type": "object",
+      "required": ["source"],
+      "additionalProperties": false,
+      "properties": {
+        "pros":   { "type": ["string", "null"] },
+        "cons":   { "type": ["string", "null"] },
+        "source": { "$ref": "_common.schema.json#/$defs/source_code" },
+        "note":   { "type": ["string", "null"] }
+      }
+    }
+  }
+}

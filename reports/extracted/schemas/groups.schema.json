@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tianjin-house.local/schemas/groups.schema.json",
+  "title": "Education Groups / 集团化办学",
+  "type": "object",
+  "required": ["version", "source", "count", "items"],
+  "additionalProperties": true,
+  "properties": {
+    "version":  { "$ref": "_common.schema.json#/$defs/version" },
+    "source":   { "type": "string" },
+    "count":    { "type": "integer", "minimum": 0 },
+    "items":    {
+      "type": "array",
+      "items": { "$ref": "#/$defs/Group" }
+    },
+    "school_to_groups": {
+      "type": "object",
+      "description": "Reverse index: school_id → [{group_id, group_name, role, stopped?}]",
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["group_id", "group_name", "role"],
+          "additionalProperties": false,
+          "properties": {
+            "group_id":   { "$ref": "_common.schema.json#/$defs/id_group" },
+            "group_name": { "type": "string" },
+            "role":       { "type": "string", "enum": ["lead", "member"] },
+            "stopped":    { "type": "boolean" }
+          }
+        }
+      }
+    },
+    "warnings": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  },
+  "$defs": {
+    "Group": {
+      "type": "object",
+      "required": ["id", "district", "name", "leads", "members"],
+      "additionalProperties": false,
+      "properties": {
+        "id":       { "$ref": "_common.schema.json#/$defs/id_group" },
+        "district": { "$ref": "_common.schema.json#/$defs/district_six" },
+        "name":     { "type": "string", "minLength": 1 },
+        "leads":    { "type": "array", "items": { "$ref": "#/$defs/SchoolRef" } },
+        "members":  { "type": "array", "items": { "$ref": "#/$defs/MemberRef" } },
+        "note":     { "type": ["string", "null"] }
+      }
+    },
+    "SchoolRef": {
+      "type": "object",
+      "required": ["name"],
+      "additionalProperties": false,
+      "properties": {
+        "name":           { "type": "string" },
+        "school_id":      { "anyOf": [ { "$ref": "_common.schema.json#/$defs/id_school" }, { "type": "null" } ] },
+        "matched_school": { "type": ["string", "null"] }
+      }
+    },
+    "MemberRef": {
+      "type": "object",
+      "required": ["name"],
+      "additionalProperties": false,
+      "properties": {
+        "name":           { "type": "string" },
+        "school_id":      { "anyOf": [ { "$ref": "_common.schema.json#/$defs/id_school" }, { "type": "null" } ] },
+        "matched_school": { "type": ["string", "null"] },
+        "stopped":        { "type": "boolean" }
+      }
+    }
+  }
+}

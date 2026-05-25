@@ -1,0 +1,1620 @@
+{
+  "version": "2026.05.25",
+  "count": 174,
+  "items": [
+    {
+      "compound_id": "cmp_38fc539cb3",
+      "compound_name": "中国铁建西派国印",
+      "district": "河北区",
+      "mapped_district": "河北区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_6d11b80e7e",
+      "compound_name": "启航精英公寓",
+      "district": "南开区",
+      "mapped_district": "南开区",
+      "primary_matches": [
+        {
+          "school_id": "sch_dc29b296e0",
+          "school_name": "勤敏小学",
+          "zone_id": "zon_c636eabad6",
+          "zone_name": "第三学区(南片)",
+          "matched_via": "community:公寓"
+        }
+      ],
+      "middle_matches": [],
+      "needs_manual_review": false
+    },
+    {
+      "compound_id": "cmp_983ef3004e",
+      "compound_name": "金汇云璟",
+      "district": "北辰区",
+      "mapped_district": "北辰区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_aafad0408b",
+      "compound_name": "天骥智谷",
+      "district": "东丽区",
+      "mapped_district": "东丽区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_f58308291c",
+      "compound_name": "保盈家园",
+      "district": "南开区",
+      "mapped_district": "南开区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_18a93ddae9",
+      "compound_name": "四季春晓",
+      "district": "津南区",
+      "mapped_district": "津南区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_684efb9f06",
+      "compound_name": "中国铁建公馆189",
+      "district": "河北区",
+      "mapped_district": "河北区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_19b3dd9ca7",
+      "compound_name": "北宁公元",
+      "district": "河北区",
+      "mapped_district": "河北区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_4b6e6c7c11",
+      "compound_name": "中海·城市广场·钻石湾",
+      "district": "河东区",
+      "mapped_district": "河东区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_693037ebcb",
+      "compound_name": "嘉里·雅颂台",
+      "district": "河东区",
+      "mapped_district": "河东区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_d2a45107bb",
+      "compound_name": "城投万欣城",
+      "district": "河东区",
+      "mapped_district": "河东区",
+      "primary_matches": [
+        {
+          "school_id": "sch_19a148e9c6",
+          "school_name": "行知小学",
+          "zone_id": "zon_7e302ffd3f",
+          "zone_name": "第四学区",
+          "matched_via": "community:万欣城"
+        }
+      ],
+      "middle_matches": [],
+      "needs_manual_review": false
+    },
+    {
+      "compound_id": "cmp_4d9ed2dd80",
+      "compound_name": "雍祥园",
+      "district": "河东区",
+      "mapped_district": "河东区",
+      "primary_matches": [
+        {
+          "school_id": "sch_19a148e9c6",
+          "school_name": "行知小学",
+          "zone_id": "zon_7e302ffd3f",
+          "zone_name": "第四学区",
+          "matched_via": "community:雍祥园"
+        }
+      ],
+      "middle_matches": [],
+      "needs_manual_review": false
+    },
+    {
+      "compound_id": "cmp_fd17ee9648",
+      "compound_name": "农垦含章雅著",
+      "district": "河东区",
+      "mapped_district": "河东区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_97f5424a3f",
+      "compound_name": "格调榴园",
+      "district": "河东区",
+      "mapped_district": "河东区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_8c688ec341",
+      "compound_name": "创意之城蘭园",
+      "district": "河西区",
+      "mapped_district": "河西区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_9bfa3aba50",
+      "compound_name": "中交融正",
+      "district": "河西区",
+      "mapped_district": "河西区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_8fc2a2b4fa",
+      "compound_name": "中交融成",
+      "district": "河西区",
+      "mapped_district": "河西区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_ef580c4327",
+      "compound_name": "华宇·御熹臺",
+      "district": "河西区",
+      "mapped_district": "河西区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_5cafc79008",
+      "compound_name": "中海 · 左岸源境",
+      "district": "河西区",
+      "mapped_district": "河西区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_f658211398",
+      "compound_name": "中海学府源境",
+      "district": "河西区",
+      "mapped_district": "河西区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_8a153f763c",
+      "compound_name": "联发城投梅江和悦",
+      "district": "河西区",
+      "mapped_district": "河西区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_6d11b80e7e",
+      "compound_name": "启航精英公寓",
+      "district": "南开区",
+      "mapped_district": "南开区",
+      "primary_matches": [
+        {
+          "school_id": "sch_dc29b296e0",
+          "school_name": "勤敏小学",
+          "zone_id": "zon_c636eabad6",
+          "zone_name": "第三学区(南片)",
+          "matched_via": "community:公寓"
+        }
+      ],
+      "middle_matches": [],
+      "needs_manual_review": false
+    },
+    {
+      "compound_id": "cmp_976a840d23",
+      "compound_name": "保利云禧",
+      "district": "南开区",
+      "mapped_district": "南开区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_e4a1e65640",
+      "compound_name": "金融街融府",
+      "district": "南开区",
+      "mapped_district": "南开区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_714786ff78",
+      "compound_name": "招商江山玺",
+      "district": "南开区",
+      "mapped_district": "南开区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_1ed6cf2ca4",
+      "compound_name": "金地阅千峯",
+      "district": "南开区",
+      "mapped_district": "南开区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_4e9fcf100a",
+      "compound_name": "格调隐翠轩",
+      "district": "南开区",
+      "mapped_district": "南开区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_0340c47b5f",
+      "compound_name": "中粮辰悦",
+      "district": "北辰区",
+      "mapped_district": "北辰区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_983ef3004e",
+      "compound_name": "金汇云璟",
+      "district": "北辰区",
+      "mapped_district": "北辰区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_8a709d262f",
+      "compound_name": "金地·万悦城",
+      "district": "东丽区",
+      "mapped_district": "东丽区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_109b4098da",
+      "compound_name": "金隅金玉府",
+      "district": "东丽区",
+      "mapped_district": "东丽区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_2f9d46c136",
+      "compound_name": "东方和府",
+      "district": "东丽区",
+      "mapped_district": "东丽区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_aafad0408b",
+      "compound_name": "天骥智谷",
+      "district": "东丽区",
+      "mapped_district": "东丽区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_061dd5506c",
+      "compound_name": "金融街·听湖小镇",
+      "district": "东丽区",
+      "mapped_district": "东丽区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_d8fc0552d9",
+      "compound_name": "万通金府国际",
+      "district": "东丽区",
+      "mapped_district": "东丽区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_bd48602db2",
+      "compound_name": "天安象屿智慧城-都城",
+      "district": "东丽区",
+      "mapped_district": "东丽区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_9fa19e9d40",
+      "compound_name": "百郦荣锦苑",
+      "district": "东丽区",
+      "mapped_district": "东丽区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_684f63e43f",
+      "compound_name": "新业御园",
+      "district": "东丽区",
+      "mapped_district": "东丽区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_a0bfc6aa79",
+      "compound_name": "中海国际公园城",
+      "district": "津南区",
+      "mapped_district": "津南区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_f0c00e16db",
+      "compound_name": "爱情·花园里",
+      "district": "津南区",
+      "mapped_district": "津南区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_18a93ddae9",
+      "compound_name": "四季春晓",
+      "district": "津南区",
+      "mapped_district": "津南区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_60b70f9ee8",
+      "compound_name": "保利西棠和煦",
+      "district": "津南区",
+      "mapped_district": "津南区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_cb7fc0e957",
+      "compound_name": "中国铁建花语天境",
+      "district": "津南区",
+      "mapped_district": "津南区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_0c2011f5de",
+      "compound_name": "融信津南府",
+      "district": "津南区",
+      "mapped_district": "津南区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_36082510b4",
+      "compound_name": "天地源叠璟院",
+      "district": "津南区",
+      "mapped_district": "津南区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_35b1a5cc52",
+      "compound_name": "金地山川印",
+      "district": "津南区",
+      "mapped_district": "津南区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_b5764975d3",
+      "compound_name": "保利时代",
+      "district": "津南区",
+      "mapped_district": "津南区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_9b15abd027",
+      "compound_name": "东亚新华国樾华府",
+      "district": "津南区",
+      "mapped_district": "津南区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_348a65bf37",
+      "compound_name": "海玥名邸",
+      "district": "津南区",
+      "mapped_district": "津南区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_1190c6e136",
+      "compound_name": "中建理想城",
+      "district": "津南区",
+      "mapped_district": "津南区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_42edc6678c",
+      "compound_name": "城投东方源筑",
+      "district": "津南区",
+      "mapped_district": "津南区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_0bbcbb285b",
+      "compound_name": "天津汇悦城",
+      "district": "东丽区",
+      "mapped_district": "东丽区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_3014c03847",
+      "compound_name": "城投水西东方天宸",
+      "district": "西青区",
+      "mapped_district": "西青区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_2e955b32f8",
+      "compound_name": "金地时光印",
+      "district": "西青区",
+      "mapped_district": "西青区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_f7f4c6888e",
+      "compound_name": "融侨方圆",
+      "district": "西青区",
+      "mapped_district": "西青区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_2d8748e6f5",
+      "compound_name": "保利·和光尘樾",
+      "district": "西青区",
+      "mapped_district": "西青区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_ca5bf0c0fb",
+      "compound_name": "万科翡翠大道",
+      "district": "西青区",
+      "mapped_district": "西青区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_1eafbea7eb",
+      "compound_name": "爱情·缤纷里",
+      "district": "西青区",
+      "mapped_district": "西青区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_e658cc1a39",
+      "compound_name": "宝安江南城",
+      "district": "西青区",
+      "mapped_district": "西青区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_70ea9dbb4d",
+      "compound_name": "天安数码城珑园",
+      "district": "西青区",
+      "mapped_district": "西青区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_ff9201af32",
+      "compound_name": "融泰城",
+      "district": "西青区",
+      "mapped_district": "西青区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_67bb9ae4b2",
+      "compound_name": "金地·藝華里",
+      "district": "西青区",
+      "mapped_district": "西青区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_ccd6c9be48",
+      "compound_name": "绿城晓月晴川",
+      "district": "西青区",
+      "mapped_district": "西青区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_43d0e49fe4",
+      "compound_name": "金地风华919",
+      "district": "西青区",
+      "mapped_district": "西青区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_2b12f8b491",
+      "compound_name": "信达格调美古花园",
+      "district": "和平区",
+      "mapped_district": "和平区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_a00e5356c2",
+      "compound_name": "南城拾壹方",
+      "district": "宝坻区",
+      "mapped_district": "宝坻区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_42510d2317",
+      "compound_name": "天宝福苑",
+      "district": "宝坻区",
+      "mapped_district": "宝坻区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_d3c02892cb",
+      "compound_name": "农垦•含章宝邸",
+      "district": "宝坻区",
+      "mapped_district": "宝坻区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_a055e1964a",
+      "compound_name": "首钢·柒里风华",
+      "district": "宝坻区",
+      "mapped_district": "宝坻区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_161e079c05",
+      "compound_name": "浩润嘉苑",
+      "district": "宝坻区",
+      "mapped_district": "宝坻区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_fe8a422bb0",
+      "compound_name": "建投·君诺学府",
+      "district": "宝坻区",
+      "mapped_district": "宝坻区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_48970b74f1",
+      "compound_name": "南城时光",
+      "district": "宝坻区",
+      "mapped_district": "宝坻区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_6781dfed1e",
+      "compound_name": "林奇郡中心城",
+      "district": "静海区",
+      "mapped_district": "静海区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_aab29a09b9",
+      "compound_name": "林奇岛",
+      "district": "静海区",
+      "mapped_district": "静海区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_9695e73412",
+      "compound_name": "珊瑚海广场",
+      "district": "塘沽区",
+      "mapped_district": "滨海新区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_f1068cdbd9",
+      "compound_name": "南湾壹号",
+      "district": "塘沽区",
+      "mapped_district": "滨海新区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_6126fb5bcd",
+      "compound_name": "中国铁建·滨海梧桐",
+      "district": "塘沽区",
+      "mapped_district": "滨海新区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_6d8e180fe2",
+      "compound_name": "泽信·渤龙云筑",
+      "district": "塘沽区",
+      "mapped_district": "滨海新区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_ff564b8a4c",
+      "compound_name": "格调林泉",
+      "district": "塘沽区",
+      "mapped_district": "滨海新区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_5aa19229b1",
+      "compound_name": "际华园天津府",
+      "district": "塘沽区",
+      "mapped_district": "滨海新区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_7e6071aa0a",
+      "compound_name": "中铁滨城云著",
+      "district": "塘沽区",
+      "mapped_district": "滨海新区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_e120cdb8aa",
+      "compound_name": "中交海河玺",
+      "district": "东丽区",
+      "mapped_district": "东丽区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_a9f5f04ad1",
+      "compound_name": "金地·水西印",
+      "district": "西青区",
+      "mapped_district": "西青区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_3642ba4edc",
+      "compound_name": "中建悦庐棠墅",
+      "district": "津南区",
+      "mapped_district": "津南区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_8dc3459712",
+      "compound_name": "博岸名邸",
+      "district": "河西区",
+      "mapped_district": "河西区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_fa70bda3bb",
+      "compound_name": "建投君诺壹號府",
+      "district": "宝坻区",
+      "mapped_district": "宝坻区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_bde8f7d88e",
+      "compound_name": "东舍宅",
+      "district": "河西区",
+      "mapped_district": "河西区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_1b2ceeafe2",
+      "compound_name": "小岛壹号",
+      "district": "大港区",
+      "mapped_district": "滨海新区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_25150d7fd3",
+      "compound_name": "中海凌云源境",
+      "district": "河西区",
+      "mapped_district": "河西区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_8c53921b3a",
+      "compound_name": "宝境棠棣",
+      "district": "宝坻区",
+      "mapped_district": "宝坻区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_d969375076",
+      "compound_name": "创意之城锦园",
+      "district": "河西区",
+      "mapped_district": "河西区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_96a1b2cf65",
+      "compound_name": "纯皓家园",
+      "district": "河西区",
+      "mapped_district": "河西区",
+      "primary_matches": [
+        {
+          "school_id": "sch_5e84e62bca",
+          "school_name": "上海道小学纯皓学校",
+          "zone_id": "zon_6795e99220",
+          "zone_name": "第二学区",
+          "matched_via": "community:纯皓家园"
+        }
+      ],
+      "middle_matches": [],
+      "needs_manual_review": false
+    },
+    {
+      "compound_id": "cmp_ba573100a3",
+      "compound_name": "天逸华府",
+      "district": "大港区",
+      "mapped_district": "滨海新区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_d506785090",
+      "compound_name": "金地时代印",
+      "district": "西青区",
+      "mapped_district": "西青区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_9be31d6210",
+      "compound_name": "御河臻璟",
+      "district": "西青区",
+      "mapped_district": "西青区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_3db7bbd287",
+      "compound_name": "绿地·津澜",
+      "district": "津南区",
+      "mapped_district": "津南区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_be04315e90",
+      "compound_name": "城投东方紫宸",
+      "district": "河东区",
+      "mapped_district": "河东区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_a2362442fb",
+      "compound_name": "建投誉河院",
+      "district": "红桥区",
+      "mapped_district": "红桥区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_0f491ba557",
+      "compound_name": "华勘鈺府",
+      "district": "河东区",
+      "mapped_district": "河东区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_6ac7b44738",
+      "compound_name": "中海长林郡",
+      "district": "津南区",
+      "mapped_district": "津南区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_b7236acad0",
+      "compound_name": "金地藝墅家·风华印",
+      "district": "西青区",
+      "mapped_district": "西青区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_1d84fb0c64",
+      "compound_name": "堤翠家园",
+      "district": "南开区",
+      "mapped_district": "南开区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_f58308291c",
+      "compound_name": "保盈家园",
+      "district": "南开区",
+      "mapped_district": "南开区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_e138ff350a",
+      "compound_name": "彩虹城",
+      "district": "西青区",
+      "mapped_district": "西青区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_11b8b3eec1",
+      "compound_name": "龙湖首创天琅",
+      "district": "西青区",
+      "mapped_district": "西青区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_716cb8b83b",
+      "compound_name": "复地湖滨广场",
+      "district": "东丽区",
+      "mapped_district": "东丽区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_0d8f85d4c6",
+      "compound_name": "心港东城名都",
+      "district": "大港区",
+      "mapped_district": "滨海新区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_3493309817",
+      "compound_name": "格调步庭",
+      "district": "河东区",
+      "mapped_district": "河东区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_1fa80b06dc",
+      "compound_name": "香锦园",
+      "district": "西青区",
+      "mapped_district": "西青区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_b6bc361eac",
+      "compound_name": "中海镜映南开",
+      "district": "南开区",
+      "mapped_district": "南开区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_6c2b59cfad",
+      "compound_name": "体北金茂府",
+      "district": "河西区",
+      "mapped_district": "河西区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_7583ea8c87",
+      "compound_name": "三源英华郡",
+      "district": "东丽区",
+      "mapped_district": "东丽区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_96bf94822a",
+      "compound_name": "诺金兰亭园",
+      "district": "宝坻区",
+      "mapped_district": "宝坻区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_7639b923a7",
+      "compound_name": "鹏飞·南开学苑",
+      "district": "南开区",
+      "mapped_district": "南开区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_caa42c6852",
+      "compound_name": "中海时光之镜",
+      "district": "河西区",
+      "mapped_district": "河西区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_f7a51249e3",
+      "compound_name": "天保意境芳华",
+      "district": "东丽区",
+      "mapped_district": "东丽区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_61f66be8fd",
+      "compound_name": "中海峰境南开",
+      "district": "南开区",
+      "mapped_district": "南开区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_bafd53a2ae",
+      "compound_name": "想云湾",
+      "district": "东丽区",
+      "mapped_district": "东丽区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_5b96a0819e",
+      "compound_name": "天津·瑞府",
+      "district": "河西区",
+      "mapped_district": "河西区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_338f030ad2",
+      "compound_name": "天保九如品筑",
+      "district": "东丽区",
+      "mapped_district": "东丽区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_2210b493f2",
+      "compound_name": "保利拾光年",
+      "district": "西青区",
+      "mapped_district": "西青区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_b1bb0dfc99",
+      "compound_name": "天保上城观景",
+      "district": "南开区",
+      "mapped_district": "南开区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_635e329518",
+      "compound_name": "绿城桂语映月",
+      "district": "西青区",
+      "mapped_district": "西青区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_863504f191",
+      "compound_name": "水西雲庐",
+      "district": "西青区",
+      "mapped_district": "西青区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_729275416e",
+      "compound_name": "绿城柳岸晓风",
+      "district": "西青区",
+      "mapped_district": "西青区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_7b872a9519",
+      "compound_name": "绿城·鳳起悦鸣",
+      "district": "南开区",
+      "mapped_district": "南开区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_3187be3d9a",
+      "compound_name": "上东金茂晓棠",
+      "district": "东丽区",
+      "mapped_district": "东丽区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_da340e983b",
+      "compound_name": "中国铁建·花语澜廷",
+      "district": "津南区",
+      "mapped_district": "津南区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_7bf16ba994",
+      "compound_name": "融金财富中心",
+      "district": "津南区",
+      "mapped_district": "津南区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_e8e7e2bc1c",
+      "compound_name": "绿城桂语朝阳",
+      "district": "西青区",
+      "mapped_district": "西青区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_55d9bcd127",
+      "compound_name": "万科翡翠嘉和",
+      "district": "西青区",
+      "mapped_district": "西青区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_d39016448b",
+      "compound_name": "中交春风景里",
+      "district": "红桥区",
+      "mapped_district": "红桥区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_3a5c573735",
+      "compound_name": "中交春映海河",
+      "district": "河东区",
+      "mapped_district": "河东区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_46b3d13f54",
+      "compound_name": "津铁镜界",
+      "district": "静海区",
+      "mapped_district": "静海区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_28dbe4c129",
+      "compound_name": "龙曜城",
+      "district": "北辰区",
+      "mapped_district": "北辰区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_b769892a30",
+      "compound_name": "绿城锦玉兰",
+      "district": "北辰区",
+      "mapped_district": "北辰区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_942ff08e46",
+      "compound_name": "金隅金成府",
+      "district": "北辰区",
+      "mapped_district": "北辰区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_c888151d35",
+      "compound_name": "金隅金成熙府",
+      "district": "北辰区",
+      "mapped_district": "北辰区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_9e4cdd229f",
+      "compound_name": "通新润府",
+      "district": "津南区",
+      "mapped_district": "津南区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_b4f24080f3",
+      "compound_name": "恒基旭辉都会江来",
+      "district": "东丽区",
+      "mapped_district": "东丽区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_d22682d1e2",
+      "compound_name": "平安泰达金融中心-马场道57号",
+      "district": "河西区",
+      "mapped_district": "河西区",
+      "primary_matches": [
+        {
+          "school_id": "sch_dd144c8a49",
+          "school_name": "马场道小学",
+          "zone_id": "zon_6795e99220",
+          "zone_name": "第二学区",
+          "matched_via": "community:马场道"
+        }
+      ],
+      "middle_matches": [],
+      "needs_manual_review": false
+    },
+    {
+      "compound_id": "cmp_719aef8ce7",
+      "compound_name": "中建玖樾府",
+      "district": "东丽区",
+      "mapped_district": "东丽区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_62e12075cd",
+      "compound_name": "复地林与里",
+      "district": "东丽区",
+      "mapped_district": "东丽区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_aae0637aab",
+      "compound_name": "大华清水湾",
+      "district": "河东区",
+      "mapped_district": "河东区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_a5e60451c5",
+      "compound_name": "北科建·水岸华府",
+      "district": "北辰区",
+      "mapped_district": "北辰区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_dfd0ed757b",
+      "compound_name": "首创禧瑞府",
+      "district": "红桥区",
+      "mapped_district": "红桥区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_a421cb38e8",
+      "compound_name": "远洋潮起东方",
+      "district": "东丽区",
+      "mapped_district": "东丽区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_8d85512eda",
+      "compound_name": "天房海河湾",
+      "district": "河西区",
+      "mapped_district": "河西区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_432c3a0229",
+      "compound_name": "经纬城市绿洲滨海",
+      "district": "大港区",
+      "mapped_district": "滨海新区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_c48ccec0d8",
+      "compound_name": "路劲太阳城壹号著区",
+      "district": "河东区",
+      "mapped_district": "河东区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_45738a9c4e",
+      "compound_name": "天津万达自在澜湾",
+      "district": "静海区",
+      "mapped_district": "静海区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_3ee5c30dbd",
+      "compound_name": "中车津浦智汇港",
+      "district": "河北区",
+      "mapped_district": "河北区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_26d0efb8a9",
+      "compound_name": "天津华侨城",
+      "district": "东丽区",
+      "mapped_district": "东丽区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_0f1e42a72a",
+      "compound_name": "中储城邦",
+      "district": "北辰区",
+      "mapped_district": "北辰区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_9313608cf3",
+      "compound_name": "远洋未来城",
+      "district": "北辰区",
+      "mapped_district": "北辰区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_ea82dedff1",
+      "compound_name": "和融广场悦湾公馆",
+      "district": "河北区",
+      "mapped_district": "河北区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_eb609d18f9",
+      "compound_name": "万科运河文化村",
+      "district": "北辰区",
+      "mapped_district": "北辰区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_6ff5774a97",
+      "compound_name": "新城悦隽风华·悦城",
+      "district": "北辰区",
+      "mapped_district": "北辰区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_28b4828f27",
+      "compound_name": "远洋寛阅时光",
+      "district": "东丽区",
+      "mapped_district": "东丽区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_837c068e55",
+      "compound_name": "天房六合国际",
+      "district": "河西区",
+      "mapped_district": "河西区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_0faa99ca81",
+      "compound_name": "天津锦绣学府",
+      "district": "静海区",
+      "mapped_district": "静海区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_d624030ad8",
+      "compound_name": "松江东湖嘉庭",
+      "district": "东丽区",
+      "mapped_district": "东丽区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_b7a11223d0",
+      "compound_name": "体北鲁能公馆",
+      "district": "河西区",
+      "mapped_district": "河西区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_7f13a8db55",
+      "compound_name": "绿城桂月云翠",
+      "district": "东丽区",
+      "mapped_district": "东丽区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_61ab81b738",
+      "compound_name": "鲁能泰山7号",
+      "district": "津南区",
+      "mapped_district": "津南区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_ba55870a99",
+      "compound_name": "珺悦峰",
+      "district": "宝坻区",
+      "mapped_district": "宝坻区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_b3959eb31b",
+      "compound_name": "玺悦峰",
+      "district": "宝坻区",
+      "mapped_district": "宝坻区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_01936cbc5a",
+      "compound_name": "中交香颂",
+      "district": "宝坻区",
+      "mapped_district": "宝坻区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_201b4ad945",
+      "compound_name": "弘业云邸",
+      "district": "宝坻区",
+      "mapped_district": "宝坻区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_2730ba37df",
+      "compound_name": "津铁格调罗宁花园",
+      "district": "河东区",
+      "mapped_district": "河东区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_78b0b10b34",
+      "compound_name": "城投时代之城",
+      "district": "东丽区",
+      "mapped_district": "东丽区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_57a6b18294",
+      "compound_name": "中建玖棠府",
+      "district": "东丽区",
+      "mapped_district": "东丽区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_4bf0abcf64",
+      "compound_name": "中交雅郡·城东春晓",
+      "district": "东丽区",
+      "mapped_district": "东丽区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    },
+    {
+      "compound_id": "cmp_0d53bc47b4",
+      "compound_name": "中国铁建·花语尚东",
+      "district": "东丽区",
+      "mapped_district": "东丽区",
+      "primary_matches": [],
+      "middle_matches": [],
+      "needs_manual_review": true
+    }
+  ]
+}

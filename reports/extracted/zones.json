@@ -1,0 +1,1046 @@
+{
+  "version": "2026.05.25",
+  "source": "PDF 津门学路通",
+  "count": 101,
+  "items": [
+    {
+      "id": "zon_5cf8adbebc",
+      "district": "和平区",
+      "zone_name": "第一学片",
+      "note": "含模范小学",
+      "middle_school_pool": [
+        "耀华中学",
+        "第二南开学校",
+        "汇文中学",
+        "第十九中学"
+      ],
+      "sensitive": {
+        "highlight": "含市五所之一的**耀华中学**初中部，第二南开有自主直升小学部，鞍山道小学被称为\"数学摇篮\"。",
+        "source": "MD-ZONE",
+        "note": "基于学片划分研究报告整理"
+      }
+    },
+    {
+      "id": "zon_0ebeadb59a",
+      "district": "和平区",
+      "zone_name": "第二学片",
+      "note": null,
+      "middle_school_pool": [
+        "一中",
+        "第五十五中学",
+        "汉阳道中学",
+        "第九十中学"
+      ],
+      "sensitive": {
+        "highlight": "含市五所之首的**天津一中**初中部（其完中高中部2024年录取线772.5分，一本率约97%）；岳阳道、实验、和平中心为三大重小，被认为是和平区**小学含金量最高**的学片。",
+        "source": "MD-ZONE",
+        "note": "基于学片划分研究报告整理"
+      }
+    },
+    {
+      "id": "zon_9b08b71b1d",
+      "district": "和平区",
+      "zone_name": "第三学片",
+      "note": "含三毛艺术学校",
+      "middle_school_pool": [
+        "二十中学",
+        "二十一中学",
+        "十一中学",
+        "六十一中学"
+      ],
+      "sensitive": {
+        "highlight": "**二十中学**是和平区\"老牌牛初中\"，新华南路小学被誉为和平区普小天花板。",
+        "source": "MD-ZONE",
+        "note": "基于学片划分研究报告整理"
+      }
+    },
+    {
+      "id": "zon_edf7edbf32",
+      "district": "和平区",
+      "zone_name": "全区招生",
+      "note": null,
+      "middle_school_pool": []
+    },
+    {
+      "id": "zon_7102214f83",
+      "district": "和平区",
+      "zone_name": "特殊学校",
+      "note": null,
+      "middle_school_pool": []
+    },
+    {
+      "id": "zon_732dcbe259",
+      "district": "河西区",
+      "zone_name": "第一学区",
+      "note": null,
+      "middle_school_pool": [
+        "新华中学",
+        "海河中学",
+        "卓群中学",
+        "田家炳中学",
+        "卓越中学",
+        "觉民中学"
+      ]
+    },
+    {
+      "id": "zon_6795e99220",
+      "district": "河西区",
+      "zone_name": "第二学区",
+      "note": null,
+      "middle_school_pool": [
+        "实验中学",
+        "四十一中学",
+        "滨湖中学",
+        "环湖中学",
+        "梅江中学",
+        "梧桐中学"
+      ]
+    },
+    {
+      "id": "zon_aa53364971",
+      "district": "河西区",
+      "zone_name": "第三学区",
+      "note": null,
+      "middle_school_pool": [
+        "第四中学",
+        "第四十二中学",
+        "北京师范大学天津附属中学",
+        "微山路中学",
+        "枫林路中学",
+        "双水道中学",
+        "第二新华中学"
+      ]
+    },
+    {
+      "id": "zon_f768d70667",
+      "district": "河西区",
+      "zone_name": "全区招生",
+      "note": null,
+      "middle_school_pool": []
+    },
+    {
+      "id": "zon_269b267ae9",
+      "district": "河西区",
+      "zone_name": "特殊学校",
+      "note": null,
+      "middle_school_pool": []
+    },
+    {
+      "id": "zon_b31fc5ddc2",
+      "district": "南开区",
+      "zone_name": "第一学区(北片)",
+      "note": null,
+      "middle_school_pool": [
+        "南开中学",
+        "二十五中学(青年路)",
+        "崇化中学(北马路)",
+        "崇化中学(临潼路)",
+        "四十三中学",
+        "五十中学",
+        "田家炳中学"
+      ]
+    },
+    {
+      "id": "zon_0426748cb0",
+      "district": "南开区",
+      "zone_name": "第二学区(中片)",
+      "note": null,
+      "middle_school_pool": [
+        "天大附中",
+        "南大附中",
+        "天津师范大学附属中学",
+        "第六十三中学"
+      ]
+    },
+    {
+      "id": "zon_c636eabad6",
+      "district": "南开区",
+      "zone_name": "第三学区(南片)",
+      "note": null,
+      "middle_school_pool": [
+        "天津中学",
+        "第九中学",
+        "南开实验学校",
+        "师范大学附属实验中学",
+        "南开区科技实验中学"
+      ]
+    },
+    {
+      "id": "zon_c11a6cd1b1",
+      "district": "南开区",
+      "zone_name": "民办初中全区招生",
+      "note": null,
+      "middle_school_pool": []
+    },
+    {
+      "id": "zon_974054cbe7",
+      "district": "南开区",
+      "zone_name": "民办本校直升 剩余名额全区招生",
+      "note": null,
+      "middle_school_pool": []
+    },
+    {
+      "id": "zon_1f96f4cd56",
+      "district": "南开区",
+      "zone_name": "其他民办小学",
+      "note": null,
+      "middle_school_pool": []
+    },
+    {
+      "id": "zon_749a74af25",
+      "district": "河北区",
+      "zone_name": "第一学区",
+      "note": null,
+      "middle_school_pool": [
+        "扶轮中学",
+        "木斋中学",
+        "第二中学",
+        "美术中学",
+        "新开中学"
+      ],
+      "sensitive": {
+        "highlight": "含**第二中学**（河北区第一龙头中学，市级老牌重点）",
+        "source": "MD-ZONE",
+        "note": "基于学片划分研究报告整理"
+      }
+    },
+    {
+      "id": "zon_2feda8f7bb",
+      "district": "河北区",
+      "zone_name": "第二学区",
+      "note": null,
+      "middle_school_pool": [
+        "天外附属河北中学",
+        "三十五中学",
+        "五十七中学",
+        "红光中学"
+      ],
+      "sensitive": {
+        "highlight": "**57中**为区重点初中之一；外国语中学为特色校",
+        "source": "MD-ZONE",
+        "note": "基于学片划分研究报告整理"
+      }
+    },
+    {
+      "id": "zon_615a435340",
+      "district": "河北区",
+      "zone_name": "第三学区",
+      "note": null,
+      "middle_school_pool": [
+        "十四中学",
+        "四十八中学",
+        "七十八中学",
+        "七十七中学",
+        "九十三中学"
+      ],
+      "sensitive": {
+        "highlight": "14中、78中（教科院附中）口碑稳定",
+        "source": "MD-ZONE",
+        "note": "基于学片划分研究报告整理"
+      }
+    },
+    {
+      "id": "zon_2299416d73",
+      "district": "河东区",
+      "zone_name": "第一学区",
+      "note": null,
+      "middle_school_pool": [
+        "第四十五中学",
+        "第九十八中学",
+        "二号桥中学"
+      ],
+      "sensitive": {
+        "highlight": "**45中**（市重点，初中部尖子向高中部输送一本率高）+卓越学校（原二号桥中学，七中集团接管）+育才学校（九年一贯）",
+        "source": "MD-ZONE",
+        "note": "基于学片划分研究报告整理"
+      }
+    },
+    {
+      "id": "zon_4a20a71df7",
+      "district": "河东区",
+      "zone_name": "第二学区",
+      "note": null,
+      "middle_school_pool": [
+        "第五十四中学",
+        "第八十二中学",
+        "田庄中学"
+      ],
+      "sensitive": {
+        "highlight": "54中为河东区二片\"一志愿校\"；位置靠近海河、与和平河西相望，富人聚集",
+        "source": "MD-ZONE",
+        "note": "基于学片划分研究报告整理"
+      }
+    },
+    {
+      "id": "zon_88b01b777c",
+      "district": "河东区",
+      "zone_name": "第三学区",
+      "note": null,
+      "middle_school_pool": [
+        "第七中学",
+        "第三十二中学",
+        "第二十八中学",
+        "七中教育集团东局子学校"
+      ],
+      "sensitive": {
+        "highlight": "**七中**为\"市九所\"之一，河东龙头初中；东局子学校九年一贯制",
+        "source": "MD-ZONE",
+        "note": "基于学片划分研究报告整理"
+      }
+    },
+    {
+      "id": "zon_7e302ffd3f",
+      "district": "河东区",
+      "zone_name": "第四学区",
+      "note": null,
+      "middle_school_pool": [
+        "第一○二中学",
+        "第八中学",
+        "香山道中学",
+        "盘山道中学",
+        "七中教育集团太阳城学校"
+      ],
+      "sensitive": {
+        "highlight": "含**102中**（市九所）；2025年新设102中津华学校以缓解学位压力",
+        "source": "MD-ZONE",
+        "note": "基于学片划分研究报告整理"
+      }
+    },
+    {
+      "id": "zon_4b1a5d832f",
+      "district": "河东区",
+      "zone_name": "第五学区",
+      "note": "河北涉县飞地, 对应天铁系学校",
+      "middle_school_pool": []
+    },
+    {
+      "id": "zon_81acf70c01",
+      "district": "红桥区",
+      "zone_name": "第一学区",
+      "note": null,
+      "middle_school_pool": [
+        "第三中学",
+        "佳春中学",
+        "第八十中学",
+        "河工大附属红桥中学"
+      ],
+      "sensitive": {
+        "highlight": "3中是红桥区\"一哥\"，红桥实验小学为市重点",
+        "source": "MD-ZONE",
+        "note": "基于学片划分研究报告整理"
+      }
+    },
+    {
+      "id": "zon_692a5f665f",
+      "district": "红桥区",
+      "zone_name": "第二学区",
+      "note": null,
+      "middle_school_pool": [
+        "西青道中学",
+        "第八十九中学",
+        "第五中学",
+        "新华中学和苑学校"
+      ],
+      "sensitive": {
+        "highlight": "5中是市重点；新华中学和苑学校首批面向拆迁安置家庭，第二批面向二学区摇号",
+        "source": "MD-ZONE",
+        "note": "基于学片划分研究报告整理"
+      }
+    },
+    {
+      "id": "zon_6b20d568d2",
+      "district": "红桥区",
+      "zone_name": "第三学区",
+      "note": null,
+      "middle_school_pool": [
+        "铃铛阁外国语中学",
+        "红桥泰达实验中学",
+        "民族中学"
+      ],
+      "sensitive": {
+        "highlight": "民族中学为市重点；三中东校区有附属小学优先录取",
+        "source": "MD-ZONE",
+        "note": "基于学片划分研究报告整理"
+      }
+    },
+    {
+      "id": "zon_0d2d1fbaaa",
+      "district": "北辰区",
+      "zone_name": "行政区域",
+      "structure": "中学→对口小学",
+      "middle_school_pool": []
+    },
+    {
+      "id": "zon_2879a5c36c",
+      "district": "宝坻区",
+      "zone_name": "行政区域",
+      "structure": "中学→对口小学",
+      "middle_school_pool": []
+    },
+    {
+      "id": "zon_67b1002a2c",
+      "district": "东丽区",
+      "zone_name": "行政区域",
+      "structure": "中学→对口小学",
+      "middle_school_pool": []
+    },
+    {
+      "id": "zon_6793f9f74f",
+      "district": "津南区",
+      "zone_name": "行政区域",
+      "structure": "学片区号→中学+小学",
+      "middle_school_pool": []
+    },
+    {
+      "id": "zon_9f9ff6333f",
+      "district": "津南区",
+      "zone_name": "津南区-一",
+      "middle_school_pool": [
+        "葛沽一中",
+        "葛沽三中"
+      ],
+      "areas_text": ""
+    },
+    {
+      "id": "zon_c89fd6f704",
+      "district": "津南区",
+      "zone_name": "津南区-二",
+      "middle_school_pool": [
+        "咸水沽第二中学",
+        "咸水沽第三中学",
+        "咸水沽第四中学",
+        "咸水沽第五中学"
+      ],
+      "areas_text": ""
+    },
+    {
+      "id": "zon_3cbee208e4",
+      "district": "津南区",
+      "zone_name": "津南区-三",
+      "middle_school_pool": [
+        "辛庄中学"
+      ],
+      "areas_text": ""
+    },
+    {
+      "id": "zon_779270813b",
+      "district": "津南区",
+      "zone_name": "津南区-四",
+      "middle_school_pool": [
+        "双港中学"
+      ],
+      "areas_text": ""
+    },
+    {
+      "id": "zon_605e453bd9",
+      "district": "津南区",
+      "zone_name": "津南区-五",
+      "middle_school_pool": [
+        "八里台一中",
+        "八里台二中"
+      ],
+      "areas_text": ""
+    },
+    {
+      "id": "zon_7fc2363724",
+      "district": "津南区",
+      "zone_name": "津南区-六",
+      "middle_school_pool": [
+        "北闸口中学"
+      ],
+      "areas_text": ""
+    },
+    {
+      "id": "zon_7747f56700",
+      "district": "津南区",
+      "zone_name": "津南区-七",
+      "middle_school_pool": [
+        "双桥中学"
+      ],
+      "areas_text": ""
+    },
+    {
+      "id": "zon_1fa98f270e",
+      "district": "津南区",
+      "zone_name": "津南区-八",
+      "middle_school_pool": [
+        "小站一中",
+        "小站实验中学"
+      ],
+      "areas_text": ""
+    },
+    {
+      "id": "zon_6041bd5658",
+      "district": "西青区",
+      "zone_name": "行政区域",
+      "structure": "中学→对口小学",
+      "middle_school_pool": []
+    },
+    {
+      "id": "zon_8c477a7893",
+      "district": "静海区",
+      "zone_name": "行政区域",
+      "structure": "中学→片区范围(地理描述)",
+      "middle_school_pool": []
+    },
+    {
+      "id": "zon_7abf8704ba",
+      "district": "宁河区",
+      "zone_name": "行政区域",
+      "structure": "中学→片区范围",
+      "middle_school_pool": []
+    },
+    {
+      "id": "zon_05f437e185",
+      "district": "武清区",
+      "zone_name": "行政区域",
+      "structure": "中学→片区范围",
+      "middle_school_pool": []
+    },
+    {
+      "id": "zon_814a321a6f",
+      "district": "蓟州区",
+      "zone_name": "行政区域",
+      "structure": "中学→片区范围",
+      "middle_school_pool": []
+    },
+    {
+      "id": "zon_756f2f1a39",
+      "district": "滨海新区",
+      "zone_name": "行政区域",
+      "structure": "区域序号→中学+小学",
+      "middle_school_pool": []
+    },
+    {
+      "id": "zon_2aa1b6492c",
+      "district": "滨海新区",
+      "zone_name": "滨海新区-塘沽1",
+      "middle_school_pool": [
+        "塘沽一中",
+        "塘沽二中",
+        "塘沽五中",
+        "塘沽六中"
+      ],
+      "areas_text": ""
+    },
+    {
+      "id": "zon_379063dbac",
+      "district": "滨海新区",
+      "zone_name": "滨海新区-塘沽2",
+      "middle_school_pool": [
+        "塘沽七中",
+        "塘沽新港中学"
+      ],
+      "areas_text": ""
+    },
+    {
+      "id": "zon_b1e1fea7b7",
+      "district": "滨海新区",
+      "zone_name": "滨海新区-塘沽3",
+      "middle_school_pool": [
+        "塘沽三中",
+        "塘沽十四中"
+      ],
+      "areas_text": ""
+    },
+    {
+      "id": "zon_b5e709d89a",
+      "district": "滨海新区",
+      "zone_name": "滨海新区-塘沽4",
+      "middle_school_pool": [
+        "塘沽育才学校初中部",
+        "塘沽胡家园学校初中部"
+      ],
+      "areas_text": ""
+    },
+    {
+      "id": "zon_3d3b901509",
+      "district": "滨海新区",
+      "zone_name": "滨海新区-塘沽5",
+      "middle_school_pool": [
+        "塘沽云山道学校",
+        "塘沽未来学校"
+      ],
+      "areas_text": ""
+    },
+    {
+      "id": "zon_caeb389162",
+      "district": "滨海新区",
+      "zone_name": "滨海新区-塘沽6",
+      "middle_school_pool": [
+        "塘沽河头中学"
+      ],
+      "areas_text": ""
+    },
+    {
+      "id": "zon_7075177762",
+      "district": "滨海新区",
+      "zone_name": "滨海新区-塘沽7",
+      "middle_school_pool": [
+        "塘沽九中"
+      ],
+      "areas_text": ""
+    },
+    {
+      "id": "zon_d9eb8eb1fb",
+      "district": "滨海新区",
+      "zone_name": "滨海新区-塘沽8",
+      "middle_school_pool": [
+        "塘沽湾学校"
+      ],
+      "areas_text": ""
+    },
+    {
+      "id": "zon_36bcdeea84",
+      "district": "滨海新区",
+      "zone_name": "滨海新区-塘沽9",
+      "middle_school_pool": [
+        "塘沽体校"
+      ],
+      "areas_text": ""
+    },
+    {
+      "id": "zon_419a44a132",
+      "district": "滨海新区",
+      "zone_name": "滨海新区-塘沽10",
+      "middle_school_pool": [
+        "塘沽十一中"
+      ],
+      "areas_text": ""
+    },
+    {
+      "id": "zon_877899934d",
+      "district": "滨海新区",
+      "zone_name": "滨海新区-塘沽11",
+      "middle_school_pool": [
+        "塘沽十五中"
+      ],
+      "areas_text": ""
+    },
+    {
+      "id": "zon_95b3fbf0e8",
+      "district": "滨海新区",
+      "zone_name": "滨海新区-塘沽12",
+      "middle_school_pool": [
+        "塘沽北塘学校",
+        "天津实验中学",
+        "滨海学校"
+      ],
+      "areas_text": ""
+    },
+    {
+      "id": "zon_2a080f9ad4",
+      "district": "滨海新区",
+      "zone_name": "滨海新区-塘沽13",
+      "middle_school_pool": [
+        "塘沽新城中学"
+      ],
+      "areas_text": ""
+    },
+    {
+      "id": "zon_e14ffee51b",
+      "district": "滨海新区",
+      "zone_name": "滨海新区-塘沽14",
+      "middle_school_pool": [
+        "塘沽盐场中学"
+      ],
+      "areas_text": ""
+    },
+    {
+      "id": "zon_c9084fef3c",
+      "district": "滨海新区",
+      "zone_name": "滨海新区-塘沽15",
+      "middle_school_pool": [
+        "塘沽渤油一中"
+      ],
+      "areas_text": ""
+    },
+    {
+      "id": "zon_f662d969e2",
+      "district": "滨海新区",
+      "zone_name": "滨海新区-塘沽16",
+      "middle_school_pool": [
+        "塘沽渤油二中"
+      ],
+      "areas_text": ""
+    },
+    {
+      "id": "zon_9786834e4a",
+      "district": "滨海新区",
+      "zone_name": "滨海新区-塘沽17",
+      "middle_school_pool": [
+        "塘沽远洋城中学"
+      ],
+      "areas_text": ""
+    },
+    {
+      "id": "zon_1b8a0f986b",
+      "district": "滨海新区",
+      "zone_name": "滨海新区-塘沽18",
+      "middle_school_pool": [
+        "中部新城学校"
+      ],
+      "areas_text": ""
+    },
+    {
+      "id": "zon_2d33e25cf9",
+      "district": "滨海新区",
+      "zone_name": "滨海新区-塘沽19",
+      "middle_school_pool": [
+        "天津师范大学滨海附属学校"
+      ],
+      "areas_text": ""
+    },
+    {
+      "id": "zon_a487c4c6fe",
+      "district": "滨海新区",
+      "zone_name": "滨海新区-塘沽20",
+      "middle_school_pool": [
+        "洞庭学校"
+      ],
+      "areas_text": ""
+    },
+    {
+      "id": "zon_cf67cb205e",
+      "district": "滨海新区",
+      "zone_name": "滨海新区-塘沽21",
+      "middle_school_pool": [
+        "天津实验中学滨海育华学校"
+      ],
+      "areas_text": ""
+    },
+    {
+      "id": "zon_a6db428ee5",
+      "district": "滨海新区",
+      "zone_name": "滨海新区-汉沽1",
+      "middle_school_pool": [
+        "汉沽二中"
+      ],
+      "areas_text": ""
+    },
+    {
+      "id": "zon_5fa3ebf866",
+      "district": "滨海新区",
+      "zone_name": "滨海新区-汉沽2",
+      "middle_school_pool": [
+        "汉沽三中"
+      ],
+      "areas_text": ""
+    },
+    {
+      "id": "zon_d2ab235e54",
+      "district": "滨海新区",
+      "zone_name": "滨海新区-汉沽3",
+      "middle_school_pool": [
+        "汉沽八中"
+      ],
+      "areas_text": ""
+    },
+    {
+      "id": "zon_e8d81c5519",
+      "district": "滨海新区",
+      "zone_name": "滨海新区-汉沽4",
+      "middle_school_pool": [
+        "汉沽九中"
+      ],
+      "areas_text": ""
+    },
+    {
+      "id": "zon_947c2474fb",
+      "district": "滨海新区",
+      "zone_name": "滨海新区-汉沽5",
+      "middle_school_pool": [
+        "汉沽后沽中学"
+      ],
+      "areas_text": ""
+    },
+    {
+      "id": "zon_ad5c0537ec",
+      "district": "滨海新区",
+      "zone_name": "滨海新区-汉沽6",
+      "middle_school_pool": [
+        "汉沽大田中学"
+      ],
+      "areas_text": ""
+    },
+    {
+      "id": "zon_52b721e01c",
+      "district": "滨海新区",
+      "zone_name": "滨海新区-汉沽7",
+      "middle_school_pool": [
+        "汉沽桃园中学"
+      ],
+      "areas_text": ""
+    },
+    {
+      "id": "zon_34085f180e",
+      "district": "滨海新区",
+      "zone_name": "滨海新区-汉沽8",
+      "middle_school_pool": [
+        "汉沽高庄中学"
+      ],
+      "areas_text": ""
+    },
+    {
+      "id": "zon_9798b7d609",
+      "district": "滨海新区",
+      "zone_name": "滨海新区-大港1",
+      "middle_school_pool": [
+        "大港二中",
+        "大港五中",
+        "大港六中",
+        "大港七中",
+        "大港九中",
+        "大港十中"
+      ],
+      "areas_text": ""
+    },
+    {
+      "id": "zon_25c05c9eae",
+      "district": "滨海新区",
+      "zone_name": "滨海新区-大港2",
+      "middle_school_pool": [
+        "大港滨湖学校"
+      ],
+      "areas_text": ""
+    },
+    {
+      "id": "zon_4b459526be",
+      "district": "滨海新区",
+      "zone_name": "滨海新区-大港3",
+      "middle_school_pool": [
+        "大港四中"
+      ],
+      "areas_text": ""
+    },
+    {
+      "id": "zon_307a398d7b",
+      "district": "滨海新区",
+      "zone_name": "滨海新区-大港4",
+      "middle_school_pool": [
+        "大港栖凤中学"
+      ],
+      "areas_text": ""
+    },
+    {
+      "id": "zon_760bdfb22a",
+      "district": "滨海新区",
+      "zone_name": "滨海新区-大港5",
+      "middle_school_pool": [
+        "大港小王庄中学"
+      ],
+      "areas_text": ""
+    },
+    {
+      "id": "zon_54a05f5efc",
+      "district": "滨海新区",
+      "zone_name": "滨海新区-大港6",
+      "middle_school_pool": [
+        "大港徐庄子中学"
+      ],
+      "areas_text": ""
+    },
+    {
+      "id": "zon_5141525d71",
+      "district": "滨海新区",
+      "zone_name": "滨海新区-大港7",
+      "middle_school_pool": [
+        "大港太平二中"
+      ],
+      "areas_text": ""
+    },
+    {
+      "id": "zon_b960511b09",
+      "district": "滨海新区",
+      "zone_name": "滨海新区-大港8",
+      "middle_school_pool": [
+        "大港太平村中学"
+      ],
+      "areas_text": ""
+    },
+    {
+      "id": "zon_e91f5c571e",
+      "district": "滨海新区",
+      "zone_name": "滨海新区-大港9",
+      "middle_school_pool": [
+        "大港苏家园学校"
+      ],
+      "areas_text": ""
+    },
+    {
+      "id": "zon_0c82975aa9",
+      "district": "滨海新区",
+      "zone_name": "滨海新区-大港10",
+      "middle_school_pool": [
+        "大港窦庄子中学"
+      ],
+      "areas_text": ""
+    },
+    {
+      "id": "zon_e623107aff",
+      "district": "滨海新区",
+      "zone_name": "滨海新区-大港11",
+      "middle_school_pool": [
+        "大港远景学校"
+      ],
+      "areas_text": ""
+    },
+    {
+      "id": "zon_5b227774d7",
+      "district": "滨海新区",
+      "zone_name": "滨海新区-大港12",
+      "middle_school_pool": [
+        "大港沙井子学校"
+      ],
+      "areas_text": ""
+    },
+    {
+      "id": "zon_52f47405c2",
+      "district": "滨海新区",
+      "zone_name": "滨海新区-油田1",
+      "middle_school_pool": [
+        "大港油田四中"
+      ],
+      "areas_text": ""
+    },
+    {
+      "id": "zon_2d86d98f76",
+      "district": "滨海新区",
+      "zone_name": "滨海新区-油田2",
+      "middle_school_pool": [
+        "大港油田一中"
+      ],
+      "areas_text": ""
+    },
+    {
+      "id": "zon_9fe3443f15",
+      "district": "滨海新区",
+      "zone_name": "滨海新区-油田3",
+      "middle_school_pool": [
+        "大港油田二中"
+      ],
+      "areas_text": ""
+    },
+    {
+      "id": "zon_989b2c81df",
+      "district": "滨海新区",
+      "zone_name": "滨海新区-油田4",
+      "middle_school_pool": [
+        "大港油田三中"
+      ],
+      "areas_text": ""
+    },
+    {
+      "id": "zon_c7683253d7",
+      "district": "滨海新区",
+      "zone_name": "滨海新区-油田5",
+      "middle_school_pool": [
+        "大港同盛学校"
+      ],
+      "areas_text": ""
+    },
+    {
+      "id": "zon_47c02aae01",
+      "district": "滨海新区",
+      "zone_name": "滨海新区-油田6",
+      "middle_school_pool": [
+        "大港海滨学校"
+      ],
+      "areas_text": ""
+    },
+    {
+      "id": "zon_39562c3868",
+      "district": "滨海新区",
+      "zone_name": "滨海新区-油田7",
+      "middle_school_pool": [
+        "大港海滨二校"
+      ],
+      "areas_text": ""
+    },
+    {
+      "id": "zon_1cd747cc57",
+      "district": "滨海新区",
+      "zone_name": "滨海新区-油田8",
+      "middle_school_pool": [
+        "大港海滨三校"
+      ],
+      "areas_text": ""
+    },
+    {
+      "id": "zon_e2468eceb5",
+      "district": "滨海新区",
+      "zone_name": "滨海新区-油田9",
+      "middle_school_pool": [
+        "大港海滨四校"
+      ],
+      "areas_text": ""
+    },
+    {
+      "id": "zon_a5988846d8",
+      "district": "滨海新区",
+      "zone_name": "滨海新区-油田10",
+      "middle_school_pool": [
+        "大港港狮学校"
+      ],
+      "areas_text": ""
+    },
+    {
+      "id": "zon_58c27221cb",
+      "district": "滨海新区",
+      "zone_name": "滨海新区-生态城",
+      "middle_school_pool": [
+        "天津南开滨海生态城学校",
+        "天津外大滨海附校初中部",
+        "北师大生态城附校初中部",
+        "天津科大附中"
+      ],
+      "areas_text": ""
+    },
+    {
+      "id": "zon_77b6b12da0",
+      "district": "滨海新区",
+      "zone_name": "滨海新区-空港",
+      "middle_school_pool": [
+        "天津一中滨海学校初中部",
+        "天津港保税区空港学校初中"
+      ],
+      "areas_text": ""
+    },
+    {
+      "id": "zon_c590311117",
+      "district": "滨海新区",
+      "zone_name": "滨海新区-泰达管委会",
+      "middle_school_pool": [
+        "开发区国际学校",
+        "泰达实验学校",
+        "开发区第一中学",
+        "开发区第二中学",
+        "天津港保税区临港实验学校"
+      ],
+      "areas_text": ""
+    },
+    {
+      "id": "zon_de26ab926e",
+      "district": "滨海新区",
+      "zone_name": "滨海新区-保税区",
+      "middle_school_pool": [
+        "天津一中滨海学校初中部",
+        "天津港保税区空港学校初中部"
+      ],
+      "areas_text": ""
+    },
+    {
+      "id": "zon_2c5e439102",
+      "district": "滨海新区",
+      "zone_name": "滨海新区-高新区",
+      "middle_school_pool": [
+        "天津滨海高新技术产业开发区第一学校"
+      ],
+      "areas_text": ""
+    }
+  ],
+  "source_codes": {
+    "JM-PDF": "津门学路通 PDF — 学片/学校 公开数据",
+    "MD-ZONE": "学片划分md (天津市内六区小学与初中学片划分及实力排名深度研究报告 2024-2026版)"
+  }
+}

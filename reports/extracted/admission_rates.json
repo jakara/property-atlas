@@ -1,0 +1,142 @@
+{
+  "version": "2026.05.25",
+  "count": 19,
+  "note": "各区2023年中考普高/职高录取率",
+  "items": [
+    {
+      "district": "和平区",
+      "gaokao_admit_pct": 85,
+      "vocational_admit_pct": 12,
+      "year": 2023,
+      "source": "pptx slide 64+120"
+    },
+    {
+      "district": "河西区",
+      "gaokao_admit_pct": 80,
+      "vocational_admit_pct": 17,
+      "year": 2023,
+      "source": "pptx slide 64+120"
+    },
+    {
+      "district": "南开区",
+      "gaokao_admit_pct": 77,
+      "vocational_admit_pct": 20,
+      "year": 2023,
+      "source": "pptx slide 64+120"
+    },
+    {
+      "district": "河东区",
+      "gaokao_admit_pct": 70,
+      "vocational_admit_pct": 20,
+      "year": 2023,
+      "source": "pptx slide 64+120"
+    },
+    {
+      "district": "河北区",
+      "gaokao_admit_pct": 67,
+      "vocational_admit_pct": 27,
+      "year": 2023,
+      "source": "pptx slide 64+120"
+    },
+    {
+      "district": "红桥区",
+      "gaokao_admit_pct": 65,
+      "vocational_admit_pct": 30,
+      "year": 2023,
+      "source": "pptx slide 64+120"
+    },
+    {
+      "district": "滨海新区",
+      "gaokao_admit_pct": 63,
+      "vocational_admit_pct": 32,
+      "year": 2023,
+      "source": "pptx slide 64+120"
+    },
+    {
+      "district": "蓟州区",
+      "gaokao_admit_pct": 62,
+      "vocational_admit_pct": 34,
+      "year": 2023,
+      "source": "pptx slide 64+120"
+    },
+    {
+      "district": "武清区",
+      "gaokao_admit_pct": 60,
+      "vocational_admit_pct": 35,
+      "year": 2023,
+      "source": "pptx slide 64+120"
+    },
+    {
+      "district": "宝坻区",
+      "gaokao_admit_pct": 58,
+      "vocational_admit_pct": 37,
+      "year": 2023,
+      "source": "pptx slide 64+120"
+    },
+    {
+      "district": "静海区",
+      "gaokao_admit_pct": 53,
+      "vocational_admit_pct": 39,
+      "year": 2023,
+      "source": "pptx slide 64+120"
+    },
+    {
+      "district": "宁河区",
+      "gaokao_admit_pct": 51,
+      "vocational_admit_pct": 44,
+      "year": 2023,
+      "source": "pptx slide 64+120"
+    },
+    {
+      "district": "津南区",
+      "gaokao_admit_pct": 49,
+      "vocational_admit_pct": 48,
+      "year": 2023,
+      "source": "pptx slide 64+120"
+    },
+    {
+      "district": "北辰区",
+      "gaokao_admit_pct": 47,
+      "vocational_admit_pct": 50,
+      "year": 2023,
+      "source": "pptx slide 64+120"
+    },
+    {
+      "district": "西青区",
+      "gaokao_admit_pct": 43,
+      "vocational_admit_pct": 54,
+      "year": 2023,
+      "source": "pptx slide 64+120"
+    },
+    {
+      "district": "东丽区",
+      "gaokao_admit_pct": 41,
+      "vocational_admit_pct": 56,
+      "year": 2023,
+      "source": "pptx slide 64+120"
+    },
+    {
+      "district": "空港",
+      "gaokao_admit_pct": 85,
+      "vocational_admit_pct": null,
+      "year": 2023,
+      "source": "pptx slide 64+120"
+    },
+    {
+      "district": "海教园",
+      "gaokao_admit_pct": 83,
+      "vocational_admit_pct": null,
+      "year": 2023,
+      "source": "pptx slide 64+120"
+    },
+    {
+      "district": "生态城",
+      "gaokao_admit_pct": 80,
+      "vocational_admit_pct": null,
+      "year": 2023,
+      "source": "pptx slide 64+120"
+    }
+  ],
+  "sensitive": true,
+  "sensitive_reason": "2023 年中考录取率为估算值, 来源非官方, 不对外公开"
+}

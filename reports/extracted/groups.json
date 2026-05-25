@@ -1,0 +1,1889 @@
+{
+  "version": "2026.05.25",
+  "source": "PDF 津门学路通 P30 集团化办学",
+  "count": 32,
+  "items": [
+    {
+      "id": "grp_a549379f0c",
+      "district": "和平区",
+      "name": "岳阳教育集团",
+      "leads": [
+        {
+          "name": "岳阳道小学",
+          "school_id": "sch_01f24f17d1",
+          "matched_school": "岳阳道小学"
+        }
+      ],
+      "members": [
+        {
+          "name": "西康路小学",
+          "school_id": "sch_d17ca8fb5a",
+          "matched_school": "西康路小学",
+          "stopped": false
+        },
+        {
+          "name": "新星小学",
+          "school_id": "sch_b1bd456d62",
+          "matched_school": "和平新星小学",
+          "stopped": false
+        },
+        {
+          "name": "二十中附属小学",
+          "school_id": "sch_2e8e54c325",
+          "matched_school": "第二十中学附属小学",
+          "stopped": false
+        }
+      ],
+      "note": null
+    },
+    {
+      "id": "grp_29fec2dcf0",
+      "district": "和平区",
+      "name": "万全教育集团",
+      "leads": [
+        {
+          "name": "和平万全小学",
+          "school_id": "sch_7eba9a6eb1",
+          "matched_school": "万全小学"
+        }
+      ],
+      "members": [
+        {
+          "name": "劝业场小学",
+          "school_id": "sch_0d7863165b",
+          "matched_school": "劝业场小学",
+          "stopped": false
+        },
+        {
+          "name": "哈密道小学",
+          "school_id": "sch_994ad86cd8",
+          "matched_school": "哈密道小学",
+          "stopped": false
+        }
+      ],
+      "note": null
+    },
+    {
+      "id": "grp_1d98a80ea2",
+      "district": "和平区",
+      "name": "昆明教育集团",
+      "leads": [
+        {
+          "name": "昆明路小学",
+          "school_id": "sch_c082652a56",
+          "matched_school": "昆明路小学"
+        }
+      ],
+      "members": [
+        {
+          "name": "四平东道小学",
+          "school_id": "sch_7d6a5dede9",
+          "matched_school": "四平东道小学",
+          "stopped": false
+        },
+        {
+          "name": "镜辉小学(停招)",
+          "school_id": null,
+          "matched_school": null,
+          "stopped": true
+        },
+        {
+          "name": "三毛艺术(停招)",
+          "school_id": null,
+          "matched_school": null,
+          "stopped": true
+        }
+      ],
+      "note": null
+    },
+    {
+      "id": "grp_b734348d5e",
+      "district": "南开区",
+      "name": "南开共同体",
+      "leads": [
+        {
+          "name": "南开中学",
+          "school_id": "sch_ccddb121c0",
+          "matched_school": "南开中学"
+        }
+      ],
+      "members": [
+        {
+          "name": "翔宇中学",
+          "school_id": "sch_49e581098e",
+          "matched_school": "翔宇学校",
+          "stopped": false
+        },
+        {
+          "name": "崇化中学(停招)",
+          "school_id": "sch_707a1225e9",
+          "matched_school": "崇化中学(北马路)",
+          "stopped": true
+        },
+        {
+          "name": "五十中学",
+          "school_id": "sch_7a7b274706",
+          "matched_school": "五十中学",
+          "stopped": false
+        },
+        {
+          "name": "南开科技实验中学",
+          "school_id": "sch_7e637c6a0b",
+          "matched_school": "南开区科技实验中学",
+          "stopped": false
+        }
+      ],
+      "note": null
+    },
+    {
+      "id": "grp_6550135ca7",
+      "district": "南开区",
+      "name": "二十五中共同体",
+      "leads": [
+        {
+          "name": "二十五中",
+          "school_id": "sch_2da29fadaa",
+          "matched_school": "第二十五中学"
+        }
+      ],
+      "members": [
+        {
+          "name": "津英中学",
+          "school_id": "sch_342efc18da",
+          "matched_school": "津英中学(完全中学)",
+          "stopped": false
+        },
+        {
+          "name": "科技实验",
+          "school_id": "sch_7e637c6a0b",
+          "matched_school": "南开区科技实验中学",
+          "stopped": false
+        },
+        {
+          "name": "四十三",
+          "school_id": "sch_792486cef8",
+          "matched_school": "第四十三中学",
+          "stopped": false
+        },
+        {
+          "name": "美达菲",
+          "school_id": "sch_849852f3b8",
+          "matched_school": "美达菲学校",
+          "stopped": false
+        }
+      ],
+      "note": null
+    },
+    {
+      "id": "grp_325e81a7ca",
+      "district": "南开区",
+      "name": "南大附中天大附中共同体",
+      "leads": [
+        {
+          "name": "南大附中",
+          "school_id": "sch_5a4d0cda3c",
+          "matched_school": "南开大学附属中学"
+        },
+        {
+          "name": "天大附中",
+          "school_id": "sch_4e92d01cda",
+          "matched_school": "天津大学附属中学"
+        }
+      ],
+      "members": [
+        {
+          "name": "六十三中",
+          "school_id": "sch_5cccb7a822",
+          "matched_school": "第六十三中学",
+          "stopped": false
+        },
+        {
+          "name": "师大南开附中",
+          "school_id": "sch_338d41edb4",
+          "matched_school": "师大南开附属中学",
+          "stopped": false
+        },
+        {
+          "name": "翔宇弘德",
+          "school_id": "sch_eba091a9a8",
+          "matched_school": "翔宇弘德学校",
+          "stopped": false
+        }
+      ],
+      "note": null
+    },
+    {
+      "id": "grp_e57981d828",
+      "district": "南开区",
+      "name": "天津中学共同体",
+      "leads": [
+        {
+          "name": "天津中学",
+          "school_id": "sch_80de38950e",
+          "matched_school": "天津中学"
+        }
+      ],
+      "members": [
+        {
+          "name": "日新国际",
+          "school_id": "sch_764ed310e4",
+          "matched_school": "日新国际学校",
+          "stopped": false
+        },
+        {
+          "name": "实验",
+          "school_id": "sch_426290e61b",
+          "matched_school": "科技实验小学",
+          "stopped": false
+        },
+        {
+          "name": "第九中学",
+          "school_id": "sch_15e0ffcc8f",
+          "matched_school": "第九中学",
+          "stopped": false
+        },
+        {
+          "name": "师大附属实验中学",
+          "school_id": "sch_1c6f104431",
+          "matched_school": "师大附属实验中学",
+          "stopped": false
+        }
+      ],
+      "note": null
+    },
+    {
+      "id": "grp_28cf20967e",
+      "district": "南开区",
+      "name": "中营小学共同体",
+      "leads": [
+        {
+          "name": "中营小学",
+          "school_id": "sch_094ce46111",
+          "matched_school": "中营小学"
+        }
+      ],
+      "members": [
+        {
+          "name": "中营瑞丽小学",
+          "school_id": "sch_62904cfb07",
+          "matched_school": "中营瑞丽小学",
+          "stopped": false
+        },
+        {
+          "name": "日新小学",
+          "school_id": "sch_764ed310e4",
+          "matched_school": "日新国际学校",
+          "stopped": false
+        },
+        {
+          "name": "美达菲小学",
+          "school_id": "sch_849852f3b8",
+          "matched_school": "美达菲学校",
+          "stopped": false
+        },
+        {
+          "name": "艺术小学",
+          "school_id": "sch_894130019e",
+          "matched_school": "南开艺术小学",
+          "stopped": false
+        },
+        {
+          "name": "永基小学",
+          "school_id": "sch_7a55636725",
+          "matched_school": "永基小学",
+          "stopped": false
+        },
+        {
+          "name": "西营门外小学",
+          "school_id": "sch_b2fa82f18c",
+          "matched_school": "西营门外小学",
+          "stopped": false
+        }
+      ],
+      "note": null
+    },
+    {
+      "id": "grp_eba1b2e5e2",
+      "district": "南开区",
+      "name": "五马路小学共同体",
+      "leads": [
+        {
+          "name": "五马路小学",
+          "school_id": "sch_5dbe970249",
+          "matched_school": "五马路小学"
+        }
+      ],
+      "members": [
+        {
+          "name": "义兴里小学",
+          "school_id": "sch_4c6574937e",
+          "matched_school": "义兴里小学",
+          "stopped": false
+        },
+        {
+          "name": "长治里小学",
+          "school_id": "sch_a3649b738c",
+          "matched_school": "长治里小学",
+          "stopped": false
+        },
+        {
+          "name": "前园小学",
+          "school_id": "sch_b08b2accd3",
+          "matched_school": "前园小学",
+          "stopped": false
+        },
+        {
+          "name": "跃升里小学",
+          "school_id": "sch_65595e1531",
+          "matched_school": "跃升里小学",
+          "stopped": false
+        },
+        {
+          "name": "南大附中南方小学",
+          "school_id": "sch_3ee9fc8510",
+          "matched_school": "南大附小",
+          "stopped": false
+        }
+      ],
+      "note": null
+    },
+    {
+      "id": "grp_a58fcdff5e",
+      "district": "南开区",
+      "name": "中心小学共同体",
+      "leads": [
+        {
+          "name": "中心小学",
+          "school_id": "sch_e21099ad2f",
+          "matched_school": "南开区中心小学"
+        }
+      ],
+      "members": [
+        {
+          "name": "科技实验小学",
+          "school_id": "sch_426290e61b",
+          "matched_school": "科技实验小学",
+          "stopped": false
+        },
+        {
+          "name": "南开小学",
+          "school_id": "sch_2c27d19dad",
+          "matched_school": "南开小学",
+          "stopped": false
+        },
+        {
+          "name": "风湖里小学",
+          "school_id": "sch_06bbf13760",
+          "matched_school": "风湖里小学",
+          "stopped": false
+        },
+        {
+          "name": "汾水道小学",
+          "school_id": "sch_56da04be25",
+          "matched_school": "汾水道小学",
+          "stopped": false
+        },
+        {
+          "name": "师大附属天大附小",
+          "school_id": "sch_5261805492",
+          "matched_school": "天大附小",
+          "stopped": false
+        }
+      ],
+      "note": null
+    },
+    {
+      "id": "grp_eaf69de825",
+      "district": "南开区",
+      "name": "师大南开附小共同体",
+      "leads": [
+        {
+          "name": "师大南开附小",
+          "school_id": "sch_25d6ebf746",
+          "matched_school": "师大南开附小"
+        }
+      ],
+      "members": [
+        {
+          "name": "咸阳路小学",
+          "school_id": "sch_506ded5acd",
+          "matched_school": "咸阳路小学",
+          "stopped": false
+        },
+        {
+          "name": "宜宾里小学",
+          "school_id": "sch_96ca5496a1",
+          "matched_school": "宜宾里小学",
+          "stopped": false
+        },
+        {
+          "name": "川府里小学",
+          "school_id": "sch_f7c0aaadc2",
+          "matched_school": "川府里小学",
+          "stopped": false
+        },
+        {
+          "name": "小南大附小",
+          "school_id": "sch_3ee9fc8510",
+          "matched_school": "南大附小",
+          "stopped": false
+        },
+        {
+          "name": "弘扬学校小学部",
+          "school_id": null,
+          "matched_school": null,
+          "stopped": false
+        }
+      ],
+      "note": null
+    },
+    {
+      "id": "grp_e175d15e09",
+      "district": "南开区",
+      "name": "新星小学共同体",
+      "leads": [
+        {
+          "name": "新星小学",
+          "school_id": "sch_f4ba8cc264",
+          "matched_school": "新星小学"
+        }
+      ],
+      "members": [
+        {
+          "name": "南开实验学校小学部",
+          "school_id": "sch_006aac4c62",
+          "matched_school": "南开实验学校小学部",
+          "stopped": false
+        },
+        {
+          "name": "阳光小学",
+          "school_id": "sch_da8594a76e",
+          "matched_school": "阳光小学",
+          "stopped": false
+        },
+        {
+          "name": "华苑小学",
+          "school_id": "sch_b72cbd7b66",
+          "matched_school": "华苑小学",
+          "stopped": false
+        },
+        {
+          "name": "苑中小学",
+          "school_id": null,
+          "matched_school": null,
+          "stopped": false
+        },
+        {
+          "name": "博瀚小学",
+          "school_id": "sch_df5253392d",
+          "matched_school": "博瀚小学(民办)",
+          "stopped": false
+        },
+        {
+          "name": "南大附属小学部",
+          "school_id": "sch_3ee9fc8510",
+          "matched_school": "南大附小",
+          "stopped": false
+        }
+      ],
+      "note": null
+    },
+    {
+      "id": "grp_bd1e844895",
+      "district": "南开区",
+      "name": "翔宇国际教育集团",
+      "leads": [
+        {
+          "name": "南开翔宇中学",
+          "school_id": null,
+          "matched_school": null
+        }
+      ],
+      "members": [
+        {
+          "name": "河西翔宇(初中)",
+          "school_id": null,
+          "matched_school": null,
+          "stopped": false
+        },
+        {
+          "name": "翔宇弘德",
+          "school_id": "sch_eba091a9a8",
+          "matched_school": "翔宇弘德学校",
+          "stopped": false
+        },
+        {
+          "name": "翔宇力仁",
+          "school_id": null,
+          "matched_school": null,
+          "stopped": false
+        }
+      ],
+      "note": null
+    },
+    {
+      "id": "grp_5e7a2a4290",
+      "district": "河东区",
+      "name": "河东实验教育集团",
+      "leads": [
+        {
+          "name": "河东实验",
+          "school_id": null,
+          "matched_school": null
+        }
+      ],
+      "members": [
+        {
+          "name": "翟云小学",
+          "school_id": "sch_743b8b88f2",
+          "matched_school": "冠云小学",
+          "stopped": false
+        },
+        {
+          "name": "凤凰小学",
+          "school_id": "sch_d121ac1a9d",
+          "matched_school": "凤凰小学",
+          "stopped": false
+        },
+        {
+          "name": "行知小学",
+          "school_id": "sch_19a148e9c6",
+          "matched_school": "行知小学",
+          "stopped": false
+        }
+      ],
+      "note": null
+    },
+    {
+      "id": "grp_7040af1ca2",
+      "district": "河东区",
+      "name": "河东一中心教育集团",
+      "leads": [
+        {
+          "name": "河东一中心小学",
+          "school_id": "sch_2e85cfe06f",
+          "matched_school": "河东第一中心小学"
+        }
+      ],
+      "members": [
+        {
+          "name": "翔东小学(停招)",
+          "school_id": "sch_79cb3b262a",
+          "matched_school": "东兴小学",
+          "stopped": true
+        },
+        {
+          "name": "大桥道小学",
+          "school_id": "sch_ecb1626d22",
+          "matched_school": "大桥道小学",
+          "stopped": false
+        }
+      ],
+      "note": null
+    },
+    {
+      "id": "grp_93bf186c19",
+      "district": "河东区",
+      "name": "七中教育集团",
+      "leads": [
+        {
+          "name": "第七中学",
+          "school_id": "sch_ea04f07d47",
+          "matched_school": "第七中学"
+        }
+      ],
+      "members": [
+        {
+          "name": "七中教育集团太阳城学校",
+          "school_id": "sch_3760562f19",
+          "matched_school": "七中教育集团太阳城学校",
+          "stopped": false
+        },
+        {
+          "name": "七中教育集团东局子学校",
+          "school_id": "sch_06b755af11",
+          "matched_school": "七中教育集团-东局子学校",
+          "stopped": false
+        }
+      ],
+      "note": null
+    },
+    {
+      "id": "grp_f236735a9f",
+      "district": "河西区",
+      "name": "实验教育集团",
+      "leads": [
+        {
+          "name": "实验中学",
+          "school_id": "sch_7e355731e9",
+          "matched_school": "实验中学"
+        }
+      ],
+      "members": [
+        {
+          "name": "北京求实学校中部(停招)",
+          "school_id": null,
+          "matched_school": null,
+          "stopped": true
+        },
+        {
+          "name": "梧桐中学",
+          "school_id": "sch_4e5ee67b05",
+          "matched_school": "梧桐中学",
+          "stopped": false
+        }
+      ],
+      "note": null
+    },
+    {
+      "id": "grp_9d47d66ab3",
+      "district": "河西区",
+      "name": "北师大附中教育集团",
+      "leads": [
+        {
+          "name": "北师大附中",
+          "school_id": "sch_1bfec16c78",
+          "matched_school": "北京师范大学天津附属中学"
+        }
+      ],
+      "members": [
+        {
+          "name": "北师大附属学校中部(停招)",
+          "school_id": "sch_1bfec16c78",
+          "matched_school": "北京师范大学天津附属中学",
+          "stopped": true
+        },
+        {
+          "name": "汇德小学部(停招)",
+          "school_id": null,
+          "matched_school": null,
+          "stopped": true
+        },
+        {
+          "name": "新会道学校",
+          "school_id": "sch_013250cb43",
+          "matched_school": "新会道小学",
+          "stopped": false
+        }
+      ],
+      "note": null
+    },
+    {
+      "id": "grp_0f5c8c2918",
+      "district": "河西区",
+      "name": "新华教育集团",
+      "leads": [
+        {
+          "name": "新华中学",
+          "school_id": "sch_274639230f",
+          "matched_school": "新华中学"
+        }
+      ],
+      "members": [
+        {
+          "name": "第二新华中学(停招)",
+          "school_id": "sch_fb5c6bd37f",
+          "matched_school": "第二新华中学",
+          "stopped": true
+        },
+        {
+          "name": "新华自动中学新校(停招)",
+          "school_id": "sch_274639230f",
+          "matched_school": "新华中学",
+          "stopped": true
+        },
+        {
+          "name": "新华中学和苑学校",
+          "school_id": "sch_274639230f",
+          "matched_school": "新华中学",
+          "stopped": false
+        }
+      ],
+      "note": null
+    },
+    {
+      "id": "grp_a625844ae6",
+      "district": "河西区",
+      "name": "上海道教育集团",
+      "leads": [
+        {
+          "name": "上海道小学",
+          "school_id": "sch_54947a7b8c",
+          "matched_school": "上海道小学"
+        }
+      ],
+      "members": [
+        {
+          "name": "海河村小学",
+          "school_id": "sch_ca6e8861f5",
+          "matched_school": "海河中学",
+          "stopped": false
+        },
+        {
+          "name": "实验小学",
+          "school_id": null,
+          "matched_school": null,
+          "stopped": false
+        },
+        {
+          "name": "厦学校小学(停招)",
+          "school_id": null,
+          "matched_school": null,
+          "stopped": true
+        },
+        {
+          "name": "抑摇小学",
+          "school_id": null,
+          "matched_school": null,
+          "stopped": false
+        }
+      ],
+      "note": null
+    },
+    {
+      "id": "grp_556d439672",
+      "district": "河西区",
+      "name": "台湾路教育集团",
+      "leads": [
+        {
+          "name": "台湾路小学",
+          "school_id": "sch_8469b83719",
+          "matched_school": "台湾路小学"
+        }
+      ],
+      "members": [
+        {
+          "name": "复兴小学",
+          "school_id": "sch_f87904163f",
+          "matched_school": "复兴小学",
+          "stopped": false
+        },
+        {
+          "name": "新华中学小学部(停招)",
+          "school_id": "sch_274639230f",
+          "matched_school": "新华中学",
+          "stopped": true
+        }
+      ],
+      "note": null
+    },
+    {
+      "id": "grp_639dece280",
+      "district": "河西区",
+      "name": "中心小学教育集团",
+      "leads": [
+        {
+          "name": "中心小学",
+          "school_id": "sch_b1a0ee4dd1",
+          "matched_school": "中心小学(梅江校区)"
+        }
+      ],
+      "members": [
+        {
+          "name": "中心小学东湖校区",
+          "school_id": "sch_514b25257e",
+          "matched_school": "中心小学(东湖校区)",
+          "stopped": false
+        },
+        {
+          "name": "中心小学梅苑小学",
+          "school_id": "sch_5e544c3cf4",
+          "matched_school": "梅苑小学",
+          "stopped": false
+        },
+        {
+          "name": "梅苑小学",
+          "school_id": "sch_5e544c3cf4",
+          "matched_school": "梅苑小学",
+          "stopped": false
+        }
+      ],
+      "note": null
+    },
+    {
+      "id": "grp_32147aa302",
+      "district": "河西区",
+      "name": "水晶小学教育集团",
+      "leads": [
+        {
+          "name": "水晶小学",
+          "school_id": "sch_0534766715",
+          "matched_school": "水晶小学"
+        }
+      ],
+      "members": [
+        {
+          "name": "?(图中关系不明)",
+          "school_id": null,
+          "matched_school": null,
+          "stopped": false
+        }
+      ],
+      "note": null
+    },
+    {
+      "id": "grp_9e79910f6b",
+      "district": "河西区",
+      "name": "师大二附小教育集团",
+      "leads": [
+        {
+          "name": "师大二附小",
+          "school_id": "sch_b6ebba132b",
+          "matched_school": "天津师范大学第二附属小学"
+        }
+      ],
+      "members": [
+        {
+          "name": "德贤小学",
+          "school_id": "sch_c54576e6f9",
+          "matched_school": "德贤小学",
+          "stopped": false
+        }
+      ],
+      "note": null
+    },
+    {
+      "id": "grp_9b42507bd8",
+      "district": "河北区",
+      "name": "婴里小学教育集团",
+      "leads": [
+        {
+          "name": "育婴里第一小学",
+          "school_id": "sch_edcba6e7dc",
+          "matched_school": "育婴里小学"
+        }
+      ],
+      "members": [
+        {
+          "name": "育婴里第二小学",
+          "school_id": "sch_c382979133",
+          "matched_school": "育婴里第二小学",
+          "stopped": false
+        },
+        {
+          "name": "育婴里第三小学",
+          "school_id": "sch_520ec40126",
+          "matched_school": "育婴里第三小学",
+          "stopped": false
+        },
+        {
+          "name": "育婴里第四小学",
+          "school_id": "sch_d943e98548",
+          "matched_school": "育婴里第四小学",
+          "stopped": false
+        }
+      ],
+      "note": "原育婴小学C锁校区"
+    },
+    {
+      "id": "grp_39a4bbe608",
+      "district": "河北区",
+      "name": "河北区第二实验小学校联盟办学",
+      "leads": [
+        {
+          "name": "河北区第二实验小学",
+          "school_id": "sch_86c845cbb4",
+          "matched_school": "第二实验小学"
+        }
+      ],
+      "members": [
+        {
+          "name": "第二实验新世纪小学",
+          "school_id": "sch_d36ddc3080",
+          "matched_school": "第二实验小学新世纪小学",
+          "stopped": false
+        }
+      ],
+      "note": "2015年成立, 2025年又在第二实验小学的'育婴里第二实验小学校联合办学'项目基础之上, 河北区第二实验小学已经成立全国第三个二附小校学品牌"
+    },
+    {
+      "id": "grp_43197d61b9",
+      "district": "红桥区",
+      "name": "第三中学教育集团",
+      "leads": [
+        {
+          "name": "天津市第三中学",
+          "school_id": "sch_9ff1bd8d35",
+          "matched_school": "第三中学"
+        }
+      ],
+      "members": [
+        {
+          "name": "红桥实验小学",
+          "school_id": "sch_3b3b085357",
+          "matched_school": "红桥实验小学",
+          "stopped": false
+        },
+        {
+          "name": "红桥清源道小学",
+          "school_id": "sch_79719c76f4",
+          "matched_school": "清源道小学",
+          "stopped": false
+        }
+      ],
+      "note": null
+    },
+    {
+      "id": "grp_35fed507b7",
+      "district": "红桥区",
+      "name": "第五中学教育集团",
+      "leads": [
+        {
+          "name": "天津市第五中学",
+          "school_id": "sch_f92971b13b",
+          "matched_school": "第五中学"
+        }
+      ],
+      "members": [
+        {
+          "name": "红桥泰达学校",
+          "school_id": "sch_da6ce9c669",
+          "matched_school": "红桥泰达实验中学",
+          "stopped": false
+        },
+        {
+          "name": "红桥实验小学",
+          "school_id": "sch_3b3b085357",
+          "matched_school": "红桥实验小学",
+          "stopped": false
+        }
+      ],
+      "note": null
+    },
+    {
+      "id": "grp_a2d8738178",
+      "district": "红桥区",
+      "name": "民族中学教育集团",
+      "leads": [
+        {
+          "name": "民族中学",
+          "school_id": "sch_6386ed0852",
+          "matched_school": "民族中学"
+        }
+      ],
+      "members": [
+        {
+          "name": "红桥区民族中学附属小学",
+          "school_id": "sch_3fb0a1a91b",
+          "matched_school": "民族中学附属小学",
+          "stopped": false
+        },
+        {
+          "name": "红桥区民族公立小学",
+          "school_id": "sch_3fb0a1a91b",
+          "matched_school": "民族中学附属小学",
+          "stopped": false
+        }
+      ],
+      "note": null
+    },
+    {
+      "id": "grp_4446ecc81c",
+      "district": "红桥区",
+      "name": "红桥区实验小学教育集团",
+      "leads": [
+        {
+          "name": "子玉鸟实验小学",
+          "school_id": "sch_3b3b085357",
+          "matched_school": "红桥实验小学"
+        }
+      ],
+      "members": [
+        {
+          "name": "红桥实验小学",
+          "school_id": "sch_3b3b085357",
+          "matched_school": "红桥实验小学",
+          "stopped": false
+        },
+        {
+          "name": "红桥五门校",
+          "school_id": "sch_367b971a49",
+          "matched_school": "河北工业大学附属红桥小学",
+          "stopped": false
+        }
+      ],
+      "note": null
+    },
+    {
+      "id": "grp_bd71be3d6c",
+      "district": "红桥区",
+      "name": "天津师范学校附属小学教育集团",
+      "leads": [
+        {
+          "name": "天津师范学校附属小学",
+          "school_id": "sch_5610bfd31b",
+          "matched_school": "天津师范学校附属小学"
+        }
+      ],
+      "members": [
+        {
+          "name": "天津师范学校和苑附属小学",
+          "school_id": "sch_822e500800",
+          "matched_school": "天津师范学校和苑附属小学",
+          "stopped": false
+        }
+      ],
+      "note": null
+    },
+    {
+      "id": "grp_5bece259cc",
+      "district": "红桥区",
+      "name": "文昌宫教育集团",
+      "leads": [
+        {
+          "name": "文昌宫民族小学",
+          "school_id": "sch_6789d635ca",
+          "matched_school": "文昌宫民族小学"
+        }
+      ],
+      "members": [
+        {
+          "name": "红桥区民族中学附属小学",
+          "school_id": "sch_3fb0a1a91b",
+          "matched_school": "民族中学附属小学",
+          "stopped": false
+        }
+      ],
+      "note": null
+    }
+  ],
+  "school_to_groups": {
+    "sch_01f24f17d1": [
+      {
+        "group_id": "grp_a549379f0c",
+        "group_name": "岳阳教育集团",
+        "role": "lead"
+      }
+    ],
+    "sch_d17ca8fb5a": [
+      {
+        "group_id": "grp_a549379f0c",
+        "group_name": "岳阳教育集团",
+        "role": "member",
+        "stopped": false
+      }
+    ],
+    "sch_b1bd456d62": [
+      {
+        "group_id": "grp_a549379f0c",
+        "group_name": "岳阳教育集团",
+        "role": "member",
+        "stopped": false
+      }
+    ],
+    "sch_2e8e54c325": [
+      {
+        "group_id": "grp_a549379f0c",
+        "group_name": "岳阳教育集团",
+        "role": "member",
+        "stopped": false
+      }
+    ],
+    "sch_7eba9a6eb1": [
+      {
+        "group_id": "grp_29fec2dcf0",
+        "group_name": "万全教育集团",
+        "role": "lead"
+      }
+    ],
+    "sch_0d7863165b": [
+      {
+        "group_id": "grp_29fec2dcf0",
+        "group_name": "万全教育集团",
+        "role": "member",
+        "stopped": false
+      }
+    ],
+    "sch_994ad86cd8": [
+      {
+        "group_id": "grp_29fec2dcf0",
+        "group_name": "万全教育集团",
+        "role": "member",
+        "stopped": false
+      }
+    ],
+    "sch_c082652a56": [
+      {
+        "group_id": "grp_1d98a80ea2",
+        "group_name": "昆明教育集团",
+        "role": "lead"
+      }
+    ],
+    "sch_7d6a5dede9": [
+      {
+        "group_id": "grp_1d98a80ea2",
+        "group_name": "昆明教育集团",
+        "role": "member",
+        "stopped": false
+      }
+    ],
+    "sch_ccddb121c0": [
+      {
+        "group_id": "grp_b734348d5e",
+        "group_name": "南开共同体",
+        "role": "lead"
+      }
+    ],
+    "sch_49e581098e": [
+      {
+        "group_id": "grp_b734348d5e",
+        "group_name": "南开共同体",
+        "role": "member",
+        "stopped": false
+      }
+    ],
+    "sch_707a1225e9": [
+      {
+        "group_id": "grp_b734348d5e",
+        "group_name": "南开共同体",
+        "role": "member",
+        "stopped": true
+      }
+    ],
+    "sch_7a7b274706": [
+      {
+        "group_id": "grp_b734348d5e",
+        "group_name": "南开共同体",
+        "role": "member",
+        "stopped": false
+      }
+    ],
+    "sch_7e637c6a0b": [
+      {
+        "group_id": "grp_b734348d5e",
+        "group_name": "南开共同体",
+        "role": "member",
+        "stopped": false
+      },
+      {
+        "group_id": "grp_6550135ca7",
+        "group_name": "二十五中共同体",
+        "role": "member",
+        "stopped": false
+      }
+    ],
+    "sch_2da29fadaa": [
+      {
+        "group_id": "grp_6550135ca7",
+        "group_name": "二十五中共同体",
+        "role": "lead"
+      }
+    ],
+    "sch_342efc18da": [
+      {
+        "group_id": "grp_6550135ca7",
+        "group_name": "二十五中共同体",
+        "role": "member",
+        "stopped": false
+      }
+    ],
+    "sch_792486cef8": [
+      {
+        "group_id": "grp_6550135ca7",
+        "group_name": "二十五中共同体",
+        "role": "member",
+        "stopped": false
+      }
+    ],
+    "sch_849852f3b8": [
+      {
+        "group_id": "grp_6550135ca7",
+        "group_name": "二十五中共同体",
+        "role": "member",
+        "stopped": false
+      },
+      {
+        "group_id": "grp_28cf20967e",
+        "group_name": "中营小学共同体",
+        "role": "member",
+        "stopped": false
+      }
+    ],
+    "sch_5a4d0cda3c": [
+      {
+        "group_id": "grp_325e81a7ca",
+        "group_name": "南大附中天大附中共同体",
+        "role": "lead"
+      }
+    ],
+    "sch_4e92d01cda": [
+      {
+        "group_id": "grp_325e81a7ca",
+        "group_name": "南大附中天大附中共同体",
+        "role": "lead"
+      }
+    ],
+    "sch_5cccb7a822": [
+      {
+        "group_id": "grp_325e81a7ca",
+        "group_name": "南大附中天大附中共同体",
+        "role": "member",
+        "stopped": false
+      }
+    ],
+    "sch_338d41edb4": [
+      {
+        "group_id": "grp_325e81a7ca",
+        "group_name": "南大附中天大附中共同体",
+        "role": "member",
+        "stopped": false
+      }
+    ],
+    "sch_eba091a9a8": [
+      {
+        "group_id": "grp_325e81a7ca",
+        "group_name": "南大附中天大附中共同体",
+        "role": "member",
+        "stopped": false
+      },
+      {
+        "group_id": "grp_bd1e844895",
+        "group_name": "翔宇国际教育集团",
+        "role": "member",
+        "stopped": false
+      }
+    ],
+    "sch_80de38950e": [
+      {
+        "group_id": "grp_e57981d828",
+        "group_name": "天津中学共同体",
+        "role": "lead"
+      }
+    ],
+    "sch_764ed310e4": [
+      {
+        "group_id": "grp_e57981d828",
+        "group_name": "天津中学共同体",
+        "role": "member",
+        "stopped": false
+      },
+      {
+        "group_id": "grp_28cf20967e",
+        "group_name": "中营小学共同体",
+        "role": "member",
+        "stopped": false
+      }
+    ],
+    "sch_426290e61b": [
+      {
+        "group_id": "grp_e57981d828",
+        "group_name": "天津中学共同体",
+        "role": "member",
+        "stopped": false
+      },
+      {
+        "group_id": "grp_a58fcdff5e",
+        "group_name": "中心小学共同体",
+        "role": "member",
+        "stopped": false
+      }
+    ],
+    "sch_15e0ffcc8f": [
+      {
+        "group_id": "grp_e57981d828",
+        "group_name": "天津中学共同体",
+        "role": "member",
+        "stopped": false
+      }
+    ],
+    "sch_1c6f104431": [
+      {
+        "group_id": "grp_e57981d828",
+        "group_name": "天津中学共同体",
+        "role": "member",
+        "stopped": false
+      }
+    ],
+    "sch_094ce46111": [
+      {
+        "group_id": "grp_28cf20967e",
+        "group_name": "中营小学共同体",
+        "role": "lead"
+      }
+    ],
+    "sch_62904cfb07": [
+      {
+        "group_id": "grp_28cf20967e",
+        "group_name": "中营小学共同体",
+        "role": "member",
+        "stopped": false
+      }
+    ],
+    "sch_894130019e": [
+      {
+        "group_id": "grp_28cf20967e",
+        "group_name": "中营小学共同体",
+        "role": "member",
+        "stopped": false
+      }
+    ],
+    "sch_7a55636725": [
+      {
+        "group_id": "grp_28cf20967e",
+        "group_name": "中营小学共同体",
+        "role": "member",
+        "stopped": false
+      }
+    ],
+    "sch_b2fa82f18c": [
+      {
+        "group_id": "grp_28cf20967e",
+        "group_name": "中营小学共同体",
+        "role": "member",
+        "stopped": false
+      }
+    ],
+    "sch_5dbe970249": [
+      {
+        "group_id": "grp_eba1b2e5e2",
+        "group_name": "五马路小学共同体",
+        "role": "lead"
+      }
+    ],
+    "sch_4c6574937e": [
+      {
+        "group_id": "grp_eba1b2e5e2",
+        "group_name": "五马路小学共同体",
+        "role": "member",
+        "stopped": false
+      }
+    ],
+    "sch_a3649b738c": [
+      {
+        "group_id": "grp_eba1b2e5e2",
+        "group_name": "五马路小学共同体",
+        "role": "member",
+        "stopped": false
+      }
+    ],
+    "sch_b08b2accd3": [
+      {
+        "group_id": "grp_eba1b2e5e2",
+        "group_name": "五马路小学共同体",
+        "role": "member",
+        "stopped": false
+      }
+    ],
+    "sch_65595e1531": [
+      {
+        "group_id": "grp_eba1b2e5e2",
+        "group_name": "五马路小学共同体",
+        "role": "member",
+        "stopped": false
+      }
+    ],
+    "sch_3ee9fc8510": [
+      {
+        "group_id": "grp_eba1b2e5e2",
+        "group_name": "五马路小学共同体",
+        "role": "member",
+        "stopped": false
+      },
+      {
+        "group_id": "grp_eaf69de825",
+        "group_name": "师大南开附小共同体",
+        "role": "member",
+        "stopped": false
+      },
+      {
+        "group_id": "grp_e175d15e09",
+        "group_name": "新星小学共同体",
+        "role": "member",
+        "stopped": false
+      }
+    ],
+    "sch_e21099ad2f": [
+      {
+        "group_id": "grp_a58fcdff5e",
+        "group_name": "中心小学共同体",
+        "role": "lead"
+      }
+    ],
+    "sch_2c27d19dad": [
+      {
+        "group_id": "grp_a58fcdff5e",
+        "group_name": "中心小学共同体",
+        "role": "member",
+        "stopped": false
+      }
+    ],
+    "sch_06bbf13760": [
+      {
+        "group_id": "grp_a58fcdff5e",
+        "group_name": "中心小学共同体",
+        "role": "member",
+        "stopped": false
+      }
+    ],
+    "sch_56da04be25": [
+      {
+        "group_id": "grp_a58fcdff5e",
+        "group_name": "中心小学共同体",
+        "role": "member",
+        "stopped": false
+      }
+    ],
+    "sch_5261805492": [
+      {
+        "group_id": "grp_a58fcdff5e",
+        "group_name": "中心小学共同体",
+        "role": "member",
+        "stopped": false
+      }
+    ],
+    "sch_25d6ebf746": [
+      {
+        "group_id": "grp_eaf69de825",
+        "group_name": "师大南开附小共同体",
+        "role": "lead"
+      }
+    ],
+    "sch_506ded5acd": [
+      {
+        "group_id": "grp_eaf69de825",
+        "group_name": "师大南开附小共同体",
+        "role": "member",
+        "stopped": false
+      }
+    ],
+    "sch_96ca5496a1": [
+      {
+        "group_id": "grp_eaf69de825",
+        "group_name": "师大南开附小共同体",
+        "role": "member",
+        "stopped": false
+      }
+    ],
+    "sch_f7c0aaadc2": [
+      {
+        "group_id": "grp_eaf69de825",
+        "group_name": "师大南开附小共同体",
+        "role": "member",
+        "stopped": false
+      }
+    ],
+    "sch_f4ba8cc264": [
+      {
+        "group_id": "grp_e175d15e09",
+        "group_name": "新星小学共同体",
+        "role": "lead"
+      }
+    ],
+    "sch_006aac4c62": [
+      {
+        "group_id": "grp_e175d15e09",
+        "group_name": "新星小学共同体",
+        "role": "member",
+        "stopped": false
+      }
+    ],
+    "sch_da8594a76e": [
+      {
+        "group_id": "grp_e175d15e09",
+        "group_name": "新星小学共同体",
+        "role": "member",
+        "stopped": false
+      }
+    ],
+    "sch_b72cbd7b66": [
+      {
+        "group_id": "grp_e175d15e09",
+        "group_name": "新星小学共同体",
+        "role": "member",
+        "stopped": false
+      }
+    ],
+    "sch_df5253392d": [
+      {
+        "group_id": "grp_e175d15e09",
+        "group_name": "新星小学共同体",
+        "role": "member",
+        "stopped": false
+      }
+    ],
+    "sch_743b8b88f2": [
+      {
+        "group_id": "grp_5e7a2a4290",
+        "group_name": "河东实验教育集团",
+        "role": "member",
+        "stopped": false
+      }
+    ],
+    "sch_d121ac1a9d": [
+      {
+        "group_id": "grp_5e7a2a4290",
+        "group_name": "河东实验教育集团",
+        "role": "member",
+        "stopped": false
+      }
+    ],
+    "sch_19a148e9c6": [
+      {
+        "group_id": "grp_5e7a2a4290",
+        "group_name": "河东实验教育集团",
+        "role": "member",
+        "stopped": false
+      }
+    ],
+    "sch_2e85cfe06f": [
+      {
+        "group_id": "grp_7040af1ca2",
+        "group_name": "河东一中心教育集团",
+        "role": "lead"
+      }
+    ],
+    "sch_79cb3b262a": [
+      {
+        "group_id": "grp_7040af1ca2",
+        "group_name": "河东一中心教育集团",
+        "role": "member",
+        "stopped": true
+      }
+    ],
+    "sch_ecb1626d22": [
+      {
+        "group_id": "grp_7040af1ca2",
+        "group_name": "河东一中心教育集团",
+        "role": "member",
+        "stopped": false
+      }
+    ],
+    "sch_ea04f07d47": [
+      {
+        "group_id": "grp_93bf186c19",
+        "group_name": "七中教育集团",
+        "role": "lead"
+      }
+    ],
+    "sch_3760562f19": [
+      {
+        "group_id": "grp_93bf186c19",
+        "group_name": "七中教育集团",
+        "role": "member",
+        "stopped": false
+      }
+    ],
+    "sch_06b755af11": [
+      {
+        "group_id": "grp_93bf186c19",
+        "group_name": "七中教育集团",
+        "role": "member",
+        "stopped": false
+      }
+    ],
+    "sch_7e355731e9": [
+      {
+        "group_id": "grp_f236735a9f",
+        "group_name": "实验教育集团",
+        "role": "lead"
+      }
+    ],
+    "sch_4e5ee67b05": [
+      {
+        "group_id": "grp_f236735a9f",
+        "group_name": "实验教育集团",
+        "role": "member",
+        "stopped": false
+      }
+    ],
+    "sch_1bfec16c78": [
+      {
+        "group_id": "grp_9d47d66ab3",
+        "group_name": "北师大附中教育集团",
+        "role": "lead"
+      },
+      {
+        "group_id": "grp_9d47d66ab3",
+        "group_name": "北师大附中教育集团",
+        "role": "member",
+        "stopped": true
+      }
+    ],
+    "sch_013250cb43": [
+      {
+        "group_id": "grp_9d47d66ab3",
+        "group_name": "北师大附中教育集团",
+        "role": "member",
+        "stopped": false
+      }
+    ],
+    "sch_274639230f": [
+      {
+        "group_id": "grp_0f5c8c2918",
+        "group_name": "新华教育集团",
+        "role": "lead"
+      },
+      {
+        "group_id": "grp_0f5c8c2918",
+        "group_name": "新华教育集团",
+        "role": "member",
+        "stopped": true
+      },
+      {
+        "group_id": "grp_0f5c8c2918",
+        "group_name": "新华教育集团",
+        "role": "member",
+        "stopped": false
+      },
+      {
+        "group_id": "grp_556d439672",
+        "group_name": "台湾路教育集团",
+        "role": "member",
+        "stopped": true
+      }
+    ],
+    "sch_fb5c6bd37f": [
+      {
+        "group_id": "grp_0f5c8c2918",
+        "group_name": "新华教育集团",
+        "role": "member",
+        "stopped": true
+      }
+    ],
+    "sch_54947a7b8c": [
+      {
+        "group_id": "grp_a625844ae6",
+        "group_name": "上海道教育集团",
+        "role": "lead"
+      }
+    ],
+    "sch_ca6e8861f5": [
+      {
+        "group_id": "grp_a625844ae6",
+        "group_name": "上海道教育集团",
+        "role": "member",
+        "stopped": false
+      }
+    ],
+    "sch_8469b83719": [
+      {
+        "group_id": "grp_556d439672",
+        "group_name": "台湾路教育集团",
+        "role": "lead"
+      }
+    ],
+    "sch_f87904163f": [
+      {
+        "group_id": "grp_556d439672",
+        "group_name": "台湾路教育集团",
+        "role": "member",
+        "stopped": false
+      }
+    ],
+    "sch_b1a0ee4dd1": [
+      {
+        "group_id": "grp_639dece280",
+        "group_name": "中心小学教育集团",
+        "role": "lead"
+      }
+    ],
+    "sch_514b25257e": [
+      {
+        "group_id": "grp_639dece280",
+        "group_name": "中心小学教育集团",
+        "role": "member",
+        "stopped": false
+      }
+    ],
+    "sch_5e544c3cf4": [
+      {
+        "group_id": "grp_639dece280",
+        "group_name": "中心小学教育集团",
+        "role": "member",
+        "stopped": false
+      },
+      {
+        "group_id": "grp_639dece280",
+        "group_name": "中心小学教育集团",
+        "role": "member",
+        "stopped": false
+      }
+    ],
+    "sch_0534766715": [
+      {
+        "group_id": "grp_32147aa302",
+        "group_name": "水晶小学教育集团",
+        "role": "lead"
+      }
+    ],
+    "sch_b6ebba132b": [
+      {
+        "group_id": "grp_9e79910f6b",
+        "group_name": "师大二附小教育集团",
+        "role": "lead"
+      }
+    ],
+    "sch_c54576e6f9": [
+      {
+        "group_id": "grp_9e79910f6b",
+        "group_name": "师大二附小教育集团",
+        "role": "member",
+        "stopped": false
+      }
+    ],
+    "sch_edcba6e7dc": [
+      {
+        "group_id": "grp_9b42507bd8",
+        "group_name": "婴里小学教育集团",
+        "role": "lead"
+      }
+    ],
+    "sch_c382979133": [
+      {
+        "group_id": "grp_9b42507bd8",
+        "group_name": "婴里小学教育集团",
+        "role": "member",
+        "stopped": false
+      }
+    ],
+    "sch_520ec40126": [
+      {
+        "group_id": "grp_9b42507bd8",
+        "group_name": "婴里小学教育集团",
+        "role": "member",
+        "stopped": false
+      }
+    ],
+    "sch_d943e98548": [
+      {
+        "group_id": "grp_9b42507bd8",
+        "group_name": "婴里小学教育集团",
+        "role": "member",
+        "stopped": false
+      }
+    ],
+    "sch_86c845cbb4": [
+      {
+        "group_id": "grp_39a4bbe608",
+        "group_name": "河北区第二实验小学校联盟办学",
+        "role": "lead"
+      }
+    ],
+    "sch_d36ddc3080": [
+      {
+        "group_id": "grp_39a4bbe608",
+        "group_name": "河北区第二实验小学校联盟办学",
+        "role": "member",
+        "stopped": false
+      }
+    ],
+    "sch_9ff1bd8d35": [
+      {
+        "group_id": "grp_43197d61b9",
+        "group_name": "第三中学教育集团",
+        "role": "lead"
+      }
+    ],
+    "sch_3b3b085357": [
+      {
+        "group_id": "grp_43197d61b9",
+        "group_name": "第三中学教育集团",
+        "role": "member",
+        "stopped": false
+      },
+      {
+        "group_id": "grp_35fed507b7",
+        "group_name": "第五中学教育集团",
+        "role": "member",
+        "stopped": false
+      },
+      {
+        "group_id": "grp_4446ecc81c",
+        "group_name": "红桥区实验小学教育集团",
+        "role": "lead"
+      },
+      {
+        "group_id": "grp_4446ecc81c",
+        "group_name": "红桥区实验小学教育集团",
+        "role": "member",
+        "stopped": false
+      }
+    ],
+    "sch_79719c76f4": [
+      {
+        "group_id": "grp_43197d61b9",
+        "group_name": "第三中学教育集团",
+        "role": "member",
+        "stopped": false
+      }
+    ],
+    "sch_f92971b13b": [
+      {
+        "group_id": "grp_35fed507b7",
+        "group_name": "第五中学教育集团",
+        "role": "lead"
+      }
+    ],
+    "sch_da6ce9c669": [
+      {
+        "group_id": "grp_35fed507b7",
+        "group_name": "第五中学教育集团",
+        "role": "member",
+        "stopped": false
+      }
+    ],
+    "sch_6386ed0852": [
+      {
+        "group_id": "grp_a2d8738178",
+        "group_name": "民族中学教育集团",
+        "role": "lead"
+      }
+    ],
+    "sch_3fb0a1a91b": [
+      {
+        "group_id": "grp_a2d8738178",
+        "group_name": "民族中学教育集团",
+        "role": "member",
+        "stopped": false
+      },
+      {
+        "group_id": "grp_a2d8738178",
+        "group_name": "民族中学教育集团",
+        "role": "member",
+        "stopped": false
+      },
+      {
+        "group_id": "grp_5bece259cc",
+        "group_name": "文昌宫教育集团",
+        "role": "member",
+        "stopped": false
+      }
+    ],
+    "sch_367b971a49": [
+      {
+        "group_id": "grp_4446ecc81c",
+        "group_name": "红桥区实验小学教育集团",
+        "role": "member",
+        "stopped": false
+      }
+    ],
+    "sch_5610bfd31b": [
+      {
+        "group_id": "grp_bd71be3d6c",
+        "group_name": "天津师范学校附属小学教育集团",
+        "role": "lead"
+      }
+    ],
+    "sch_822e500800": [
+      {
+        "group_id": "grp_bd71be3d6c",
+        "group_name": "天津师范学校附属小学教育集团",
+        "role": "member",
+        "stopped": false
+      }
+    ],
+    "sch_6789d635ca": [
+      {
+        "group_id": "grp_5bece259cc",
+        "group_name": "文昌宫教育集团",
+        "role": "lead"
+      }
+    ]
+  },
+  "warnings": [
+    "图为关系图形, 部分线条可能交叉 → 集团归属不确定的标注 ?(图中关系不明)",
+    "部分字段因视觉转录可能有错读, 建议拿到PDF人工校对",
+    "(停招) 标注校已停止小学/初中招生, 但学籍仍在",
+    "牵头校 = 该集团 lead school, 集团共享师资/招生方案; 转学/升学常按集团内调配"
+  ]
+}

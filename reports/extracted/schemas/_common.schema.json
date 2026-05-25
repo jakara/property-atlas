@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tianjin-house.local/schemas/_common.schema.json",
+  "title": "Common definitions",
+  "$defs": {
+    "id_school":   { "type": "string", "pattern": "^sch_[a-f0-9]{10}$" },
+    "id_zone":     { "type": "string", "pattern": "^zon_[a-f0-9]{10}$" },
+    "id_compound": { "type": "string", "pattern": "^cmp_[a-f0-9]{10}$" },
+    "id_group":    { "type": "string", "pattern": "^grp_[a-f0-9]{10}$" },
+    "id_policy":   { "type": "string", "pattern": "^pol_[a-z0-9_]+$" },
+    "version":     { "type": "string", "pattern": "^\\d{4}\\.\\d{2}\\.\\d{2}$" },
+    "source_code": {
+      "type": "string",
+      "enum": ["JM-PDF", "YH-XLSX", "YH-PPTX", "MD-RANK", "MD-ZONE"],
+      "description": "信源缩写: JM-PDF=津门学路通PDF, YH-XLSX=永辉xlsx, YH-PPTX=永辉pptx, MD-RANK=中考排名md, MD-ZONE=学片划分md"
+    },
+    "district_six": {
+      "type": "string",
+      "enum": ["和平区", "河西区", "南开区", "河东区", "河北区", "红桥区"]
+    },
+    "district_any": {
+      "type": "string",
+      "enum": ["和平区","河西区","南开区","河东区","河北区","红桥区",
+               "北辰区","西青区","津南区","东丽区",
+               "武清区","宝坻区","静海区","宁河区","蓟州区","滨海新区",
+               "塘沽区","大港区"]
+    },
+    "level": { "type": "string", "enum": ["primary", "middle"] },
+    "tier_letter": {
+      "type": ["string", "null"],
+      "enum": ["A++", "A+", "A", "B+", "B", "C+", "C", "D", "D-", "新办", "新办/合作", null]
+    },
+    "tier_label": {
+      "type": ["string", "null"],
+      "enum": ["顶尖", "强校", "优质", "中上", "中档", "中下", "偏弱", "垫底", "新办", "未知", "重点", "良好", "普通", null]
+    },
+    "source_codes_dict": {
+      "type": "object",
+      "description": "顶层信源代码字典",
+      "additionalProperties": { "type": "string" }
+    }
+  }
+}

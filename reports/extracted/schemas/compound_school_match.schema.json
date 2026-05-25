@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tianjin-house.local/schemas/compound_school_match.schema.json",
+  "title": "Compound → School matches",
+  "type": "object",
+  "required": ["version", "count", "items"],
+  "additionalProperties": true,
+  "properties": {
+    "version": { "$ref": "_common.schema.json#/$defs/version" },
+    "count":   { "type": "integer", "minimum": 0 },
+    "items":   {
+      "type": "array",
+      "items": { "$ref": "#/$defs/Match" }
+    }
+  },
+  "$defs": {
+    "Match": {
+      "type": "object",
+      "required": ["compound_id", "compound_name", "district", "primary_matches", "middle_matches"],
+      "additionalProperties": false,
+      "properties": {
+        "compound_id":   { "$ref": "_common.schema.json#/$defs/id_compound" },
+        "compound_name": { "type": "string" },
+        "district":      { "$ref": "_common.schema.json#/$defs/district_any" },
+        "mapped_district": { "$ref": "_common.schema.json#/$defs/district_any" },
+        "primary_matches": { "type": "array", "items": { "$ref": "#/$defs/MatchEntry" } },
+        "middle_matches":  { "type": "array", "items": { "$ref": "#/$defs/MatchEntry" } },
+        "needs_manual_review": { "type": "boolean" }
+      }
+    },
+    "MatchEntry": {
+      "type": "object",
+      "required": ["school_id", "school_name", "matched_via"],
+      "additionalProperties": false,
+      "properties": {
+        "school_id":   { "$ref": "_common.schema.json#/$defs/id_school" },
+        "school_name": { "type": "string" },
+        "zone_id":     { "anyOf": [ { "$ref": "_common.schema.json#/$defs/id_zone" }, { "type": "null" } ] },
+        "zone_name":   { "type": ["string", "null"] },
+        "level":       { "$ref": "_common.schema.json#/$defs/level" },
+        "matched_via": {
+          "type": "string",
+          "pattern": "^(community:|hint:).+",
+          "description": "community:<token> 来自社区名匹配; hint:<token> 来自pros/cons学校提示"
+        }
+      }
+    }
+  }
+}

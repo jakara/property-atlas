@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tianjin-house.local/schemas/schools.schema.json",
+  "title": "Schools dataset (天津学校)",
+  "type": "object",
+  "required": ["version", "source", "count", "items"],
+  "additionalProperties": true,
+  "properties": {
+    "version":      { "$ref": "_common.schema.json#/$defs/version" },
+    "source":       { "type": "string" },
+    "count":        { "type": "integer", "minimum": 0 },
+    "source_codes": { "$ref": "_common.schema.json#/$defs/source_codes_dict" },
+    "items": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/School" }
+    }
+  },
+  "$defs": {
+    "School": {
+      "type": "object",
+      "required": ["id", "name", "district", "level", "source"],
+      "additionalProperties": false,
+      "properties": {
+        "id":         { "$ref": "_common.schema.json#/$defs/id_school" },
+        "name":       { "type": "string", "minLength": 1 },
+        "district":   { "$ref": "_common.schema.json#/$defs/district_any" },
+        "zone_id":    { "anyOf": [ { "$ref": "_common.schema.json#/$defs/id_zone" }, { "type": "null" } ] },
+        "zone_name":  { "type": ["string", "null"] },
+        "level":      { "$ref": "_common.schema.json#/$defs/level" },
+        "address":    { "type": ["string", "null"] },
+        "phone":      { "type": ["string", "null"] },
+        "campuses":   { "type": ["integer", "string", "null"] },
+        "is_private":      { "type": "boolean" },
+        "is_jiunian":      { "type": "boolean" },
+        "is_12year":       { "type": "boolean" },
+        "is_market_five":  { "type": "boolean" },
+        "is_market_nine":  { "type": "boolean" },
+        "is_market_key":   { "type": "boolean" },
+        "tuition":    { "type": ["string", "null"] },
+        "note":       { "type": ["string", "null"] },
+        "communities_text": { "type": ["string", "null"] },
+        "source":     { "$ref": "_common.schema.json#/$defs/source_code" },
+        "sensitive":  { "$ref": "#/$defs/SchoolSensitive" }
+      }
+    },
+    "SchoolSensitive": {
+      "type": "object",
+      "required": ["source"],
+      "additionalProperties": false,
+      "properties": {
+        "rank_overall":    { "type": ["integer", "null"], "minimum": 1 },
+        "top_percentile":  { "type": ["integer", "null"], "minimum": 1, "maximum": 100 },
+        "tier_letter":     { "$ref": "_common.schema.json#/$defs/tier_letter" },
+        "tier_label":      { "$ref": "_common.schema.json#/$defs/tier_label" },
+        "tier_rank":       { "type": ["integer", "null"], "minimum": 1, "maximum": 99 },
+        "comment":         { "type": ["string", "null"] },
+        "data_origin":     { "type": ["string", "null"] },
+        "source":          { "$ref": "_common.schema.json#/$defs/source_code" },
+        "note":            { "type": ["string", "null"] }
+      }
+    }
+  }
+}

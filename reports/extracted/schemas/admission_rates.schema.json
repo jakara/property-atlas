@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tianjin-house.local/schemas/admission_rates.schema.json",
+  "title": "Admission rates / 中考各区录取率",
+  "type": "object",
+  "required": ["version", "count", "items"],
+  "additionalProperties": true,
+  "properties": {
+    "version":          { "$ref": "_common.schema.json#/$defs/version" },
+    "count":            { "type": "integer", "minimum": 0 },
+    "sensitive":        { "type": "boolean", "description": "true=整个数据集敏感" },
+    "sensitive_reason": { "type": "string" },
+    "note":             { "type": "string" },
+    "items": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/Rate" }
+    }
+  },
+  "$defs": {
+    "Rate": {
+      "type": "object",
+      "required": ["district", "gaokao_admit_pct", "year", "source"],
+      "additionalProperties": false,
+      "properties": {
+        "district": {
+          "type": "string",
+          "description": "区或区域名(可含板块如 空港/海教园/生态城/滨海新区)"
+        },
+        "gaokao_admit_pct":     { "type": ["integer", "null"], "minimum": 0, "maximum": 100 },
+        "vocational_admit_pct": { "type": ["integer", "null"], "minimum": 0, "maximum": 100 },
+        "year":                 { "type": "integer", "minimum": 2020, "maximum": 2030 },
+        "source":               { "type": "string" }
+      }
+    }
+  }
+}

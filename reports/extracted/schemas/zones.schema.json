@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tianjin-house.local/schemas/zones.schema.json",
+  "title": "Zones / 学片",
+  "type": "object",
+  "required": ["version", "source", "count", "items"],
+  "additionalProperties": true,
+  "properties": {
+    "version":      { "$ref": "_common.schema.json#/$defs/version" },
+    "source":       { "type": "string" },
+    "count":        { "type": "integer", "minimum": 0 },
+    "source_codes": { "$ref": "_common.schema.json#/$defs/source_codes_dict" },
+    "items": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/Zone" }
+    }
+  },
+  "$defs": {
+    "Zone": {
+      "type": "object",
+      "required": ["id", "district", "zone_name"],
+      "additionalProperties": false,
+      "properties": {
+        "id":         { "$ref": "_common.schema.json#/$defs/id_zone" },
+        "district":   { "$ref": "_common.schema.json#/$defs/district_any" },
+        "zone_name":  { "type": "string", "minLength": 1 },
+        "structure":  { "type": ["string", "null"] },
+        "middle_school_pool": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "areas_text": { "type": ["string", "null"] },
+        "note":       { "type": ["string", "null"] },
+        "sensitive":  { "$ref": "#/$defs/ZoneSensitive" }
+      }
+    },
+    "ZoneSensitive": {
+      "type": "object",
+      "required": ["source"],
+      "additionalProperties": false,
+      "properties": {
+        "highlight": { "type": ["string", "null"] },
+        "source":    { "$ref": "_common.schema.json#/$defs/source_code" },
+        "note":      { "type": ["string", "null"] }
+      }
+    }
+  }
+}
