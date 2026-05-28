@@ -14,25 +14,7 @@ struct PropertyAtlasApp: App {
 
     init() {
         do {
-            let schema = Schema([
-                LegacySchoolZone.self, LegacyCompound.self, Compound.self, LegacySchool.self, School.self,
-                SchoolGroup.self, Policy.self, AdmissionRate.self, CompoundSchoolMatch.self,
-                SchoolScore.self, LegacyAdmissionDoc.self, BuiltinTag.self,
-                PropertyMark.self, Visit.self, VisitPhoto.self,
-                TagExtension.self, VisitTag.self, UserArea.self, ShareSubmission.self,
-                Dataset.self, POI.self, Area.self, StyleRule.self, Palette.self, Theme.self, Layer.self, FilterFieldConfig.self, Photo.self, Document.self,
-            ])
-            #if targetEnvironment(macCatalyst)
-            // Mac Catalyst: 关 CloudKit 镜像 (entitlement 在但不接 iCloud); 否则会 ServerRejected
-            let config = ModelConfiguration(schema: schema, cloudKitDatabase: .none)
-            #else
-            let config = ModelConfiguration(
-                schema: schema,
-                cloudKitDatabase: .private("iCloud.com.fujie.propertyatlas")
-            )
-            #endif
-            container = try ModelContainer(for: schema, configurations: [config])
-            // 调试: 写 store 路径到固定文件, 不依赖 stdout/log
+            container = try ModelSchema.makeContainer()
             var debugInfo = "Home: \(NSHomeDirectory())\n"
             debugInfo += "AppSupport: \(URL.applicationSupportDirectory.path)\n"
             for cfg in container.configurations {
