@@ -29,6 +29,7 @@ enum LegacyMigrator {
         try seedFilterFields(dataset: dataset, in: ctx)
         try seedPalettesThemesLayers(dataset: dataset, in: ctx)
         try seedCameraPresets(dataset: dataset, in: ctx)
+        try migrateAdmissionDocs(dataset: dataset, in: ctx)
         try ctx.save()
     }
 
@@ -540,6 +541,27 @@ enum LegacyMigrator {
             )
             p.sortOrder = idx
             ctx.insert(p)
+        }
+    }
+
+    // MARK: stage 10 — LegacyAdmissionDoc → Document
+
+    private static func migrateAdmissionDocs(dataset: Dataset, in ctx: ModelContext) throws {
+        let docs = try ctx.fetch(FetchDescriptor<LegacyAdmissionDoc>())
+        let areas = try ctx.fetch(FetchDescriptor<Area>())
+        let fallback = UUID(uuidString: "00000000-0000-0000-0000-000000000000")!
+        for ld in docs {
+            let owner = areas.first { $0.name.contains(ld.district) }?.id ?? fallback
+            let d = Document(
+                ownerEntityId: owner,
+                ownerEntityType: "area",
+                kind: "pdf",
+                title: ld.title,
+                url: ld.sourceUrl ?? ""
+            )
+            d.id = ld.id
+            d.ocrText = ld.ocrText
+            ctx.insert(d)
         }
     }
 

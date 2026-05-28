@@ -292,4 +292,23 @@ struct LegacyMigratorTests {
         #expect(heping.centerLon == 117.205)
         #expect(heping.distance == 12000)
     }
+
+    @Test func migrateConvertsAdmissionDocsToDocuments() throws {
+        let container = try TestContainer.makeInMemory(for: ModelSchema.allTypes)
+        let ctx = ModelContext(container)
+        let doc = LegacyAdmissionDoc(title: "2024 和平区招生简章", district: "和平区", year: 2024)
+        doc.ocrText = "..."
+        doc.sourceUrl = "https://example.com"
+        ctx.insert(doc)
+        let lc = LegacyCompound(name: "x", district: "和平区", latitude: 39.1, longitude: 117.2)
+        ctx.insert(lc)
+        try ctx.save()
+        try LegacyMigrator.run(in: ctx)
+        let documents = try ctx.fetch(FetchDescriptor<Document>())
+        #expect(documents.count == 1)
+        let d = try #require(documents.first)
+        #expect(d.title == "2024 和平区招生简章")
+        #expect(d.kind == "pdf")
+        #expect(d.ocrText == "...")
+    }
 }
