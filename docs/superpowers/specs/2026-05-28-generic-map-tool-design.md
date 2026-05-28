@@ -37,6 +37,7 @@
 | 协同 | iCloud 私有库（个人多设备同步）+ `.tjmap.zip` 文件导入/导出（团队共享） |
 | 数据来源 | 手动点 + 表单 + Apple/高德 POI 搜索（不做 CSV 批量） |
 | 样式系统 | StyleRule（字段值 → 样式）+ Palette（自动配色）+ Entity override（个体强覆盖）+ Theme（一键切场景） |
+| 显示控制 | Layer（entity 集合 + zoom 触发）+ FilterFieldConfig（per-type 最多 3 个过滤+图例字段，含 viewport 计数） |
 | 讲解交互 | 点击实体 = 详情卡 + 按 Edge label 分 tab + 切 tab 高亮关联实体 |
 
 ---
@@ -55,9 +56,11 @@ Dataset (容器, 中介可多: '天津 demo' / '北京海淀' / '杭州滨江')
 ├── Edges    · 任意两实体间, typed (中介命名), 多对多
 ├── CustomFieldDefs · dataset 级 schema, per entityType 注册中介加的自定义字段
 ├── EnumOptions  · per scope (school.category / edge.label / ...) 维护中介自定义枚举值
+├── FilterFieldConfigs · per entityType 最多 3 个过滤+图例字段 (含 viewport 计数)
+├── Layers · 命名 entity 集合 (static ∪ dynamic) + zoom 触发, 默认 layer "全部" 不可删
 ├── StyleRules · per entityType, 条件 → 样式 (含 palette 模式)
 ├── Palettes   · 调色板 (内置 + 中介加)
-├── Themes     · 一组 styleRule + cameraId + 文案 + 可见性, 直播一键切
+├── Themes     · 一组 styleRule + cameraId + 文案 + 可见性 + defaultEnabledLayerIds, 直播一键切
 ├── Tags       · 通用标签
 ├── Photos     · 关联 entity
 ├── Documents  · PDF/富文本附件, 挂任意 entity
@@ -310,6 +313,7 @@ fill = palette.colorsHex[idx]
   styleRuleIds: [UUID]                // theme 启用的 rule 子集 (有序)
   defaultStylesJSON: String           // per entityType 兜底
   visibilityJSON: String              // {compound:true, school:true, poi:false, area:true}
+  defaultEnabledLayerIds: [UUID] = [] // 切 theme 时初始化 Layer enable 状态 (运行时改不回写)
   spotlightOnSelect: Bool = true      // 选中时其他 dim 30%
   drawEdgeLines: [String] = []        // 画连线的 edge label list
   showLegend: Bool = true
@@ -352,7 +356,181 @@ Entity editor 基本 tab 底加 **样式 disclosure**（默认折叠）：
 
 ### 5.6 Legend 自动生成
 
-由 active Theme 的 enabled rules + visible entity types 列条目（颜色样块 + glyph + 名称 + 数量）。
+由 active Theme 的 enabled rules + visible entity types + 启用 Layer 列条目（颜色样块 + glyph + 名称 + 数量）。详见 § 5.7 Filter 字段配置。
+
+### 5.7 Filter 字段配置（per-entityType 最多 3 个，含 viewport 计数）
+
+每实体类型最多 3 个"过滤+图例字段"，字段可选 baseField 或 customField。Legend 自动按 distinct value 列 chip，点击 toggle 隐显。
+
+```swift
+@Model FilterFieldConfig {
+  id, datasetId
+  entityType: String              // "compound"/"school"/"poi"/"area"
+  fieldKey: String                // baseField 名 或 CustomFieldDef.key
+  fieldSource: String             // "base" / "custom"
+  label: String                   // legend 显示名
+  slot: Int                       // 1/2/3 (per entityType 最多 3 个)
+  showInLegend: Bool = true
+  showSwatch: Bool = true         // chip 前是否显色样块 (取自 StyleRule/Palette 求值)
+  expandedByDefault: Bool = true  // legend 该组默认展开
+  createdAt, updatedAt, deleted, version
+}
+```
+
+约束：同 `(datasetId, entityType, slot)` 唯一，slot ∈ {1,2,3}。
+
+**Settings → 字段定义** 子页加 "过滤字段" tab：
+```
+─ Compound ─────────────
+  slot 1: [finishType ▾]  label[精装类型]   ☑ legend ☑ swatch
+  slot 2: [isNewHouse ▾]  label[新房/二手]   ☑ legend ☑ swatch
+  slot 3: [+ 加]
+─ School ─────────────
+  slot 1: [category ▾]    label[阶段]       ☑ ☑
+  slot 2: [grade ▾]       label[等级]       ☑ ☑
+  slot 3: [form ▾]        label[学制]       ☑ ☑
+─ POI ───────────────
+  slot 1: [category ▾]    label[POI 类型]   ☑ ☑
+─ Area ──────────────
+  slot 1: [category ▾]    label[区域类型]   ☑ ☑
+```
+
+**Legend 渲染**（每 chip 显两个数字：当前屏 / 全 dataset）：
+```
+─ Legend (视图内 234 / 全集 1009) ─
+  ▾ School    [83 / 823]
+     阶段
+        ● 小学    [50 / 411]    [hide]
+        ■ 初中    [33 / 412]    [hide]
+     等级
+        ● 重点    [12 / 12]     [hide]
+        ● 区重点  [8 / 38]      [hide]
+        ○ 普通    [63 / 773]    [hide]
+     学制
+        ● 普通       [hide]
+        ⬡ 九年一贯   [hide]
+        ⬡ 十二年制   [hide]
+  ▾ Compound  [142 / 174]
+     精装类型
+        ● 精装    [120 / 145]   [hide]
+        ● 毛坯    [22 / 29]     [hide]
+     ...
+  ▾ POI       [9 / 412]
+     ...
+```
+
+每 chip 点击 → 隐含 entity 该字段=值 的实例 + chip 灰显。AND 跨 slot，OR 跨 value。折叠/展开按 entityType。
+
+**色样块**：由 StyleRule + Palette 实时求值（legend 与地图视觉一致）。
+
+**Viewport 计数计算**：
+```swift
+struct LegendChipCount {
+  let viewport: Int      // 同 type + 字段 = value + 在 region bbox + 过 active filters (除自身) + 在启用 Layer
+  let total: Int         // 同上但忽略 viewport bbox
+}
+```
+
+**刷新策略**：
+- `MapContainerView.onRegionChange` 触发 → debounce 200ms → 重算所有 chip count
+- 数据流：region → entityFetch(bbox) → groupBy (type, fieldKey, value) → 写 `@Observable LegendState`
+- 大 dataset (N > 5000)：SwiftData `#Predicate` + bbox 过滤；内存中 spatial index (R-tree) 暂不引入，视实测加
+- 计算 chip 自身 count 时，**排除自身这个字段的 filter**（避免点了"重点" chip 后该 chip count 变 0 看不出还能恢复）
+- 跨字段的 active filter 仍生效
+- count 结果按 `(region, filter, layer)` 签名缓存，签名变才失效
+
+**接受标准**：
+- 拖动地图后 200-300ms 内 count 刷新
+- 点 chip 后 count 即时变（不等地图）
+- 切 theme 重置 filter 后 count 全量重算
+- Layer 启停立即影响 count
+
+**默认 FilterFieldConfig 种子**（天津 demo）：
+- compound: `finishType`, `isNewHouse`
+- school: `category`, `grade`, `form`
+- poi: `category`
+- area: `category`
+
+迁移：旧 `PinFilter`（tiers/levels/jiunianVisible 写死）砍，等价能力由 school slot1=category, slot2=grade, slot3=form 实现。
+
+### 5.8 Layer（图层）
+
+图层 = 命名的 entity 集合 + zoom 触发。用于在不同缩放维度精准控制展示，避免一次性堆 POI。
+
+```swift
+@Model Layer {
+  id, datasetId, name
+  iconSF: String?                 // SF Symbol (toolbar icon)
+  colorHex: String?               // 图层指示色 (legend/toolbar)
+  staticRefsJSON: String?         // [{entityId, entityType}] 显式加入
+  dynamicQueryJSON: String?       // {entityType, conditions:[...]} 同 StyleRule.conditions
+  minZoom: Double?                // 地图 zoom < min 时隐
+  maxZoom: Double?                // 地图 zoom > max 时隐
+  isDefault: Bool = false         // 默认全集 layer (不可删)
+  enabled: Bool = true            // 中介当前是否启用 (运行时态, 由 Theme.defaultEnabledLayerIds 初始化)
+  sortOrder: Int
+  createdAt, updatedAt, deleted, version
+}
+```
+
+**Member 求值**：`members = staticRefs ∪ (entities matching dynamicQuery)`。任一为空允许。
+
+**Zoom**：MapKit `altitude` 标准化为 [0..21] zoom level。Layer 在视图当前 zoom < minZoom 或 > maxZoom 时整体隐。
+
+**渲染逻辑**：
+```swift
+let visibleByType = theme.visibility            // {compound:true,...}
+let enabledLayers = layers.filter { $0.enabled && $0.matchesAtZoom(currentZoom) }
+let layerMembers: Set<UUID> = enabledLayers.flatMap { $0.members }.asSet
+let visibleEntities = allEntities
+  .filter { visibleByType[$0.type] }
+  .filter { enabledLayers.isEmpty(forType: $0.type) || layerMembers.contains($0.id) }
+  .filter { passesFilters($0) }        // §5.7 filter chips
+```
+
+**默认 layer**：首启动种入 `name="全部"`, `isDefault=true`, dynamicQuery 匹配全部 entity，无 zoom 限。永不能删（UI 删除按钮灰显）。
+
+**Studio 左抽屉新增 Layers section**：
+```
+─ Layers ───────────
+  ☑ 全部 (默认)        ⓘ 0-21
+  ☑ 学校全集            ⓘ 0-12
+  ☑ 重点学校            ⓘ 0-21
+  ☐ 商圈细节            ⓘ 12-21
+  ☐ 地铁站              ⓘ 8-21
+  ☐ 实地踩盘            ⓘ 14-21
+  [+ 新建 layer]
+```
+
+多选 toggle。当前 zoom 不在 layer 范围时该 layer 灰显 + 提示。
+
+**Layer 编辑器**（Settings → Layers）：
+```
+┌── 编辑 layer ───────────────────────────┐
+│ name: [重点学校]                          │
+│ 图标 SF: [star.fill]    色: [#FF3B30]    │
+│ zoom 范围: [0]___[21]  slider            │
+│ 动态规则:                                  │
+│   entityType: [School ▾]                  │
+│   when: grade in [重点, 区重点]            │
+│   [+ 条件]                                │
+│ 静态加入:                                  │
+│   [+ 从地图选]  / 当前: 0 entities        │
+│ 预览: 命中 50 entities                    │
+│ [取消]              [保存]                │
+└─────────────────────────────────────────┘
+```
+
+**Theme × Layer 集成**：
+- `Theme.defaultEnabledLayerIds: [UUID]` — 切 theme 时初始化 layer enable 状态；中介运行时 toggle 不回写 theme
+- "学区视图" theme 默认 enabled：[全部, 重点学校]
+- "商圈视图" theme 默认 enabled：[地铁站, 商圈细节, 重要商场]
+- "新房地图" theme 默认 enabled：[新房楼盘]
+
+**用例覆盖**：
+- 中介开直播讲学区：启 "学校全集 (zoom 0-12)" + "重点学校 (zoom 0-21)"。拉远只见重点，拉近见全集。
+- 切讲商圈：一键启 "地铁站" + "商圈细节"，学校自动从画面消失。
+- 临时高亮某 5 个小区：新建 layer "本期重点 5 盘"，静态加入，zoom 全程。
 
 ---
 
@@ -367,7 +545,7 @@ ZStack:
     └─ [Dataset ▾] [Theme ▾] [Mode: 编辑/取景 toggle]
        [📸 截屏] [📡 直播取景态] [⚙ Settings]
   LeftDrawer (visible 编辑 mode only, 浮动)                       z=10
-    └─ Legend + Filters + Visibility + StyleRule quick edit
+    └─ Layers + Legend (含 viewport count, 过滤 chip) + Visibility + StyleRule quick edit
   RightDrawer (selected entity 时浮出)                            z=10
     └─ EntityCard (read) / EntityEditor (edit)
   BottomChips (camera presets, scrollable)                       z=15
@@ -429,8 +607,12 @@ Settings
 ├── Datasets        新建/重命名/激活/导入/导出/清空
 ├── Themes          列表 + 编辑器
 ├── Style Rules     列表 + 编辑器
+├── Palettes        列表 + 编辑器
+├── Layers          列表 + 编辑器 (zoom/规则/静态成员)
 ├── Enum 字典       per scope (school.category / edge.label / ...)
-├── 字段定义        per entityType, 编辑 CustomFieldDef
+├── 字段定义        per entityType
+│   ├── 基本/Custom: 编辑 CustomFieldDef
+│   └── 过滤字段:    编辑 FilterFieldConfig (最多 3 slot)
 ├── Cameras         列表 + "当前镜头另存为 preset"
 └── 备份/同步       iCloud 状态 + 手动 export .tjmap.zip
 ```
@@ -466,7 +648,7 @@ ModelConfiguration(cloudKitDatabase: .private(...))
 ```
 
 **全部 @Model 进私库**（中介跨 iPad/Mac 同步）：
-`Dataset, Compound, School, POI, Area, Edge, CustomFieldDef, EnumOption, StyleRule, Palette, Theme, Photo, Document, Tag, CameraPreset`。
+`Dataset, Compound, School, POI, Area, Edge, CustomFieldDef, EnumOption, FilterFieldConfig, Layer, StyleRule, Palette, Theme, Photo, Document, Tag, CameraPreset`。
 
 Photo / Document 走 `@Attribute(.externalStorage)` 自动 CKAsset。
 
@@ -492,6 +674,8 @@ edges.json
 styles/rules.json
 styles/themes.json
 styles/palettes.json
+display/layers.json
+display/filterFields.json
 vocab/customFieldDefs.json
 vocab/enums.json
 vocab/tags.json
@@ -526,7 +710,7 @@ rasters/${areaId}.png
 
 Settings → Datasets → row swipe → confirm sheet：
 - "删除 dataset 「天津 demo」?  含 174 Compound / 823 School / 32 Theme / 1.2 GB 媒体" → confirm
-- Cascade：del Dataset，全部 entity（datasetId == X），全部 Edge（任一端 entity 删），Photo/Document，Theme/StyleRule，EnumOption，CustomFieldDef，raster files。
+- Cascade：del Dataset，全部 entity（datasetId == X），全部 Edge（任一端 entity 删），Photo/Document，Theme/StyleRule/Palette，Layer，FilterFieldConfig，EnumOption，CustomFieldDef，CameraPreset，Tag，raster files。
 
 "重置为天津 demo" 按钮：del active + 重导 bundled。
 
@@ -586,6 +770,7 @@ Settings → Datasets → row swipe → confirm sheet：
 | `BuiltinTag` | `Tag` | 通用化 |
 | 19 区（`district` 字符串） | 19 个 Area（category="行政区"，bbox 取自 `district_bboxes.json`） | 自动迁入 |
 | `CameraPresets.seed`（硬编码 6 区） | `CameraPreset` @Model | 旧 seed 迁入 |
+| `PinFilter`（硬编码 tiers/levels/jiunianVisible struct） | `FilterFieldConfig` 种子 (school: category/grade/form) + Layer | 等价能力由 FilterFieldConfig + Layer 替代 |
 
 ### 8.3 LegacyMigrator 流程
 
@@ -598,9 +783,11 @@ Settings → Datasets → row swipe → confirm sheet：
 6. 旧关联表 (CompoundSchoolMatch / SchoolGroup / Zone.middleSchoolPoolJSON / Compound.primarySchoolId) → Edges
 7. sensitive 子结构 → privateNotes
 8. 种 EnumOption (school.category / school.grade / school.form / edge.label / area.category 等默认值)
-9. 种默认 Palette + 默认 Theme (字段总览 / 学区视图 / 商圈视图 / 新房地图)
-10. 旧 store rename .legacy.store，不删
-11. 写新 store
+9. 种 FilterFieldConfig (compound: finishType, isNewHouse; school: category, grade, form; poi/area: category)
+10. 种默认 Palette + 默认 Theme (字段总览 / 学区视图 / 商圈视图 / 新房地图)
+11. 种默认 Layer ("全部" isDefault=true)
+12. 旧 store rename .legacy.store，不删
+13. 写新 store
 ```
 
 ### 8.4 迁移测试
@@ -621,18 +808,25 @@ Settings → Datasets → row swipe → confirm sheet：
 - Edge 双向查询 + groupBy label
 - StyleRule matcher（每个 op）
 - StyleRule merge（priority + nil-skip）
-- Palette stableHash（同 key 多次结果一致）
+- Palette stableHash（同 key 多次结果一致 / 跨进程一致 / FNV-1a 32-bit 边界）
 - Theme 切换不丢 entity override
+- Layer member 求值（static ∪ dynamic 去重）
+- Layer zoom 阈值（边界值行为：等于 min/max 时显隐）
+- FilterFieldConfig slot 唯一约束（同 (datasetId, entityType, slot) 拒重复）
+- Filter chip self-exclusion（同 slot filter 不影响自身 count）
+- LegendCounter 缓存签名（region/filter/layer 变化触发失效）
 - Migration: 旧 → 新 count + sample diff
+- Migration: 旧 PinFilter 写死字段 → FilterFieldConfig 等价种子
 - Round-trip: export → import 一致
 
 ### 9.2 UI 快照
 
 - 各 EntityEditor tab 默认状态
-- Studio 编辑态布局（Mac/iPad）
+- Studio 编辑态布局（Mac/iPad）：含 Layers panel + Legend
 - Studio 取景态布局
 - Theme 切换前后 map 渲染 hash 稳定
 - 详情卡 tab 切换高亮联动
+- Layer 切换前后 entity 可见集合差异
 
 ### 9.3 集成
 
@@ -642,6 +836,9 @@ Settings → Datasets → row swipe → confirm sheet：
 - Area raster 4 角校准
 - CloudKit 双设备并发（模拟）→ last-write-wins + 本地备份
 - Wipe + reseed bundled demo
+- Viewport count：拖动地图 → 200-300ms 内 chip count 刷新
+- Layer zoom 触发：缩放跨阈值时 entity 集合自动隐显
+- Filter chip + Layer 组合：AND 语义验证
 
 ### 9.4 可访问性
 
@@ -651,10 +848,10 @@ Settings → Datasets → row swipe → confirm sheet：
 
 ---
 
-## 10. 模型清单（15 @Model）
+## 10. 模型清单（17 @Model）
 
-新增 (10)：
-- `Dataset`、`POI`、`Edge`、`CustomFieldDef`、`EnumOption`、`StyleRule`、`Palette`、`Theme`、`Photo`、`CameraPreset`（后者替代硬编码 `CameraPresets.seed` enum，非旧 @Model）
+新增 (12)：
+- `Dataset`、`POI`、`Edge`、`CustomFieldDef`、`EnumOption`、`FilterFieldConfig`、`Layer`、`StyleRule`、`Palette`、`Theme`、`Photo`、`CameraPreset`（后者替代硬编码 `CameraPresets.seed` enum，非旧 @Model）
 
 重命名/重构 (3)：
 - `Area`（← `SchoolZone`，字段大改）
@@ -667,7 +864,7 @@ Settings → Datasets → row swipe → confirm sheet：
 纯删除 (5，无替代)：
 - `CompoundSchoolMatch`、`SchoolGroup`、`AdmissionRate`、`Policy`、`SchoolScore`
 
-**合计**：旧 10 个 @Model + `CameraPresets` enum → 新 **15 个 @Model**（删 5 + 重命名 3 + 原地重构 2 + 新增 10）。
+**合计**：旧 10 个 @Model + `CameraPresets` enum + 硬编码 `PinFilter` struct → 新 **17 个 @Model**（删 5 + 重命名 3 + 原地重构 2 + 新增 12）。
 
 非 @Model 保留：`AppSettings`（UserDefaults-backed `ObservableObject`）。
 
@@ -681,6 +878,7 @@ PropertyAtlas/PropertyAtlas/
 │   ├── Core/        Dataset.swift, Edge.swift, Tag.swift, CameraPreset.swift
 │   ├── Entities/    Compound.swift, School.swift, POI.swift, Area.swift
 │   ├── Style/       StyleRule.swift, Palette.swift, Theme.swift
+│   ├── Display/     Layer.swift, FilterFieldConfig.swift
 │   ├── Schema/      CustomFieldDef.swift, EnumOption.swift
 │   ├── Media/       Photo.swift, Document.swift
 │   └── Settings/    AppSettings.swift (保留)
@@ -691,6 +889,9 @@ PropertyAtlas/PropertyAtlas/
 │   ├── EdgeQuery.swift
 │   ├── StyleResolver.swift
 │   ├── PaletteResolver.swift
+│   ├── LayerResolver.swift          // member 求值 + zoom 触发
+│   ├── FilterResolver.swift         // chip toggle 状态 + entity 过滤
+│   ├── LegendCounter.swift          // viewport count, debounce, 缓存
 │   └── ImportExportService.swift (.tjmap.zip)
 ├── MapRender/
 │   ├── MapContainerView.swift (保留)
@@ -701,9 +902,9 @@ PropertyAtlas/PropertyAtlas/
 ├── Studio/
 │   ├── StudioRootView.swift
 │   ├── TopToolbar.swift
-│   ├── LeftDrawer/  Legend, Filters, Visibility
+│   ├── LeftDrawer/  LayersPanel, LegendPanel (viewport-aware), FilterChips, VisibilityToggles
 │   ├── RightDrawer/ EntityCard, EntityEditor (per type variants)
-│   ├── Settings/    DatasetsView, ThemesView, StyleRulesView, EnumDictView, FieldDefsView, CamerasView
+│   ├── Settings/    DatasetsView, ThemesView, StyleRulesView, PalettesView, LayersView, EnumDictView, FieldDefsView (基本/Custom + 过滤字段 tab), CamerasView
 │   └── LiveMode/    LiveOverlay, SpotlightController
 ├── Explore/         (iPad 浏览模式)
 ├── Onboarding/      OnboardingSheet, DatasetPicker
