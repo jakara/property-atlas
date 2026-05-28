@@ -136,4 +136,79 @@ struct LegacyMigratorTests {
         #expect(defs.contains { $0.key == "residencyYears" })
         #expect(defs.contains { $0.key == "tier" })
     }
+
+    @Test func migrateConvertsCompoundSchoolMatchToEdges() throws {
+        let container = try TestContainer.makeInMemory(for: ModelSchema.allTypes)
+        let ctx = ModelContext(container)
+        let lc = LegacyCompound(name: "x", district: "和平区", latitude: 39.1, longitude: 117.2)
+        let ls = LegacySchool(name: "鞍山道小学", type: "小学", district: "和平区", tier: "重点")
+        ls.lat = 39.12
+        ls.lon = 117.19
+        let m = CompoundSchoolMatch(compoundId: lc.id, compoundName: "x", district: "和平区")
+        m.primaryMatchesJSON = #"[{"school_id":"\#(ls.id.uuidString)","school_name":"鞍山道小学","match_kind":"name"}]"#
+        m.middleMatchesJSON = "[]"
+        ctx.insert(lc)
+        ctx.insert(ls)
+        ctx.insert(m)
+        try ctx.save()
+        try LegacyMigrator.run(in: ctx)
+        let edges = try ctx.fetch(FetchDescriptor<Edge>())
+        let primary = edges.filter { $0.label == "对口小学" }
+        #expect(primary.count == 1)
+        #expect(primary.first?.fromId == lc.id)
+        #expect(primary.first?.fromType == "compound")
+        #expect(primary.first?.toId == ls.id)
+        #expect(primary.first?.toType == "school")
+        #expect(primary.first?.directed == true)
+    }
+
+    @Test func migrateConvertsSchoolGroupToEdges() throws {
+        let container = try TestContainer.makeInMemory(for: ModelSchema.allTypes)
+        let ctx = ModelContext(container)
+        let leader = LegacySchool(name: "实验中学", type: "初中", district: "和平区", tier: "重点")
+        leader.lat = 39.1
+        leader.lon = 117.2
+        let member = LegacySchool(name: "实验中学分校", type: "初中", district: "和平区", tier: "区重点")
+        member.lat = 39.11
+        member.lon = 117.21
+        let g = SchoolGroup(name: "实验集团", district: "和平区")
+        g.leadsJSON = #"[{"name":"实验中学","school_id":"\#(leader.id.uuidString)"}]"#
+        g.membersJSON = #"[{"name":"实验中学分校","school_id":"\#(member.id.uuidString)"}]"#
+        ctx.insert(leader)
+        ctx.insert(member)
+        ctx.insert(g)
+        let lc = LegacyCompound(name: "x", district: "和平区", latitude: 39.1, longitude: 117.2)
+        ctx.insert(lc)
+        try ctx.save()
+        try LegacyMigrator.run(in: ctx)
+        let edges = try ctx.fetch(FetchDescriptor<Edge>())
+        #expect(edges.contains { $0.label == "集团成员" && $0.fromId == leader.id && $0.toId == member.id })
+    }
+
+    @Test func migrateConvertsZoneMiddleSchoolPoolToEdges() throws {
+        let container = try TestContainer.makeInMemory(for: ModelSchema.allTypes)
+        let ctx = ModelContext(container)
+        let middle = LegacySchool(name: "耀华中学", type: "初中", district: "和平区", tier: "重点")
+        middle.lat = 39.12
+        middle.lon = 117.19
+        ctx.insert(middle)
+        let z = LegacySchoolZone(
+            name: "第一学片",
+            tier: "重点",
+            primaryDistrict: "和平区",
+            geometry: #"{"type":"Polygon","coordinates":[[[117,39],[118,39],[118,40],[117,40],[117,39]]]}"#,
+            geometryStage: "hull"
+        )
+        z.middleSchoolPoolJSON = #"["耀华中学"]"#
+        ctx.insert(z)
+        let lc = LegacyCompound(name: "x", district: "和平区", latitude: 39.1, longitude: 117.2)
+        ctx.insert(lc)
+        try ctx.save()
+        try LegacyMigrator.run(in: ctx)
+        let edges = try ctx.fetch(FetchDescriptor<Edge>())
+        let pool = edges.filter { $0.label == "片内中学" && $0.fromType == "area" }
+        #expect(pool.count == 1)
+        #expect(pool.first?.toType == "school")
+        #expect(pool.first?.toId == middle.id)
+    }
 }

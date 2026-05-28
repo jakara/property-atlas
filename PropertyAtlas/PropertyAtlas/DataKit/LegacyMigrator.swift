@@ -24,6 +24,7 @@ enum LegacyMigrator {
         try migrateAreas(dataset: dataset, in: ctx)
         try migrateSchools(dataset: dataset, in: ctx)
         try migrateCompounds(dataset: dataset, in: ctx)
+        try migrateEdges(dataset: dataset, in: ctx)
         try ctx.save()
     }
 
@@ -272,6 +273,129 @@ enum LegacyMigrator {
         }
         dict[key] = json
         registerCustomFieldDef(datasetId: dataset, entityType: entity, key: key, label: label, type: type, unit: unit, in: ctx)
+    }
+
+    // MARK: stage 5 — Edges
+
+    private struct MatchEntry: Decodable {
+        let school_id: String
+        let school_name: String?
+    }
+
+    private struct GroupEntry: Decodable {
+        let name: String
+        let school_id: String?
+    }
+
+    private static func migrateEdges(dataset: Dataset, in ctx: ModelContext) throws {
+        try migrateCompoundSchoolMatches(dataset: dataset, in: ctx)
+        try migratePrimarySchoolId(dataset: dataset, in: ctx)
+        try migrateZoneMiddleSchoolPool(dataset: dataset, in: ctx)
+        try migrateSchoolGroups(dataset: dataset, in: ctx)
+    }
+
+    private static func migrateCompoundSchoolMatches(dataset: Dataset, in ctx: ModelContext) throws {
+        let matches = try ctx.fetch(FetchDescriptor<CompoundSchoolMatch>())
+        for m in matches {
+            let primary: [MatchEntry] = (try? JSONHelpers.decode(m.primaryMatchesJSON)) ?? []
+            for entry in primary {
+                guard let toId = UUID(uuidString: entry.school_id) else { continue }
+                let e = Edge(
+                    datasetId: dataset.id,
+                    fromId: m.compoundId, fromType: "compound",
+                    toId: toId, toType: "school",
+                    label: "对口小学",
+                    directed: true
+                )
+                ctx.insert(e)
+            }
+            let middle: [MatchEntry] = (try? JSONHelpers.decode(m.middleMatchesJSON)) ?? []
+            for entry in middle {
+                guard let toId = UUID(uuidString: entry.school_id) else { continue }
+                let e = Edge(
+                    datasetId: dataset.id,
+                    fromId: m.compoundId, fromType: "compound",
+                    toId: toId, toType: "school",
+                    label: "片内中学",
+                    directed: true
+                )
+                ctx.insert(e)
+            }
+        }
+    }
+
+    private static func migratePrimarySchoolId(dataset: Dataset, in ctx: ModelContext) throws {
+        let compounds = try ctx.fetch(FetchDescriptor<LegacyCompound>())
+        for lc in compounds {
+            guard let to = lc.primarySchoolId else { continue }
+            // Skip if already emitted by CompoundSchoolMatch (avoid dup)
+            let dsId = dataset.id
+            let fromId = lc.id
+            let descriptor = FetchDescriptor<Edge>(
+                predicate: #Predicate { $0.fromId == fromId && $0.toId == to && $0.label == "对口小学" && $0.datasetId == dsId }
+            )
+            let existing = try? ctx.fetch(descriptor)
+            if existing?.isEmpty == false { continue }
+            let e = Edge(
+                datasetId: dataset.id,
+                fromId: lc.id, fromType: "compound",
+                toId: to, toType: "school",
+                label: "对口小学",
+                directed: true
+            )
+            ctx.insert(e)
+        }
+    }
+
+    private static func migrateZoneMiddleSchoolPool(dataset: Dataset, in ctx: ModelContext) throws {
+        let zones = try ctx.fetch(FetchDescriptor<LegacySchoolZone>())
+        let allSchools = try ctx.fetch(FetchDescriptor<LegacySchool>())
+        var schoolByName: [String: LegacySchool] = [:]
+        for s in allSchools {
+            schoolByName[s.name] = s
+        }
+        for z in zones {
+            guard let poolJSON = z.middleSchoolPoolJSON else { continue }
+            let names: [String] = (try? JSONHelpers.decode(poolJSON)) ?? []
+            for name in names {
+                guard let school = schoolByName[name] else { continue }
+                let e = Edge(
+                    datasetId: dataset.id,
+                    fromId: z.id, fromType: "area",
+                    toId: school.id, toType: "school",
+                    label: "片内中学",
+                    directed: true
+                )
+                ctx.insert(e)
+            }
+        }
+    }
+
+    private static func migrateSchoolGroups(dataset: Dataset, in ctx: ModelContext) throws {
+        let groups = try ctx.fetch(FetchDescriptor<SchoolGroup>())
+        for g in groups {
+            let leads: [GroupEntry] = (try? JSONHelpers.decode(g.leadsJSON)) ?? []
+            let members: [GroupEntry] = (try? JSONHelpers.decode(g.membersJSON)) ?? []
+            guard let leaderEntry = leads.first,
+                  let leaderIdStr = leaderEntry.school_id,
+                  let leaderId = UUID(uuidString: leaderIdStr)
+            else { continue }
+            for memberEntry in members {
+                guard let memberIdStr = memberEntry.school_id,
+                      let memberId = UUID(uuidString: memberIdStr),
+                      memberId != leaderId
+                else { continue }
+                let e = Edge(
+                    datasetId: dataset.id,
+                    fromId: leaderId, fromType: "school",
+                    toId: memberId, toType: "school",
+                    label: "集团成员",
+                    directed: true
+                )
+                e.note = g.name
+                ctx.insert(e)
+            }
+        }
     }
 
     static func registerCustomFieldDef(
