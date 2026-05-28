@@ -63,7 +63,7 @@ struct StudioRootView: View {
     @State private var title: String = "和平区学区分布图"
     @State private var subtitle: String = "2026 招生季"
     @State private var watermark: String = "@公众号名 · PropertyAtlas"
-    @State private var selectedPreset: CameraPreset = CameraPresets.seed[0]
+    @State private var selectedPreset: StudioCameraPreset = CameraPresets.seed[0]
     @State private var aspect: CanvasAspect = .ratio16x9
     @State private var showZoneFill = false // hull 不准, 默认关; pin 颜色已表达 zone 归属
     @State private var showSchoolPins = true
@@ -140,7 +140,7 @@ struct StudioRootView: View {
             camera = new.camera
         }
         .onReceive(NotificationCenter.default.publisher(for: .studioPresetSelected)) { note in
-            if let p = note.object as? CameraPreset { selectedPreset = p }
+            if let p = note.object as? StudioCameraPreset { selectedPreset = p }
         }
         .onReceive(NotificationCenter.default.publisher(for: .reloadSeeds)) { _ in
             reloadSeeds()

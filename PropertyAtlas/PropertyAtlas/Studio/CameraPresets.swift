@@ -2,7 +2,7 @@
 import CoreLocation
 import MapKit
 
-struct CameraPreset: Identifiable, Hashable {
+struct StudioCameraPreset: Identifiable, Hashable {
     let id: String
     let name: String
     let center: CLLocationCoordinate2D
@@ -23,7 +23,7 @@ struct CameraPreset: Identifiable, Hashable {
         hasher.combine(id)
     }
 
-    static func == (l: CameraPreset, r: CameraPreset) -> Bool {
+    static func == (l: StudioCameraPreset, r: StudioCameraPreset) -> Bool {
         l.id == r.id
     }
 }
@@ -40,7 +40,7 @@ extension CLLocationCoordinate2D: @retroactive Hashable {
 }
 
 enum CameraPresets {
-    static let seed: [CameraPreset] = [
+    static let seed: [StudioCameraPreset] = [
         .init(id: "和平区", name: "和平区", center: .init(latitude: 39.125, longitude: 117.205), distance: 12000, pitch: 0, heading: 0),
         .init(id: "河西区", name: "河西区", center: .init(latitude: 39.110, longitude: 117.225), distance: 18000, pitch: 0, heading: 0),
         .init(id: "南开区", name: "南开区", center: .init(latitude: 39.130, longitude: 117.150), distance: 18000, pitch: 0, heading: 0),

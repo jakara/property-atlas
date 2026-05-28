@@ -5,7 +5,7 @@ struct StudioOverlay: View {
     @Binding var title: String
     @Binding var subtitle: String
     @Binding var watermark: String
-    @Binding var selectedPreset: CameraPreset
+    @Binding var selectedPreset: StudioCameraPreset
     @Binding var aspect: CanvasAspect
     @Binding var showZoneFill: Bool
     @Binding var showSchoolPins: Bool

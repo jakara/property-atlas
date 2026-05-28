@@ -3,7 +3,7 @@ import MapKit
 import SwiftUI
 
 struct StudioToolbar: View {
-    @Binding var selectedPreset: CameraPreset
+    @Binding var selectedPreset: StudioCameraPreset
     @Binding var aspect: CanvasAspect
     @Binding var showZoneFill: Bool
     @Binding var showSchoolPins: Bool
