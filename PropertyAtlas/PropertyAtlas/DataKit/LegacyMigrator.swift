@@ -11,11 +11,7 @@ enum LegacyMigrator {
     static let datasetName = "天津 demo"
 
     static func run(in ctx: ModelContext) throws {
-        // Idempotent: skip if a Dataset already exists
-        if try !ctx.fetch(FetchDescriptor<Dataset>()).isEmpty {
-            return
-        }
-        // No-op when no legacy data
+        if try !ctx.fetch(FetchDescriptor<Dataset>()).isEmpty { return }
         let hasLegacy: Bool = try (
             !ctx.fetch(FetchDescriptor<LegacyCompound>()).isEmpty
                 || !ctx.fetch(FetchDescriptor<LegacySchool>()).isEmpty
@@ -25,6 +21,87 @@ enum LegacyMigrator {
 
         let dataset = Dataset(name: datasetName)
         ctx.insert(dataset)
+        try migrateAreas(dataset: dataset, in: ctx)
         try ctx.save()
+    }
+
+    // MARK: stage 2 — SchoolZone → Area
+
+    private static func migrateAreas(dataset: Dataset, in ctx: ModelContext) throws {
+        let zones = try ctx.fetch(FetchDescriptor<LegacySchoolZone>())
+        for z in zones {
+            let area = Area(
+                datasetId: dataset.id,
+                name: z.name,
+                geometryKind: z.geometryStage == "raster" ? "raster" : "polygon",
+                geometryJSON: z.geometry
+            )
+            area.id = z.id // preserve id for edges
+            area.fillOpacity = z.fillOpacity
+            area.textDescription = z.textDescription
+            area.strokeHex = z.strokeColorHex
+            // sensitive → privateNotes
+            let sensitive = [z.sensitiveHighlight, z.sensitiveSource, z.sensitiveNote]
+                .compactMap { $0 }
+                .filter { !$0.isEmpty }
+                .joined(separator: "\n")
+            area.privateNotes = sensitive.isEmpty ? nil : sensitive
+
+            // Migrate stripped baseFields → customField
+            var customFields: [String: AnyJSON] = [:]
+            if let y = z.residencyYears {
+                customFields["residencyYears"] = .int(y)
+                registerCustomFieldDef(
+                    datasetId: dataset.id,
+                    entityType: "area",
+                    key: "residencyYears",
+                    label: "居住年限",
+                    type: "int",
+                    unit: "年",
+                    in: ctx
+                )
+            }
+            if !z.tier.isEmpty, z.tier != "普通" {
+                customFields["tier"] = .string(z.tier)
+                registerCustomFieldDef(
+                    datasetId: dataset.id,
+                    entityType: "area",
+                    key: "tier",
+                    label: "学片级别",
+                    type: "string",
+                    unit: nil,
+                    in: ctx
+                )
+            }
+            if !customFields.isEmpty {
+                area.customFieldsJSON = try? JSONHelpers.encode(customFields)
+            }
+            ctx.insert(area)
+        }
+    }
+
+    static func registerCustomFieldDef(
+        datasetId: UUID,
+        entityType: String,
+        key: String,
+        label: String,
+        type: String,
+        unit: String?,
+        in ctx: ModelContext
+    ) {
+        let existing = try? ctx.fetch(FetchDescriptor<CustomFieldDef>(
+            predicate: #Predicate { $0.datasetId == datasetId && $0.entityType == entityType && $0.key == key }
+        ))
+        if existing?.isEmpty == false { return }
+        let def = CustomFieldDef(
+            datasetId: datasetId,
+            entityType: entityType,
+            key: key,
+            label: label,
+            type: type,
+            source: "migrated"
+        )
+        def.unit = unit
+        ctx.insert(def)
     }
 }
