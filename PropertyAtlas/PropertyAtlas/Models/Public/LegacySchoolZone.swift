@@ -3,7 +3,7 @@ import Foundation
 import SwiftData
 
 @Model
-final class SchoolZone {
+final class LegacySchoolZone {
     var id: UUID = UUID()
     var name: String = "" // zone_name
     var tier: String = "普通" // 聚合 (max coarse tier of members)

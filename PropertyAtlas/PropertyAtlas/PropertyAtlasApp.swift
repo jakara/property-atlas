@@ -15,12 +15,12 @@ struct PropertyAtlasApp: App {
     init() {
         do {
             let schema = Schema([
-                SchoolZone.self, LegacyCompound.self, Compound.self, LegacySchool.self, School.self,
+                LegacySchoolZone.self, LegacyCompound.self, Compound.self, LegacySchool.self, School.self,
                 SchoolGroup.self, Policy.self, AdmissionRate.self, CompoundSchoolMatch.self,
                 SchoolScore.self, AdmissionDoc.self, BuiltinTag.self,
                 PropertyMark.self, Visit.self, VisitPhoto.self,
                 TagExtension.self, VisitTag.self, UserArea.self, ShareSubmission.self,
-                Dataset.self, POI.self,
+                Dataset.self, POI.self, Area.self,
             ])
             #if targetEnvironment(macCatalyst)
             // Mac Catalyst: 关 CloudKit 镜像 (entitlement 在但不接 iCloud); 否则会 ServerRejected

@@ -57,7 +57,7 @@ struct ExploreRootView: View {
 #if targetEnvironment(macCatalyst)
 struct StudioRootView: View {
     @Environment(\.modelContext) private var modelContext
-    @Query private var zones: [SchoolZone]
+    @Query private var zones: [LegacySchoolZone]
     @Query private var schools: [LegacySchool]
 
     @State private var title: String = "和平区学区分布图"
@@ -149,7 +149,7 @@ struct StudioRootView: View {
 
     private func reloadSeeds() {
         do {
-            try modelContext.delete(model: SchoolZone.self)
+            try modelContext.delete(model: LegacySchoolZone.self)
             try modelContext.delete(model: LegacySchool.self)
             try modelContext.delete(model: LegacyCompound.self)
             try modelContext.save()

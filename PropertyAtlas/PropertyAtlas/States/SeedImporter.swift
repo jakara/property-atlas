@@ -25,7 +25,7 @@ enum SeedImporter {
     }
 
     static func needsImport(_ context: ModelContext) -> Bool {
-        var fd = FetchDescriptor<SchoolZone>()
+        var fd = FetchDescriptor<LegacySchoolZone>()
         fd.fetchLimit = 1
         return ((try? context.fetchCount(fd)) ?? 0) == 0
     }
@@ -94,7 +94,7 @@ enum SeedImporter {
     /// Zone tier = max coarse tier across schools whose zoneId == zone.id.
     private static func aggregateZoneTier(context: ModelContext) {
         let priority = ["重点": 2, "区重点": 1, "普通": 0]
-        let zones = (try? context.fetch(FetchDescriptor<SchoolZone>())) ?? []
+        let zones = (try? context.fetch(FetchDescriptor<LegacySchoolZone>())) ?? []
         let schools = (try? context.fetch(FetchDescriptor<LegacySchool>())) ?? []
         var byZone: [UUID: [LegacySchool]] = [:]
         for s in schools {
@@ -149,7 +149,7 @@ enum SeedImporter {
             } else {
                 geometryString = ""
             }
-            let zone = SchoolZone(
+            let zone = LegacySchoolZone(
                 id: uuid(from: seedId),
                 name: zoneName,
                 tier: "普通", // aggregateZoneTier 会覆盖

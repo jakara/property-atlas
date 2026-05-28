@@ -10,12 +10,12 @@ enum ZoneGeometryImporter {
     }
 
     static func makeOverlay(
-        for zone: SchoolZone,
+        for zone: LegacySchoolZone,
         imageProvider: (String) -> UIImage?
     ) throws -> MKOverlay {
         switch zone.geometryStage {
         case "raster":
-            let r = try SchoolZone.decodeRaster(zone.geometry)
+            let r = try LegacySchoolZone.decodeRaster(zone.geometry)
             guard let img = imageProvider(r.image) else { throw ImporterError.imageMissing(r.image) }
             return CalibratedImageOverlay(image: img, corners: r.corners)
         case "hull", "geojson":
