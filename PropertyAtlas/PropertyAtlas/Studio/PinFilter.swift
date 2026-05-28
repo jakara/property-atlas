@@ -6,7 +6,7 @@ struct PinFilter: Equatable {
     var levels: Set<String> = ["小学", "初中"]
     var jiunianVisible: Bool = true // 九年一贯 (独立维度, 与 level 正交)
 
-    func includes(school: School) -> Bool {
+    func includes(school: LegacySchool) -> Bool {
         guard tiers.contains(school.tier) else { return false }
         guard levels.contains(school.type) else { return false }
         if school.isJiunian, !jiunianVisible { return false }

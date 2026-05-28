@@ -58,7 +58,7 @@ struct ExploreRootView: View {
 struct StudioRootView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var zones: [SchoolZone]
-    @Query private var schools: [School]
+    @Query private var schools: [LegacySchool]
 
     @State private var title: String = "和平区学区分布图"
     @State private var subtitle: String = "2026 招生季"
@@ -150,7 +150,7 @@ struct StudioRootView: View {
     private func reloadSeeds() {
         do {
             try modelContext.delete(model: SchoolZone.self)
-            try modelContext.delete(model: School.self)
+            try modelContext.delete(model: LegacySchool.self)
             try modelContext.delete(model: LegacyCompound.self)
             try modelContext.save()
             try SeedImporter.runIfNeeded(into: modelContext)
@@ -161,7 +161,7 @@ struct StudioRootView: View {
     }
 
     private func computeVisibleZones(
-        schools: [School],
+        schools: [LegacySchool],
         zoneNameById: [UUID: String],
         region: MKCoordinateRegion?
     ) -> [StudioLegend.VisibleZone] {

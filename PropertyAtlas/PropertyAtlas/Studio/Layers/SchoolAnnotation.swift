@@ -16,7 +16,7 @@ final class SchoolAnnotation: NSObject, MKAnnotation {
     @objc dynamic var coordinate: CLLocationCoordinate2D
 
     init(
-        school: School,
+        school: LegacySchool,
         zoneName: String?,
         zoneColorHex: String? = nil,
         showName: Bool = true

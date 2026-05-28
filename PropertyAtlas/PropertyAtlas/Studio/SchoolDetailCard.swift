@@ -7,7 +7,7 @@ struct SchoolDetailCard: View {
     let onClose: () -> Void
 
     @Environment(\.modelContext) private var context
-    @State private var school: School?
+    @State private var school: LegacySchool?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -72,7 +72,7 @@ struct SchoolDetailCard: View {
 
     private func fetchSchool() async {
         let id = schoolId
-        var fd = FetchDescriptor<School>(predicate: #Predicate { $0.id == id })
+        var fd = FetchDescriptor<LegacySchool>(predicate: #Predicate { $0.id == id })
         fd.fetchLimit = 1
         school = try? context.fetch(fd).first
     }
@@ -110,7 +110,7 @@ struct SchoolDetailCard: View {
         }
     }
 
-    private func sensitiveGroup(_ s: School) -> some View {
+    private func sensitiveGroup(_ s: LegacySchool) -> some View {
         let rows: [(String, String?)] = [
             ("tier_letter", s.sensitiveTierLetter),
             ("tier_label", s.sensitiveTierLabel),

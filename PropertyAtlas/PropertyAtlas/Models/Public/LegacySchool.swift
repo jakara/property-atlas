@@ -2,7 +2,7 @@ import Foundation
 import SwiftData
 
 @Model
-final class School {
+final class LegacySchool {
     var id: UUID = UUID()
     var name: String = ""
     var type: String = "小学" // "小学" / "初中"

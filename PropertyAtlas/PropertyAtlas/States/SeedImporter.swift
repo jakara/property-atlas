@@ -95,8 +95,8 @@ enum SeedImporter {
     private static func aggregateZoneTier(context: ModelContext) {
         let priority = ["重点": 2, "区重点": 1, "普通": 0]
         let zones = (try? context.fetch(FetchDescriptor<SchoolZone>())) ?? []
-        let schools = (try? context.fetch(FetchDescriptor<School>())) ?? []
-        var byZone: [UUID: [School]] = [:]
+        let schools = (try? context.fetch(FetchDescriptor<LegacySchool>())) ?? []
+        var byZone: [UUID: [LegacySchool]] = [:]
         for s in schools {
             guard let zid = s.zoneId else { continue }
             byZone[zid, default: []].append(s)
@@ -184,7 +184,7 @@ enum SeedImporter {
             let isJiunian = (item["is_jiunian"] as? Bool) == true
             let tier = coarseTierFromSensitive(item["sensitive"]) ?? "普通"
             let zoneId: UUID? = (item["zone_id"] as? String).map(uuid(from:))
-            let school = School(
+            let school = LegacySchool(
                 id: uuid(from: seedId),
                 name: name,
                 type: type,

@@ -15,7 +15,7 @@ struct PropertyAtlasApp: App {
     init() {
         do {
             let schema = Schema([
-                SchoolZone.self, LegacyCompound.self, Compound.self, School.self,
+                SchoolZone.self, LegacyCompound.self, Compound.self, LegacySchool.self, School.self,
                 SchoolGroup.self, Policy.self, AdmissionRate.self, CompoundSchoolMatch.self,
                 SchoolScore.self, AdmissionDoc.self, BuiltinTag.self,
                 PropertyMark.self, Visit.self, VisitPhoto.self,
