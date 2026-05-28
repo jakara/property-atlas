@@ -276,4 +276,20 @@ struct LegacyMigratorTests {
         let datasets = try ctx.fetch(FetchDescriptor<Dataset>())
         #expect(datasets.first?.activeThemeId != nil)
     }
+
+    @Test func migrateMigratesHardcodedCameraPresets() throws {
+        let container = try TestContainer.makeInMemory(for: ModelSchema.allTypes)
+        let ctx = ModelContext(container)
+        let lc = LegacyCompound(name: "x", district: "和平区", latitude: 39.1, longitude: 117.2)
+        ctx.insert(lc)
+        try ctx.save()
+        try LegacyMigrator.run(in: ctx)
+        let presets = try ctx.fetch(FetchDescriptor<CameraPreset>())
+        let names = Set(presets.map(\.name))
+        #expect(names == ["和平区", "河西区", "南开区", "河东区", "河北区", "红桥区"])
+        let heping = try #require(presets.first { $0.name == "和平区" })
+        #expect(heping.centerLat == 39.125)
+        #expect(heping.centerLon == 117.205)
+        #expect(heping.distance == 12000)
+    }
 }

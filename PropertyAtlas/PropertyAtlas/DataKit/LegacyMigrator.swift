@@ -28,6 +28,7 @@ enum LegacyMigrator {
         try seedEnumOptions(dataset: dataset, in: ctx)
         try seedFilterFields(dataset: dataset, in: ctx)
         try seedPalettesThemesLayers(dataset: dataset, in: ctx)
+        try seedCameraPresets(dataset: dataset, in: ctx)
         try ctx.save()
     }
 
@@ -516,6 +517,30 @@ enum LegacyMigrator {
         ctx.insert(t4)
 
         dataset.activeThemeId = t1.id
+    }
+
+    // MARK: stage 9 — CameraPreset seeds
+
+    private static func seedCameraPresets(dataset: Dataset, in ctx: ModelContext) throws {
+        let seeds: [(name: String, lat: Double, lon: Double, distance: Double)] = [
+            ("和平区", 39.125, 117.205, 12000),
+            ("河西区", 39.110, 117.225, 18000),
+            ("南开区", 39.130, 117.150, 18000),
+            ("河东区", 39.125, 117.235, 18000),
+            ("河北区", 39.155, 117.205, 18000),
+            ("红桥区", 39.165, 117.155, 18000),
+        ]
+        for (idx, s) in seeds.enumerated() {
+            let p = CameraPreset(
+                datasetId: dataset.id,
+                name: s.name,
+                centerLat: s.lat,
+                centerLon: s.lon,
+                distance: s.distance
+            )
+            p.sortOrder = idx
+            ctx.insert(p)
+        }
     }
 
     static func registerCustomFieldDef(
