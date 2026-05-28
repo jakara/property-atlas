@@ -12,6 +12,9 @@ iPad-first iOS 17+ app for property research in Tianjin. Stack: SwiftUI · MapKi
 - Implementation plan: `docs/superpowers/plans/2026-05-20-tianjin-house-app.md`
 - Studio spec: `docs/superpowers/specs/2026-05-26-studio-mode-design.md`
 - Studio plan: `docs/superpowers/plans/2026-05-26-studio-mode.md`
+- 新方向 spec (2026-05-28 重定位): `docs/superpowers/specs/2026-05-28-generic-map-tool-design.md`
+- 实施计划 P1 (已完成): `docs/superpowers/plans/2026-05-28-p1-data-model-migration.md`
+- P2-P5 计划: 待写
 
 ## 拆分文档 (`docs/claude/`) — 按需读
 
@@ -49,6 +52,12 @@ Never use `HSplitView` or `HStack` to divide map and drawer.
 | `loc_*` | App settings | SwiftData local only |
 
 Never sync `pub_*` or `loc_*` to CloudKit.
+
+> **P1 (2026-05-28) 完成后**: pub_/usr_/loc_ 分层作废. 全部新 @Model 走
+> CloudKit private (Mac Catalyst 暂 .none, P5 切). 旧 pub_* 类已加
+> `@available(*, deprecated)` 标记, 由 `LegacyMigrator` 一次性消化
+> 到新 entity, P5 删除文件. usr_* 类 (PropertyMark/Visit/...) 当前
+> 保留不动, 后续 plan 决定去留.
 
 ### School district logic
 
