@@ -25,6 +25,7 @@ enum LegacyMigrator {
         try migrateSchools(dataset: dataset, in: ctx)
         try migrateCompounds(dataset: dataset, in: ctx)
         try migrateEdges(dataset: dataset, in: ctx)
+        try seedEnumOptions(dataset: dataset, in: ctx)
         try ctx.save()
     }
 
@@ -394,6 +395,32 @@ enum LegacyMigrator {
                 )
                 e.note = g.name
                 ctx.insert(e)
+            }
+        }
+    }
+
+    // MARK: stage 6 — EnumOption seeds
+
+    private static func seedEnumOptions(dataset: Dataset, in ctx: ModelContext) throws {
+        let seeds: [(scope: String, labels: [String])] = [
+            ("school.category", ["小学", "初中", "九年一贯", "十二年制", "幼儿园", "职业"]),
+            ("school.grade", ["重点", "区重点", "普通"]),
+            ("school.form", ["普通", "九年一贯", "十二年制"]),
+            ("compound.finishType", ["毛坯", "精装", "毛坯/精装"]),
+            ("compound.deliveryTime", ["现房", "期房"]),
+            ("poi.category", ["地铁站", "商场", "医院", "办事处", "学区办", "公交站", "景点"]),
+            ("area.category", ["行政区", "片区", "商圈", "管辖区"]),
+            ("edge.label", ["对口小学", "片内中学", "周边", "集团成员", "集团领办", "管辖", "属于"]),
+        ]
+        for (scope, labels) in seeds {
+            for (idx, label) in labels.enumerated() {
+                let opt = EnumOption(
+                    datasetId: dataset.id,
+                    scope: scope,
+                    label: label,
+                    sortOrder: idx
+                )
+                ctx.insert(opt)
             }
         }
     }

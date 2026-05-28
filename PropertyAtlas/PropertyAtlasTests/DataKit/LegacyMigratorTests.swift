@@ -211,4 +211,23 @@ struct LegacyMigratorTests {
         #expect(pool.first?.toType == "school")
         #expect(pool.first?.toId == middle.id)
     }
+
+    @Test func migrateSeedsDefaultEnumOptions() throws {
+        let container = try TestContainer.makeInMemory(for: ModelSchema.allTypes)
+        let ctx = ModelContext(container)
+        let lc = LegacyCompound(name: "x", district: "和平区", latitude: 39.1, longitude: 117.2)
+        ctx.insert(lc)
+        try ctx.save()
+        try LegacyMigrator.run(in: ctx)
+        let enums = try ctx.fetch(FetchDescriptor<EnumOption>())
+        let scopes = Set(enums.map(\.scope))
+        #expect(scopes.contains("school.category"))
+        #expect(scopes.contains("school.grade"))
+        #expect(scopes.contains("school.form"))
+        #expect(scopes.contains("edge.label"))
+        #expect(scopes.contains("area.category"))
+        let cat = enums.filter { $0.scope == "school.category" }.map(\.label)
+        #expect(cat.contains("小学"))
+        #expect(cat.contains("初中"))
+    }
 }
