@@ -2,6 +2,7 @@ import CoreLocation
 import Foundation
 import SwiftData
 
+@available(*, deprecated, message: "P1 migrated to Models/Entities/Area.swift. Will be removed in P5.")
 @Model
 final class LegacySchoolZone {
     var id: UUID = UUID()

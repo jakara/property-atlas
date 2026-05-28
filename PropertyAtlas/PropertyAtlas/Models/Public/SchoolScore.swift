@@ -1,6 +1,7 @@
 import Foundation
 import SwiftData
 
+@available(*, deprecated, message: "P1 removed; policy-sensitive, no replacement. Will be removed in P5.")
 @Model final class SchoolScore {
     var id: UUID = UUID()
     var schoolId: UUID = UUID()

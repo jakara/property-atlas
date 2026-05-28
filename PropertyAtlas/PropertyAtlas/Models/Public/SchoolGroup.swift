@@ -2,6 +2,7 @@ import Foundation
 import SwiftData
 
 /// 32 集团办学关系 (groups.json)
+@available(*, deprecated, message: "P1 replaced by Edge entities. Will be removed in P5.")
 @Model
 final class SchoolGroup {
     var id: UUID = UUID()

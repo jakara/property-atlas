@@ -2,6 +2,7 @@ import Foundation
 import SwiftData
 
 /// 174 楼盘→学校匹配 (compound_school_match.json)
+@available(*, deprecated, message: "P1 replaced by Edge entities. Will be removed in P5.")
 @Model
 final class CompoundSchoolMatch {
     var id: UUID = UUID() // 自生 (compound_id md5)

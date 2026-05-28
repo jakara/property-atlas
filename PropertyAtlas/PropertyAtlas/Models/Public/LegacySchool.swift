@@ -1,6 +1,7 @@
 import Foundation
 import SwiftData
 
+@available(*, deprecated, message: "P1 migrated to Models/Entities/School.swift. Will be removed in P5.")
 @Model
 final class LegacySchool {
     var id: UUID = UUID()

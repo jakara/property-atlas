@@ -1,6 +1,7 @@
 import Foundation
 import SwiftData
 
+@available(*, deprecated, message: "P1 migrated to Models/Media/Document.swift. Will be removed in P5.")
 @Model final class LegacyAdmissionDoc {
     var id: UUID = UUID()
     var title: String = ""

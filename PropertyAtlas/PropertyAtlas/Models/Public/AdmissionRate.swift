@@ -2,6 +2,7 @@ import Foundation
 import SwiftData
 
 /// 19 区中考录取率 (admission_rates.json) — 顶层 sensitive=true
+@available(*, deprecated, message: "P1 removed; policy-sensitive, no replacement. Will be removed in P5.")
 @Model
 final class AdmissionRate {
     var id: UUID = UUID() // 自生 (district+year md5)

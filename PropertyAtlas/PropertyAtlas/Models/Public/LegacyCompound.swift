@@ -2,6 +2,7 @@ import CoreLocation
 import Foundation
 import SwiftData
 
+@available(*, deprecated, message: "P1 migrated to Models/Entities/Compound.swift. Will be removed in P5.")
 @Model
 final class LegacyCompound {
     var id: UUID = UUID()

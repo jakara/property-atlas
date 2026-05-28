@@ -1,6 +1,7 @@
 import Foundation
 import SwiftData
 
+@available(*, deprecated, message: "P1 migrated to Models/Core/Tag.swift. Will be removed in P5.")
 @Model final class BuiltinTag {
     var id: UUID = UUID()
     var category: String = ""

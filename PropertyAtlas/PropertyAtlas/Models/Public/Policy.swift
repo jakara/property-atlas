@@ -2,6 +2,7 @@ import Foundation
 import SwiftData
 
 /// 25 政策 (policies.json) — 落户/入学/转学/小升初/中考/高考
+@available(*, deprecated, message: "P1 removed; policy-sensitive, no replacement. Will be removed in P5.")
 @Model
 final class Policy {
     var id: UUID = UUID()
