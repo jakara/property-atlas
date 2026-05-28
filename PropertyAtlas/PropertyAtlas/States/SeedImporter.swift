@@ -241,7 +241,7 @@ enum SeedImporter {
             // JSON 无 lat/lon, 默认值
             let lat = (item["latitude"] as? Double) ?? (item["lat"] as? Double) ?? 39.1
             let lon = (item["longitude"] as? Double) ?? (item["lon"] as? Double) ?? 117.2
-            let c = Compound(
+            let c = LegacyCompound(
                 id: uuid(from: seedId),
                 name: name,
                 district: district,

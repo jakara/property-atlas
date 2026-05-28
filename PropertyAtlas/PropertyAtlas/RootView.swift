@@ -151,7 +151,7 @@ struct StudioRootView: View {
         do {
             try modelContext.delete(model: SchoolZone.self)
             try modelContext.delete(model: School.self)
-            try modelContext.delete(model: Compound.self)
+            try modelContext.delete(model: LegacyCompound.self)
             try modelContext.save()
             try SeedImporter.runIfNeeded(into: modelContext)
             print("✓ 热更新完成: \(schools.count) schools, \(zones.count) zones")

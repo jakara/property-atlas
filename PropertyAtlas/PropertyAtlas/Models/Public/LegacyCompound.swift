@@ -3,7 +3,7 @@ import Foundation
 import SwiftData
 
 @Model
-final class Compound {
+final class LegacyCompound {
     var id: UUID = UUID()
     var amapPoiId: String?
     var name: String = ""
