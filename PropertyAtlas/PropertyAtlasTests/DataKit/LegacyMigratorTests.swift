@@ -66,6 +66,46 @@ struct LegacyMigratorTests {
         #expect(defs.contains { $0.key == "isMarketKey" })
     }
 
+    @Test func migrateConvertsLegacyCompoundsToNewCompounds() throws {
+        let container = try TestContainer.makeInMemory(for: ModelSchema.allTypes)
+        let ctx = ModelContext(container)
+        let lc = LegacyCompound(name: "中海西派国印", district: "河北区", latitude: 39.155, longitude: 117.190)
+        lc.buildYear = 2022
+        lc.developer = "中海"
+        lc.propertyMgmt = "中海物业"
+        lc.propertyFeeCents = 580
+        lc.finishType = "毛坯/精装"
+        lc.deliveryTime = "现房"
+        lc.isNewHouse = true
+        lc.availableUnits = "10-50"
+        lc.areaSegments = "105,125,洋房133停售"
+        lc.priceSegments = "一期现房105精装400万左右"
+        lc.sourceCode = "YH-XLSX"
+        lc.amapPoiId = "B0FFK1H7MQ"
+        lc.greeningRatio = 35.0
+        lc.sensitivePros = "现房, 即买即住"
+        lc.sensitiveCons = "价格高"
+        ctx.insert(lc)
+        try ctx.save()
+        try LegacyMigrator.run(in: ctx)
+        let compounds = try ctx.fetch(FetchDescriptor<Compound>())
+        #expect(compounds.count == 1)
+        let c = try #require(compounds.first)
+        #expect(c.name == "中海西派国印")
+        #expect(c.latitude == 39.155)
+        #expect(c.longitude == 117.190)
+        #expect(c.buildYear == 2022)
+        #expect(c.propertyFeeCents == 580)
+        #expect(c.finishType == "毛坯/精装")
+        #expect(c.isNewHouse == true)
+        #expect(c.privateNotes?.contains("现房") == true)
+        let defs = try ctx.fetch(FetchDescriptor<CustomFieldDef>())
+            .filter { $0.entityType == "compound" }
+        #expect(defs.contains { $0.key == "sourceCode" })
+        #expect(defs.contains { $0.key == "amapPoiId" })
+        #expect(defs.contains { $0.key == "greeningRatio" })
+    }
+
     @Test func migrateConvertsSchoolZonesToAreas() throws {
         let container = try TestContainer.makeInMemory(for: ModelSchema.allTypes)
         let ctx = ModelContext(container)
