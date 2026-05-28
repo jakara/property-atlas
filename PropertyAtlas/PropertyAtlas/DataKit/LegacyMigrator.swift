@@ -26,6 +26,7 @@ enum LegacyMigrator {
         try migrateCompounds(dataset: dataset, in: ctx)
         try migrateEdges(dataset: dataset, in: ctx)
         try seedEnumOptions(dataset: dataset, in: ctx)
+        try seedFilterFields(dataset: dataset, in: ctx)
         try ctx.save()
     }
 
@@ -421,6 +422,41 @@ enum LegacyMigrator {
                     sortOrder: idx
                 )
                 ctx.insert(opt)
+            }
+        }
+    }
+
+    // MARK: stage 7 — FilterFieldConfig seeds
+
+    private static func seedFilterFields(dataset: Dataset, in ctx: ModelContext) throws {
+        let seeds: [(entity: String, fields: [(key: String, label: String, source: String)])] = [
+            ("compound", [
+                ("finishType", "精装类型", "base"),
+                ("isNewHouse", "新房/二手", "base"),
+            ]),
+            ("school", [
+                ("category", "阶段", "base"),
+                ("grade", "等级", "base"),
+                ("form", "学制", "base"),
+            ]),
+            ("poi", [
+                ("category", "POI 类型", "base"),
+            ]),
+            ("area", [
+                ("category", "区域类型", "base"),
+            ]),
+        ]
+        for (entity, fields) in seeds {
+            for (idx, f) in fields.enumerated() {
+                let c = FilterFieldConfig(
+                    datasetId: dataset.id,
+                    entityType: entity,
+                    fieldKey: f.key,
+                    fieldSource: f.source,
+                    label: f.label,
+                    slot: idx + 1
+                )
+                ctx.insert(c)
             }
         }
     }

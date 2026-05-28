@@ -230,4 +230,22 @@ struct LegacyMigratorTests {
         #expect(cat.contains("小学"))
         #expect(cat.contains("初中"))
     }
+
+    @Test func migrateSeedsDefaultFilterFieldConfigs() throws {
+        let container = try TestContainer.makeInMemory(for: ModelSchema.allTypes)
+        let ctx = ModelContext(container)
+        let lc = LegacyCompound(name: "x", district: "和平区", latitude: 39.1, longitude: 117.2)
+        ctx.insert(lc)
+        try ctx.save()
+        try LegacyMigrator.run(in: ctx)
+        let configs = try ctx.fetch(FetchDescriptor<FilterFieldConfig>())
+        let schoolSlots = configs.filter { $0.entityType == "school" }
+            .sorted { $0.slot < $1.slot }
+            .map(\.fieldKey)
+        #expect(schoolSlots == ["category", "grade", "form"])
+        let compoundSlots = configs.filter { $0.entityType == "compound" }
+            .sorted { $0.slot < $1.slot }
+            .map(\.fieldKey)
+        #expect(compoundSlots == ["finishType", "isNewHouse"])
+    }
 }
