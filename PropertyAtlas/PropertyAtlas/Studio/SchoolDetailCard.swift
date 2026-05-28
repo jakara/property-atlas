@@ -7,7 +7,7 @@ struct SchoolDetailCard: View {
     let onClose: () -> Void
 
     @Environment(\.modelContext) private var context
-    @State private var school: LegacySchool?
+    @State private var school: School?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -18,37 +18,37 @@ struct SchoolDetailCard: View {
                     VStack(alignment: .leading, spacing: 14) {
                         group("基本", rows: [
                             ("name", s.name),
-                            ("district", s.district),
-                            ("type", s.type),
-                            ("zone_name", s.zoneName),
+                            ("district", s.legacyDistrict.isEmpty ? nil : s.legacyDistrict),
+                            ("type", s.legacyType.isEmpty ? nil : s.legacyType),
+                            ("zone_name", nil),
                             ("address", s.address),
                             ("phone", s.phone),
-                            ("campuses", s.campuses),
-                            ("isPublic", String(s.isPublicSchool)),
-                            ("isJiunian", String(s.isJiunian)),
-                            ("is12Year", String(s.is12Year)),
+                            ("campuses", nil),
+                            ("isPublic", nil),
+                            ("isJiunian", String(s.legacyIsJiunian)),
+                            ("is12Year", String(s.legacyIs12Year)),
                         ])
                         group("招生", rows: [
-                            ("zoneId", s.zoneId?.uuidString),
-                            ("tuition", s.tuition),
+                            ("zoneId", s.legacyZoneId?.uuidString),
+                            ("tuition", nil),
                             ("communitiesText", s.communitiesText),
                         ])
                         group("市场标签", rows: [
-                            ("isMarketFive", String(s.isMarketFive)),
-                            ("isMarketKey", String(s.isMarketKey)),
+                            ("isMarketFive", nil),
+                            ("isMarketKey", nil),
                         ])
                         group("梯队 (粗 3 档)", rows: [
-                            ("tier", s.tier),
+                            ("tier", s.legacyTier),
                         ])
                         group("地理坐标", rows: [
                             ("lat", s.lat.map { String(format: "%.6f", $0) }),
                             ("lon", s.lon.map { String(format: "%.6f", $0) }),
-                            ("geocodeSource", s.geocodeSource),
-                            ("geocodeConfidence", s.geocodeConfidence),
+                            ("geocodeSource", nil),
+                            ("geocodeConfidence", nil),
                         ])
                         group("标识", rows: [
                             ("id", s.id.uuidString),
-                            ("sourceCode", s.sourceCode),
+                            ("sourceCode", nil),
                         ])
                         sensitiveGroup(s)
                         if let n = s.notes, !n.isEmpty {
@@ -72,7 +72,7 @@ struct SchoolDetailCard: View {
 
     private func fetchSchool() async {
         let id = schoolId
-        var fd = FetchDescriptor<LegacySchool>(predicate: #Predicate { $0.id == id })
+        var fd = FetchDescriptor<School>(predicate: #Predicate { $0.id == id })
         fd.fetchLimit = 1
         school = try? context.fetch(fd).first
     }
@@ -82,7 +82,7 @@ struct SchoolDetailCard: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text(school?.name ?? "—")
                     .font(.system(size: 14, weight: .bold))
-                Text("\(school?.district ?? "") · \(school?.type ?? "")")
+                Text("\(school?.legacyDistrict ?? "") · \(school?.legacyType ?? "")")
                     .font(.system(size: 11)).foregroundStyle(.secondary)
             }
             Spacer()
@@ -110,18 +110,18 @@ struct SchoolDetailCard: View {
         }
     }
 
-    private func sensitiveGroup(_ s: LegacySchool) -> some View {
+    private func sensitiveGroup(_ s: School) -> some View {
         let rows: [(String, String?)] = [
-            ("tier_letter", s.sensitiveTierLetter),
-            ("tier_label", s.sensitiveTierLabel),
-            ("rank_overall", s.sensitiveRankOverall.map(String.init)),
-            ("top_percentile", s.sensitiveTopPercentile.map(String.init)),
-            ("tier_rank", s.sensitiveTierRank.map(String.init)),
-            ("comment", s.sensitiveComment),
-            ("data_origin", s.sensitiveDataOrigin),
-            ("source", s.sensitiveSource),
-            ("source_url", s.sensitiveSourceUrl),
-            ("note", s.sensitiveNote),
+            ("tier_letter", nil),
+            ("tier_label", nil),
+            ("rank_overall", nil),
+            ("top_percentile", nil),
+            ("tier_rank", nil),
+            ("comment", nil),
+            ("data_origin", nil),
+            ("source", nil),
+            ("source_url", nil),
+            ("note", nil),
         ]
         let visible = rows.filter { $0.1 != nil && !($0.1 ?? "").isEmpty }
         return Group {

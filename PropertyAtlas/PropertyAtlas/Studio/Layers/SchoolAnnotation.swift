@@ -16,20 +16,20 @@ final class SchoolAnnotation: NSObject, MKAnnotation {
     @objc dynamic var coordinate: CLLocationCoordinate2D
 
     init(
-        school: LegacySchool,
+        school: School,
         zoneName: String?,
         zoneColorHex: String? = nil,
         showName: Bool = true
     ) {
         self.schoolId = school.id
         self.name = school.name
-        self.level = school.type
-        self.tier = school.tier
+        self.level = school.legacyType
+        self.tier = school.legacyTier
         self.shortLabel = zoneName.map(ZoneShortLabel.shortLabel(for:)) ?? ""
         self.showName = showName
         self.zoneName = zoneName
         self.zoneColorHex = zoneColorHex
-        self.isJiunian = school.isJiunian
+        self.isJiunian = school.legacyIsJiunian
         self.coordinate = CLLocationCoordinate2D(
             latitude: school.lat ?? 0,
             longitude: school.lon ?? 0

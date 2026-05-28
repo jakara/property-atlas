@@ -57,8 +57,8 @@ struct ExploreRootView: View {
 #if targetEnvironment(macCatalyst)
 struct StudioRootView: View {
     @Environment(\.modelContext) private var modelContext
-    @Query private var zones: [LegacySchoolZone]
-    @Query private var schools: [LegacySchool]
+    @Query private var zones: [Area]
+    @Query private var schools: [School]
 
     @State private var title: String = "和平区学区分布图"
     @State private var subtitle: String = "2026 招生季"
@@ -98,9 +98,9 @@ struct StudioRootView: View {
             ? filteredSchools
             .filter { $0.lat != nil && $0.lon != nil }
             .map { school -> MKAnnotation in
-                let zName = school.zoneId.flatMap { zoneNameById[$0] }
+                let zName = school.legacyZoneId.flatMap { zoneNameById[$0] }
                 let displayName: String? = zName.map {
-                    ZoneShortLabel.displayName(district: school.district, zoneName: $0)
+                    ZoneShortLabel.displayName(district: school.legacyDistrict, zoneName: $0)
                 }
                 let hex = displayName.flatMap { zoneColorByName[$0] }
                 return SchoolAnnotation(
@@ -149,9 +149,9 @@ struct StudioRootView: View {
 
     private func reloadSeeds() {
         do {
-            try modelContext.delete(model: LegacySchoolZone.self)
-            try modelContext.delete(model: LegacySchool.self)
-            try modelContext.delete(model: LegacyCompound.self)
+            try modelContext.delete(model: Area.self)
+            try modelContext.delete(model: School.self)
+            try modelContext.delete(model: Compound.self)
             try modelContext.save()
             try SeedImporter.runIfNeeded(into: modelContext)
             print("✓ 热更新完成: \(schools.count) schools, \(zones.count) zones")
@@ -161,7 +161,7 @@ struct StudioRootView: View {
     }
 
     private func computeVisibleZones(
-        schools: [LegacySchool],
+        schools: [School],
         zoneNameById: [UUID: String],
         region: MKCoordinateRegion?
     ) -> [StudioLegend.VisibleZone] {
@@ -174,7 +174,7 @@ struct StudioRootView: View {
         // 1. 全 zone 统计 (不限 viewport): zoneId → school count (已过 filter)
         var countByZoneId: [UUID: Int] = [:]
         for s in schools {
-            guard let zid = s.zoneId else { continue }
+            guard let zid = s.legacyZoneId else { continue }
             countByZoneId[zid, default: 0] += 1
         }
 
@@ -184,12 +184,12 @@ struct StudioRootView: View {
         for s in schools {
             guard let lat = s.lat, let lon = s.lon else { continue }
             if lat < minLat || lat > maxLat || lon < minLon || lon > maxLon { continue }
-            guard let zid = s.zoneId,
+            guard let zid = s.legacyZoneId,
                   let zname = zoneNameById[zid],
                   !zname.isEmpty,
                   !zname.contains("行政区域")
             else { continue }
-            let display = ZoneShortLabel.displayName(district: s.district, zoneName: zname)
+            let display = ZoneShortLabel.displayName(district: s.legacyDistrict, zoneName: zname)
             if seenDisplay.insert(display).inserted {
                 entries.append((display, zid))
             }

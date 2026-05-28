@@ -1,3 +1,4 @@
+import CoreLocation
 import Foundation
 import SwiftData
 
@@ -41,5 +42,30 @@ final class Area {
         self.name = name
         self.geometryKind = geometryKind
         self.geometryJSON = geometryJSON
+    }
+
+    // MARK: - Raster geometry decoding (mirrors LegacySchoolZone.decodeRaster)
+
+    struct RasterGeometry {
+        let image: String
+        let corners: [CLLocationCoordinate2D]
+    }
+
+    static func decodeRaster(_ json: String) throws -> RasterGeometry {
+        guard let data = json.data(using: .utf8) else {
+            throw GeoJSONHelper.GeoJSONError.invalidUTF8
+        }
+        let obj = try JSONSerialization.jsonObject(with: data)
+        guard let dict = obj as? [String: Any],
+              let image = dict["image"] as? String,
+              let corners = dict["corners"] as? [[Double]],
+              corners.count == 4
+        else {
+            throw GeoJSONHelper.GeoJSONError.invalidStructure
+        }
+        return RasterGeometry(
+            image: image,
+            corners: corners.map { CLLocationCoordinate2D(latitude: $0[0], longitude: $0[1]) }
+        )
     }
 }
