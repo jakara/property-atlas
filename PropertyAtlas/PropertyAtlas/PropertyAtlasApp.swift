@@ -18,7 +18,7 @@ struct PropertyAtlasApp: App {
                 SchoolZone.self, Compound.self, School.self,
                 SchoolGroup.self, Policy.self, AdmissionRate.self, CompoundSchoolMatch.self,
                 SchoolScore.self, AdmissionDoc.self, BuiltinTag.self,
-                PropertyMark.self, Visit.self, Photo.self,
+                PropertyMark.self, Visit.self, VisitPhoto.self,
                 TagExtension.self, VisitTag.self, UserArea.self, ShareSubmission.self,
             ])
             #if targetEnvironment(macCatalyst)

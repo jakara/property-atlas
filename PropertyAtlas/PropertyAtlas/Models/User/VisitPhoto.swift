@@ -1,7 +1,8 @@
+// PropertyAtlas/PropertyAtlas/Models/User/VisitPhoto.swift
 import Foundation
 import SwiftData
 
-@Model final class Photo {
+@Model final class VisitPhoto {
     var id: UUID = UUID()
     var visitId: UUID?
     var compoundId: UUID?
