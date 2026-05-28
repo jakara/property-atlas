@@ -1,5 +1,6 @@
 import CoreLocation
 import Testing
+@testable import PropertyAtlas
 
 struct GeoJSONTests {
     @Test func polygonCoordinatesRoundtrip() throws {

@@ -31,7 +31,42 @@
         },
         "areas_text": { "type": ["string", "null"] },
         "note":       { "type": ["string", "null"] },
+        "geometry_stage": { "type": "string", "enum": ["raster", "hull", "geojson"] },
+        "geometry":       { "oneOf": [ { "$ref": "#/$defs/RasterGeometry" }, { "$ref": "#/$defs/GeoJSONPolygon" } ] },
         "sensitive":  { "$ref": "#/$defs/ZoneSensitive" }
+      }
+    },
+    "RasterGeometry": {
+      "type": "object",
+      "required": ["image", "corners"],
+      "additionalProperties": false,
+      "properties": {
+        "image":   { "type": "string", "pattern": ".+\\.png$" },
+        "corners": {
+          "type": "array", "minItems": 4, "maxItems": 4,
+          "items": {
+            "type": "array", "minItems": 2, "maxItems": 2,
+            "items": { "type": "number" }
+          }
+        }
+      }
+    },
+    "GeoJSONPolygon": {
+      "type": "object",
+      "required": ["type", "coordinates"],
+      "additionalProperties": false,
+      "properties": {
+        "type":        { "const": "Polygon" },
+        "coordinates": {
+          "type": "array", "minItems": 1,
+          "items": {
+            "type": "array", "minItems": 4,
+            "items": {
+              "type": "array", "minItems": 2, "maxItems": 2,
+              "items": { "type": "number" }
+            }
+          }
+        }
       }
     },
     "ZoneSensitive": {

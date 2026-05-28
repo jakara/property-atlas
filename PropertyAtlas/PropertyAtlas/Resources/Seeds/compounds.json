@@ -1,0 +1,4013 @@
+{
+  "version": "2026.05.25",
+  "count": 174,
+  "items": [
+    {
+      "id": "cmp_38fc539cb3",
+      "name": "中国铁建西派国印",
+      "district_group": "市内六区",
+      "district": "河北区",
+      "available_units": {
+        "bucket": "10-50",
+        "raw": "10-50套"
+      },
+      "area_segments": "高层,105,125,洋房133停售",
+      "price_segments": "一期现房105精装400万左右\n125精装500万左右\n二期\n洋房133平米，停售",
+      "finish_type": "毛坯/精装",
+      "delivery_time": "现房",
+      "source": "YH-XLSX",
+      "source_row": 1,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "现房，即买即住即落户，河北区昆一学校，书包房",
+        "cons": "价格高，可选性低，噪音问题。地铁远",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_6d11b80e7e",
+      "name": "启航精英公寓",
+      "district_group": "市内六区",
+      "district": "南开区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "高层50-70平\n高层70-82平\n高层85平",
+      "price_segments": "高层50-70平：203万-250万\n高层70-82平：246—290万\n高层85平：280-290万",
+      "finish_type": "精装",
+      "delivery_time": "精装现房",
+      "source": "YH-XLSX",
+      "source_row": 17,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "现房可选，便宜",
+        "cons": "公寓，年限问题，流通性问题",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_983ef3004e",
+      "name": "金汇云璟",
+      "district_group": "环城四区",
+      "district": "北辰区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "小高：87、99平；洋房97、128平",
+      "price_segments": "小高125-165万，洋房157-250万",
+      "finish_type": "精装",
+      "delivery_time": "2025-12-31",
+      "source": "YH-XLSX",
+      "source_row": 24,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "价格合适，准现房，产品可选",
+        "cons": "开发商之前为金侨，出现过资金问题，项目品质不一定保障",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_aafad0408b",
+      "name": "天骥智谷",
+      "district_group": "环城四区",
+      "district": "东丽区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "高层：83/92/113㎡",
+      "price_segments": "83㎡：58-60万\n92㎡：65-70万\n113㎡：71-80万",
+      "finish_type": "毛坯",
+      "delivery_time": "现房",
+      "source": "YH-XLSX",
+      "source_row": 28,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "东丽湖环境不错，价格便宜，可选",
+        "cons": "四大湖众所周知，卖了N年还有房，配套一般",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_f58308291c",
+      "name": "保盈家园",
+      "district_group": "市内六区",
+      "district": "南开区",
+      "available_units": {
+        "bucket": "10-50",
+        "raw": "10-50套"
+      },
+      "area_segments": "洋房91㎡、123㎡",
+      "price_segments": "91平米的300万起\n123平米的453万起",
+      "finish_type": "毛坯",
+      "delivery_time": "现房",
+      "source": "YH-XLSX",
+      "source_row": 118,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "价格便宜，现房",
+        "cons": "还迁房品质，户型一般",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_18a93ddae9",
+      "name": "四季春晓",
+      "district_group": "环城四区",
+      "district": "津南区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "洋房：78-115㎡",
+      "price_segments": "洋房78平126-140万 101平:170-180万 115平:185-195万",
+      "finish_type": "毛坯",
+      "delivery_time": "2025.6.30",
+      "source": "YH-XLSX",
+      "source_row": 36,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "便宜，海教园",
+        "cons": "隔壁颐景园啊，海教园最南侧，阳光城 金科难兄难弟了",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_684efb9f06",
+      "name": "中国铁建公馆189",
+      "district_group": "市内六区",
+      "district": "河北区",
+      "available_units": {
+        "bucket": "10-50",
+        "raw": "10-50套"
+      },
+      "area_segments": "平层53平米/56平米/82平米101平米  loft53平米/56平米/",
+      "price_segments": "平层55平63万起\n平层82平79万起\n平层100平99万起\nloft53平67万起\nloft56平74万起",
+      "finish_type": "精装",
+      "delivery_time": "现房",
+      "source": "YH-XLSX",
+      "source_row": 2,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "户型多，现房。",
+        "cons": "公寓，年限问题，流通性问题",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_19b3dd9ca7",
+      "name": "北宁公元",
+      "district_group": "市内六区",
+      "district": "河北区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "高层/88/97/106/119/130㎡",
+      "price_segments": "88两室中户（210～220万）【剩2层，14层18层，顶层】\n106边户（260万）【剩1/2/顶】\n 97平米 中户（250～264）万(剩余4/14/18/20层）\n119平米  银角（310万）万（剩余6/13/14/18/20/顶）\n130平米  金角（350万）万 可选",
+      "finish_type": "毛坯",
+      "delivery_time": "现房",
+      "source": "YH-XLSX",
+      "source_row": 3,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "价格便宜，地铁近，现房",
+        "cons": "可选性低，产品差，之前天房项目",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_4b6e6c7c11",
+      "name": "中海·城市广场·钻石湾",
+      "district_group": "市内六区",
+      "district": "河东区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "跃层：310平米，公寓60平米",
+      "price_segments": "跃层310平米：1400万 公寓60平米：100-180万",
+      "finish_type": "精装/毛坯",
+      "delivery_time": "现房/2023年6月底",
+      "source": "YH-XLSX",
+      "source_row": 4,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "现房可选，海河景观资源，大户型",
+        "cons": "公寓，年限问题，流通性问题",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_693037ebcb",
+      "name": "嘉里·雅颂台",
+      "district_group": "市内六区",
+      "district": "河东区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "高层：120/170/180/208平米",
+      "price_segments": "高层120平米：430-450万 高层170平米630-640万 高层180平米：730-740万 高层208平米880-1100万",
+      "finish_type": "精装",
+      "delivery_time": "2025年交付",
+      "source": "YH-XLSX",
+      "source_row": 5,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "海河一线景观，周边配套成熟，产品不错，改善",
+        "cons": "适用于南方风格，改善为主，价格高",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_d2a45107bb",
+      "name": "城投万欣城",
+      "district_group": "市内六区",
+      "district": "河东区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "高层85/110/120/89/117㎡洋房132/143㎡",
+      "price_segments": "荷园高层110：290万（仅余顶楼）\n荷园高层120：330-350万（团装）\n梅园高层89：250-270万（团装）\n梅园高层117：350-370万（团装）\n梅园洋房132：460-500万\n梅园洋房143：520-550万",
+      "finish_type": "毛坯",
+      "delivery_time": "荷园2024年12月，梅园25年8月交房",
+      "source": "YH-XLSX",
+      "source_row": 6,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "可选性多，位置好，价格适中",
+        "cons": "梅兰竹菊风荷，小区很多，大部分都是四栋楼，绿化问题，具体细分到自己小区。",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_4d9ed2dd80",
+      "name": "雍祥园",
+      "district_group": "市内六区",
+      "district": "河东区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "高层：84/94/110/115/119/122/126/146㎡",
+      "price_segments": "高层：84平米：225万左右\n94平米：235万左右\n110平米：280万左右\n115平米：270-290万\n119平米：245-255万\n122平米：265-280\n126平米：255-265万\n147平米：300-320万",
+      "finish_type": "毛坯",
+      "delivery_time": "现房",
+      "source": "YH-XLSX",
+      "source_row": 7,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "现房，可选，交付品质不错",
+        "cons": "产品过时，户型设计差，大高层，周边配套一般",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_fd17ee9648",
+      "name": "农垦含章雅著",
+      "district_group": "市内六区",
+      "district": "河东区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "高层：85/95/105/119/131平米 洋房：139/145平米",
+      "price_segments": "高层85平米:258万 高层95平米：290-340万 高层105平米：330-360万 高层119平米：385-440万 高层131平米：445-470万 洋房139平米：560万 洋房145平米：720-750万",
+      "finish_type": "毛坯",
+      "delivery_time": "2023-09-30",
+      "source": "YH-XLSX",
+      "source_row": 8,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "现房可选，户型多，园林不错",
+        "cons": "户型一般，中环线旁，快速路旁，有一定噪音，学校一般",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_97f5424a3f",
+      "name": "格调榴园",
+      "district_group": "市内六区",
+      "district": "河东区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "高层：90/99/115/120/128/170㎡：洋房：121/131/140",
+      "price_segments": "高层90平米：230-260万\n高层99平米：250-280万\n高层115平米：305-330万\n高层120平米：316-325万\n高层128平米：332-370万\n高层170平米：461-482万\n洋房121平米：370-430万\n洋房131平米：430-460万\n洋房140平米：463-496万",
+      "finish_type": "毛坯/精装",
+      "delivery_time": "现房",
+      "source": "YH-XLSX",
+      "source_row": 9,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "可选性多，园林好，地铁近",
+        "cons": "价格高，河东区边缘位置，格调卖到现房",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_8c688ec341",
+      "name": "创意之城蘭园",
+      "district_group": "市内六区",
+      "district": "河西区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "小号高80m²89m²  洋房113m²",
+      "price_segments": "小高265-320万，洋房450-600万",
+      "finish_type": "毛坯",
+      "delivery_time": "2025-10-31",
+      "source": "YH-XLSX",
+      "source_row": 10,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "产品好，园林绿化不错，价格合适",
+        "cons": "柳林刚起步，周期会长，需要等",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_9bfa3aba50",
+      "name": "中交融正",
+      "district_group": "市内六区",
+      "district": "河西区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "高层88平米/108平米",
+      "price_segments": "88平283-290万，108平360-380万\n工抵房限量",
+      "finish_type": "毛坯",
+      "delivery_time": "现房",
+      "source": "YH-XLSX",
+      "source_row": 11,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "现房，即买即住转学可以看",
+        "cons": "四栋楼，小海地，",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_8fc2a2b4fa",
+      "name": "中交融成",
+      "district_group": "市内六区",
+      "district": "河西区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "小高层89.105.140㎡",
+      "price_segments": "小高 290-600万",
+      "finish_type": "毛坯",
+      "delivery_time": "2024.5（4月8日下房本）",
+      "source": "YH-XLSX",
+      "source_row": 12,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "现房，位置比融正好，",
+        "cons": "价格不便宜，周边空地多",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_ef580c4327",
+      "name": "华宇·御熹臺",
+      "district_group": "市内六区",
+      "district": "河西区",
+      "available_units": {
+        "bucket": "10-50",
+        "raw": "10-50套"
+      },
+      "area_segments": "叠拼：上叠143平，叠下143平",
+      "price_segments": "上叠暂时无房，下叠：660-700万\n下叠特惠房一口价663万",
+      "finish_type": "毛坯",
+      "delivery_time": "现房",
+      "source": "YH-XLSX",
+      "source_row": 13,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "现房，别墅产品",
+        "cons": "小海地，周边城市界面一般，可选性低",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_5cafc79008",
+      "name": "中海 · 左岸源境",
+      "district_group": "市内六区",
+      "district": "河西区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "高层：82.89㎡洋房：91.105.125㎡",
+      "price_segments": "高层：270万起。洋房：350万起，商业售罄",
+      "finish_type": "毛坯",
+      "delivery_time": "2024-04-01",
+      "source": "YH-XLSX",
+      "source_row": 14,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "现房，即买即住",
+        "cons": "可选性低，",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_f658211398",
+      "name": "中海学府源境",
+      "district_group": "市内六区",
+      "district": "河西区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "小高层：85、105㎡洋房：91.108.126㎡",
+      "price_segments": "126户型520-620万，108户型435-520万，91户型365-390万",
+      "finish_type": "毛坯",
+      "delivery_time": "2025-10-01",
+      "source": "YH-XLSX",
+      "source_row": 15,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "户型不错，价格合适",
+        "cons": "位置河西最南部，新梅江，",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_8a153f763c",
+      "name": "联发城投梅江和悦",
+      "district_group": "市内六区",
+      "district": "河西区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "小高98/116 洋房128/143",
+      "price_segments": "小高98/353-363 小高116/418-430 洋房128/512-538 洋房143/572-601",
+      "finish_type": "毛坯",
+      "delivery_time": "2026-04-01",
+      "source": "YH-XLSX",
+      "source_row": 16,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "户型好，产品力强，",
+        "cons": "联发之前交付小区一般，周边慌，只有自己在这，配套",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_6d11b80e7e",
+      "name": "启航精英公寓",
+      "district_group": "市内六区",
+      "district": "南开区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "高层50-70平\n高层70-82平\n高层85平",
+      "price_segments": "高层50-70平：203万-250万\n高层70-82平：246—290万\n高层85平：280-290万",
+      "finish_type": "精装",
+      "delivery_time": "精装现房",
+      "source": "YH-XLSX",
+      "source_row": 17,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "现房可选，便宜",
+        "cons": "公寓，年限问题，流通性问题",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_976a840d23",
+      "name": "保利云禧",
+      "district_group": "市内六区",
+      "district": "南开区",
+      "available_units": {
+        "bucket": "10-50",
+        "raw": "10-50套"
+      },
+      "area_segments": "高层：88、103㎡洋房：87、106、112、125、128、143㎡",
+      "price_segments": "高层：88㎡360万-370万，\n103㎡：440万左右，\n洋房：106㎡：550-570万，\n112㎡600-640万，\n125/128㎡600-700万，\n143㎡800-850万",
+      "finish_type": "毛坯",
+      "delivery_time": "现房",
+      "source": "YH-XLSX",
+      "source_row": 18,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "现房，保利品质，地铁上盖",
+        "cons": "可选性低。价格贵产品落后",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_e4a1e65640",
+      "name": "金融街融府",
+      "district_group": "市内六区",
+      "district": "南开区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "小高层89-115㎡",
+      "price_segments": "89㎡310-340万，115㎡400-435万",
+      "finish_type": "毛坯",
+      "delivery_time": "2026-06-30",
+      "source": "YH-XLSX",
+      "source_row": 19,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "产品力不错，户型好，地铁上盖3.0",
+        "cons": "楼栋少，题量小，金融街其他项目交付问题。",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_714786ff78",
+      "name": "招商江山玺",
+      "district_group": "市内六区",
+      "district": "南开区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "小高143㎡，高层143、169㎡、189㎡",
+      "price_segments": "143平米小高：660～725万左右 \n143平米高层 ：577～600万左右\n169平米高层：780~865万左右\n189平米高层：950万左右",
+      "finish_type": "精装",
+      "delivery_time": "一期：2024/6/30（1#9#11#）二期：2025/3/31（2#4#）",
+      "source": "YH-XLSX",
+      "source_row": 20,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "产品好，品质不错，现房改善",
+        "cons": "纯大高层，隔壁快速路，天拖相对较差的位置，南开中片",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_1ed6cf2ca4",
+      "name": "金地阅千峯",
+      "district_group": "市内六区",
+      "district": "南开区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "高层171平 洋房160/180平米",
+      "price_segments": "高层171平：900-1000万 洋房172：930-990万 180平:1200-1300万",
+      "finish_type": "精装",
+      "delivery_time": "高层24年底/洋房25年底",
+      "source": "YH-XLSX",
+      "source_row": 21,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "产品好，品质不错，现房改善",
+        "cons": "设计不是最新的了，略有过时，高端产品里面略微差一些，位置核心但是处于万德庄",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_4e9fcf100a",
+      "name": "格调隐翠轩",
+      "district_group": "市内六区",
+      "district": "南开区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "高层：94㎡117㎡128㎡\n小高层：143㎡\n洋房：143㎡",
+      "price_segments": "高层：94㎡370-390万\n117㎡470-490万\n128㎡490万-540万\n小高层：143㎡620-650万\n洋房：143㎡660-720万",
+      "finish_type": "精装",
+      "delivery_time": "2026年年底；2027年年底",
+      "source": "YH-XLSX",
+      "source_row": 22,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "产品好，价格适中，地铁近",
+        "cons": "黄河道老五金城位置 周边周期长，体量大",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_0340c47b5f",
+      "name": "中粮辰悦",
+      "district_group": "环城四区",
+      "district": "北辰区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "公寓43-63；商墅158m²",
+      "price_segments": "公寓35-40万；商墅160-200万",
+      "finish_type": "毛坯",
+      "delivery_time": "现房",
+      "source": "YH-XLSX",
+      "source_row": 23,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "价格便宜，位置核心，产品不错",
+        "cons": "公寓年限问题，居住人群圈层问题，",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_983ef3004e",
+      "name": "金汇云璟",
+      "district_group": "环城四区",
+      "district": "北辰区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "小高：87、99平；洋房97、128平",
+      "price_segments": "小高125-165万，洋房157-250万",
+      "finish_type": "精装",
+      "delivery_time": "2025-12-31",
+      "source": "YH-XLSX",
+      "source_row": 24,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "价格合适，准现房，产品可选",
+        "cons": "开发商之前为金侨，出现过资金问题，项目品质不一定保障",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_8a709d262f",
+      "name": "金地·万悦城",
+      "district_group": "环城四区",
+      "district": "东丽区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "二期小高层：72㎡/77㎡/82㎡/89㎡/100㎡,洋房95㎡/115㎡",
+      "price_segments": "高层：\n72㎡78－84万\n77㎡85－90万\n82㎡90－98万\n89㎡107－115万\n101㎡123-135万\n洋房：\n95㎡135万－145万\n115㎡175－185万",
+      "finish_type": "毛坯",
+      "delivery_time": "高层2025/6/30，洋房2025/9/30",
+      "source": "YH-XLSX",
+      "source_row": 25,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "1.地铁上盖2.人气足，生活氛围好3.价格便宜4.有学校",
+        "cons": "1.板块商品房扎堆，但刚开发，空地依然很多，2.东侧为大荒地距离二殡4.5公里有一部分人介意3.南侧荒地",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_109b4098da",
+      "name": "金隅金玉府",
+      "district_group": "环城四区",
+      "district": "东丽区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "85/92/99/105m²",
+      "price_segments": "高层：\n85㎡：104万-110万\n92㎡：100万-115万\n99㎡：100万-120万\n105㎡：130万-140万",
+      "finish_type": "毛坯",
+      "delivery_time": "现房",
+      "source": "YH-XLSX",
+      "source_row": 26,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "1.地铁上盖2.人气足，生活氛围好3.价格便宜4.有学校",
+        "cons": "位置一般，本地人很少选择，户型差，产品力不行跟不上时代了",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_2f9d46c136",
+      "name": "东方和府",
+      "district_group": "环城四区",
+      "district": "东丽区",
+      "available_units": {
+        "bucket": "10-50",
+        "raw": "10-50套"
+      },
+      "area_segments": "89㎡小高，89、105、119㎡洋房",
+      "price_segments": "小高89平米：187-210万\n洋房89平米：197-210万\n洋房105平米：215-235万\n洋房119平米：260-275万",
+      "finish_type": "毛坯",
+      "delivery_time": "现房",
+      "source": "YH-XLSX",
+      "source_row": 27,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "现房可选，纯洋房，城投第一个项目",
+        "cons": "物业外包，产品力一般，位置比较差",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_aafad0408b",
+      "name": "天骥智谷",
+      "district_group": "环城四区",
+      "district": "东丽区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "高层：83/92/113㎡",
+      "price_segments": "83㎡：58-60万\n92㎡：65-70万\n113㎡：71-80万",
+      "finish_type": "毛坯",
+      "delivery_time": "现房",
+      "source": "YH-XLSX",
+      "source_row": 28,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "东丽湖环境不错，价格便宜，可选",
+        "cons": "四大湖众所周知，卖了N年还有房，配套一般",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_061dd5506c",
+      "name": "金融街·听湖小镇",
+      "district_group": "环城四区",
+      "district": "东丽区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "洋房：82/115/136㎡ \n别墅：128/161/195㎡",
+      "price_segments": "洋房82㎡：70万起；\n洋房115㎡：85万起；\n洋房136㎡：96万起；\n别墅128㎡：138万起；\n别墅161平米280万起；\n别墅195㎡：268万起",
+      "finish_type": "毛坯",
+      "delivery_time": "现房",
+      "source": "YH-XLSX",
+      "source_row": 29,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "东丽湖环境不错，价格便宜，可选，亮点小别墅还不错",
+        "cons": "四大湖众所周知，卖了N年还有房，配套一般，",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_d8fc0552d9",
+      "name": "万通金府国际",
+      "district_group": "环城四区",
+      "district": "东丽区",
+      "available_units": {
+        "bucket": "10-50",
+        "raw": "10-50套"
+      },
+      "area_segments": "公寓：70、87、95、120、150",
+      "price_segments": "70平：42万起\n87平：62万左右\n95平：66万左右\n120平：89万左右\n150平：110万左右",
+      "finish_type": "精装",
+      "delivery_time": "现房",
+      "source": "YH-XLSX",
+      "source_row": 30,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "现房，户型多，",
+        "cons": "公寓产品，年限问题，流通性差",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_bd48602db2",
+      "name": "天安象屿智慧城-都城",
+      "district_group": "环城四区",
+      "district": "东丽区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "高层80㎡/98㎡/113㎡",
+      "price_segments": "高层80平米48万起\n高层98平米79-85万\n高层113平米90-97万",
+      "finish_type": "毛坯",
+      "delivery_time": "98.113平米2026年12月底交房，其余都是现房",
+      "source": "YH-XLSX",
+      "source_row": 31,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "属于东丽湖，但更靠近华明空港，位置优势",
+        "cons": "孤盘，除了自己，一无所有。",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_9fa19e9d40",
+      "name": "百郦荣锦苑",
+      "district_group": "环城四区",
+      "district": "东丽区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "小高82/90/94/113/122㎡",
+      "price_segments": "82平：134-145万；\n90平：145-160万；\n94平：167-180万；\n113平：213-224万；\n122平：255-280万",
+      "finish_type": "毛坯",
+      "delivery_time": "现房",
+      "source": "YH-XLSX",
+      "source_row": 32,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "现房，位置好，地铁商业近。",
+        "cons": "延期交付了一段时间，小高层，产品一般",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_684f63e43f",
+      "name": "新业御园",
+      "district_group": "环城四区",
+      "district": "东丽区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "小高：90、95、120㎡洋房130㎡",
+      "price_segments": "小高：90平米120-135万 \n小高95平米130-145万 \n小高120平米172-200万 \n洋房：130平米235-245万",
+      "finish_type": "毛坯",
+      "delivery_time": "现房",
+      "source": "YH-XLSX",
+      "source_row": 33,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "产品多，可选，地铁较近",
+        "cons": "产品力拉胯",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_a0bfc6aa79",
+      "name": "中海国际公园城",
+      "district_group": "环城四区",
+      "district": "津南区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "高层77/85/89/109/128㎡， 洋房89㎡，叠拼97/103/109/115㎡，联排128/154/185㎡",
+      "price_segments": "高层49-90万，\n洋房80万左右，\n叠拼100-170万，\n联排175-350万",
+      "finish_type": "毛坯",
+      "delivery_time": "高层、洋房、叠拼：现房\n联排：北区现房，南区2025.5底",
+      "source": "YH-XLSX",
+      "source_row": 34,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "现房，便宜，景色好",
+        "cons": "八里台啊八里台，外地人心中的痛啊。全国人民都知道啊",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_f0c00e16db",
+      "name": "爱情·花园里",
+      "district_group": "环城四区",
+      "district": "津南区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "洋房 88/108/117㎡",
+      "price_segments": "洋房 72-120万",
+      "finish_type": "毛坯",
+      "delivery_time": "现房",
+      "source": "YH-XLSX",
+      "source_row": 35,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "现房便宜",
+        "cons": "八里台啊八里台，外地人心中的痛啊。全国人民都知道啊",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_18a93ddae9",
+      "name": "四季春晓",
+      "district_group": "环城四区",
+      "district": "津南区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "洋房：78-115㎡",
+      "price_segments": "洋房78平126-140万 101平:170-180万 115平:185-195万",
+      "finish_type": "毛坯",
+      "delivery_time": "2025.6.30",
+      "source": "YH-XLSX",
+      "source_row": 36,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "便宜，海教园",
+        "cons": "隔壁颐景园啊，海教园最南侧，阳光城 金科难兄难弟了",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_60b70f9ee8",
+      "name": "保利西棠和煦",
+      "district_group": "环城四区",
+      "district": "津南区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "二期洋房118/137平米，三期洋房86/107平米",
+      "price_segments": "二期洋房118平米：225-250万，137平米：271-285万；\n三期洋房86平米：152-175万，107平米：200-220万",
+      "finish_type": "毛坯",
+      "delivery_time": "二期2026/5/15，三期2026/8/31",
+      "source": "YH-XLSX",
+      "source_row": 37,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "产品不错，保利央企有品质，自持物业",
+        "cons": "周边配套不成熟，需要时间，二期绿化一般",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_cb7fc0e957",
+      "name": "中国铁建花语天境",
+      "district_group": "环城四区",
+      "district": "津南区",
+      "available_units": {
+        "bucket": "<10",
+        "raw": "＜10套"
+      },
+      "area_segments": "洋房：80.89.106.127.143㎡",
+      "price_segments": "80㎡：153-160 89㎡：174-183  106：215-235万   127㎡：255-280万143㎡/：315-337万",
+      "finish_type": "毛坯",
+      "delivery_time": "2026.6月",
+      "source": "YH-XLSX",
+      "source_row": 38,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "产品不错，中铁建央企有品质，自持物业，价格合适",
+        "cons": "房源很少了",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_0c2011f5de",
+      "name": "融信津南府",
+      "district_group": "环城四区",
+      "district": "津南区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "小高层53㎡.66㎡",
+      "price_segments": "35-48万",
+      "finish_type": "毛坯",
+      "delivery_time": "2025-03-31",
+      "source": "YH-XLSX",
+      "source_row": 39,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "现房可选",
+        "cons": "位置差，融信开发商资金问题",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_36082510b4",
+      "name": "天地源叠璟院",
+      "district_group": "环城四区",
+      "district": "津南区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "叠拼：上叠196平米",
+      "price_segments": "180万左右",
+      "finish_type": "毛坯",
+      "delivery_time": "现房",
+      "source": "YH-XLSX",
+      "source_row": 40,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "现房，别墅",
+        "cons": "北闸口了。。唉，远了啊。",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_35b1a5cc52",
+      "name": "金地山川印",
+      "district_group": "环城四区",
+      "district": "津南区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "洋房143 别墅171-196",
+      "price_segments": "洋房143平280-340万\n别墅171平450-480万\n别墅196平610-640万",
+      "finish_type": "毛坯",
+      "delivery_time": "20260331",
+      "source": "YH-XLSX",
+      "source_row": 41,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "改善可选，产品不错，位置不错",
+        "cons": "双港房源多，流通性问题，地缘性改善偏多",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_b5764975d3",
+      "name": "保利时代",
+      "district_group": "环城四区",
+      "district": "津南区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "洋房：79/95/113/135㎡",
+      "price_segments": "79平米：90-105万\n95平米：108-125万\n113平米：137-165万\n135平米：155-200万",
+      "finish_type": "毛坯",
+      "delivery_time": "一期：2024/5/31；二期：2025.6月-12月",
+      "source": "YH-XLSX",
+      "source_row": 42,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "产品力强，咸水沽配套成熟，物业开发商有保障",
+        "cons": "咸水沽最东部，周边慌。",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_9b15abd027",
+      "name": "东亚新华国樾华府",
+      "district_group": "环城四区",
+      "district": "津南区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "洋房115/135㎡",
+      "price_segments": "135-190万",
+      "finish_type": "毛坯",
+      "delivery_time": "一期售罄，二期2025年10月",
+      "source": "YH-XLSX",
+      "source_row": 43,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "产品力强，咸水沽配套成熟，",
+        "cons": "咸水沽最东部，周边慌。",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_348a65bf37",
+      "name": "海玥名邸",
+      "district_group": "环城四区",
+      "district": "津南区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "高层：85/98   洋房118",
+      "price_segments": "85平米：100-110万，98平米：115-125万\n118平米170-185万",
+      "finish_type": "毛坯",
+      "delivery_time": "现房",
+      "source": "YH-XLSX",
+      "source_row": 44,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "现房便宜",
+        "cons": "东侧慌。南侧公交站，15层的小高层",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_1190c6e136",
+      "name": "中建理想城",
+      "district_group": "环城四区",
+      "district": "津南区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "洋房109㎡，126㎡，130㎡，小高89㎡、125㎡，大高82㎡、89㎡、106㎡、117㎡、127㎡    目前排卡阶段",
+      "price_segments": "洋房109/126/130㎡：预计26000元/㎡小高89/125㎡：预计22000元/㎡        大高82㎡、89㎡、106㎡、117㎡、127㎡：预计20500元/㎡",
+      "finish_type": "毛坯",
+      "delivery_time": "预计2026年10月",
+      "source": "YH-XLSX",
+      "source_row": 45,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "产品力强，环内。位置不错",
+        "cons": "价格高，刚需可以过度，改善多对比",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_42edc6678c",
+      "name": "城投东方源筑",
+      "district_group": "环城四区",
+      "district": "津南区",
+      "available_units": {
+        "bucket": "<10",
+        "raw": "＜10套"
+      },
+      "area_segments": "82m²，88m²",
+      "price_segments": "82平90-115万，88平120万",
+      "finish_type": "毛坯",
+      "delivery_time": "现房",
+      "source": "YH-XLSX",
+      "source_row": 46,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "辛庄周边成熟，价格便宜",
+        "cons": "华润撤了，隔壁百万公路加油站，天津大道景观大道噪音",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_0bbcbb285b",
+      "name": "天津汇悦城",
+      "district_group": "环城四区",
+      "district": "东丽区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "洋房70/88/104/118",
+      "price_segments": "洋房70㎡：53-58万左右\n洋房88㎡：65-71万左右\n洋房104㎡：80-89万左右\n洋房118㎡：98-110万左右",
+      "finish_type": "毛坯",
+      "delivery_time": "现房",
+      "source": "YH-XLSX",
+      "source_row": 47,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "可选性多，价格合适，属于空港滨海",
+        "cons": "有一段时间资金问题，周边慌，紧邻军粮城二期",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_3014c03847",
+      "name": "城投水西东方天宸",
+      "district_group": "环城四区",
+      "district": "西青区",
+      "available_units": {
+        "bucket": "10-50",
+        "raw": "10-50套"
+      },
+      "area_segments": "128㎡\n135㎡\n155㎡\n175㎡",
+      "price_segments": "128㎡总价350-360万左右\n135㎡总价380万起\n155㎡总价460-490万左右\n175㎡总价570-590万左右",
+      "finish_type": "毛坯/部分楼栋团装2号楼",
+      "delivery_time": "一期2025/9/30二期2026/6/30",
+      "source": "YH-XLSX",
+      "source_row": 48,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "水西环境好，环线内湖景资源，价格适中",
+        "cons": "周边配套不全，人气少，城投之前交付项目少",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_2e955b32f8",
+      "name": "金地时光印",
+      "district_group": "环城四区",
+      "district": "西青区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "洋房80/95/110m²",
+      "price_segments": "80㎡：119万起\n 95㎡：149万起\n110㎡：182万起",
+      "finish_type": "毛坯",
+      "delivery_time": "一期2025年12月底/二期待定",
+      "source": "YH-XLSX",
+      "source_row": 49,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "双轨道交通，项目价格合适，学校旁，交付快",
+        "cons": "南站商务区发展周期略长，高铁有一定噪音，学校是私立并不一定能进",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_f7f4c6888e",
+      "name": "融侨方圆",
+      "district_group": "环城四区",
+      "district": "西青区",
+      "available_units": {
+        "bucket": "10-50",
+        "raw": "10-50套"
+      },
+      "area_segments": "上叠144平米下叠157平米 高层：72/82平",
+      "price_segments": "别墅230-300万 高层：78-100万",
+      "finish_type": "毛坯",
+      "delivery_time": "叠拼：现房 高层：2025.11月底",
+      "source": "YH-XLSX",
+      "source_row": 50,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "现房，门口商业，价格适中",
+        "cons": "闽系开发，品质后期问题，项目保障房问题",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_2d8748e6f5",
+      "name": "保利·和光尘樾",
+      "district_group": "环城四区",
+      "district": "西青区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "小高76/80/87/99/113/127平米",
+      "price_segments": "小高76平米：108-135万；\n小高80平米：125-140万；\n小高87平米：130-165万；\n小高99平米：156-200万；\n小高113平米：210-235万；\n小高127平米：220-265万",
+      "finish_type": "毛坯",
+      "delivery_time": "现房",
+      "source": "YH-XLSX",
+      "source_row": 51,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "现房可选，地铁近，小区品质相对不错",
+        "cons": "宾水西兑现力问题，学校问题，小区超大体量3500户",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_ca5bf0c0fb",
+      "name": "万科翡翠大道",
+      "district_group": "环城四区",
+      "district": "西青区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "南地块二期\n小高层:84/97㎡\n高层：80/89/102㎡ \n洋房：118㎡\n北地块二期\n高层：77/87/89㎡\n洋房：100㎡",
+      "price_segments": "南地块：\n小高层\n 84㎡ 140万\n      97㎡ 168万\n高层\n80㎡ 110-130万\n89㎡ 130-140万\n102㎡ 150-160万\n洋房\n118㎡   200-240万\n北地块：\n高层：\n77㎡     103-110万\n87㎡     120-132万\n89㎡     130-140万\n洋房\n100㎡   170-210万",
+      "finish_type": "精装",
+      "delivery_time": "南地块二期2025/7/30,2025/10/31,2025年12月底;北地块二期2026/6/30",
+      "source": "YH-XLSX",
+      "source_row": 52,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "万科物业绿化品质不错，价格合适，地铁近，户型可选",
+        "cons": "杨武庄住宅加上商铺八期开发，项目地价高降标减配，孤盘，体力超大",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_1eafbea7eb",
+      "name": "爱情·缤纷里",
+      "district_group": "环城四区",
+      "district": "西青区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "小高：75㎡、80㎡、84㎡、89㎡、96㎡、115㎡、126㎡、140㎡",
+      "price_segments": "75㎡：105-135万；\n80㎡：115-125万；\n84㎡：104-120万；\n89㎡：120-130万；\n96㎡：130-150万；\n115㎡：145-170万；\n 126㎡：165-220万；                                                140㎡：220-240万",
+      "finish_type": "毛坯；贝壳团装",
+      "delivery_time": "一期：现房 二期：2024.12月底",
+      "source": "YH-XLSX",
+      "source_row": 53,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "挨着地铁，现房可选，名字好听",
+        "cons": "宾水西兑现力问题，学校问题，爱情后期物业品质问题。交付问题",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_e658cc1a39",
+      "name": "宝安江南城",
+      "district_group": "环城四区",
+      "district": "西青区",
+      "available_units": {
+        "bucket": "10-50",
+        "raw": "10-50套"
+      },
+      "area_segments": "350/400/480㎡",
+      "price_segments": "别墅：联排350㎡   720 万起\n独栋：400㎡ 1170万起\n480㎡ 1400-1700万",
+      "finish_type": "毛坯",
+      "delivery_time": "现房",
+      "source": "YH-XLSX",
+      "source_row": 54,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "品质不错，徽派江南风格，大独栋特色",
+        "cons": "总价高，纯改善，小区内部荷花塘北部南运河",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_70ea9dbb4d",
+      "name": "天安数码城珑园",
+      "district_group": "环城四区",
+      "district": "西青区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "高层：90/120㎡  洋房：113，127，145，152，154㎡ 联排：430,464㎡",
+      "price_segments": "高层：\n90㎡100-115万\n120㎡ 135-140万\n洋房：\n113㎡ 135-140万\n127㎡ 145-155万\n145㎡ 170-180万\n152㎡ 190-200万\n154㎡ 190-200万\n联排：\n430㎡ 602万\n464㎡ 736万",
+      "finish_type": "毛坯",
+      "delivery_time": "现房",
+      "source": "YH-XLSX",
+      "source_row": 55,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "现房，可选",
+        "cons": "价格不合适，位置偏，户型老旧",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_ff9201af32",
+      "name": "融泰城",
+      "district_group": "环城四区",
+      "district": "西青区",
+      "available_units": {
+        "bucket": "10-50",
+        "raw": "10-50套"
+      },
+      "area_segments": "洋房112、122、127㎡，高层125/143㎡",
+      "price_segments": "洋房160-220万；高层175-210万",
+      "finish_type": "毛坯/精装",
+      "delivery_time": "现房",
+      "source": "YH-XLSX",
+      "source_row": 56,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "现房，李七庄，",
+        "cons": "多年老盘，户型差，地铁远产品老",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_67bb9ae4b2",
+      "name": "金地·藝華里",
+      "district_group": "环城四区",
+      "district": "西青区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "洋房 114、128㎡",
+      "price_segments": "洋房195-300万",
+      "finish_type": "毛坯",
+      "delivery_time": "2024-12-31",
+      "source": "YH-XLSX",
+      "source_row": 57,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "李七庄现房可选，户型新，3.0产品",
+        "cons": "南侧大片空地，秀川路堵车，城市界面差",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_ccd6c9be48",
+      "name": "绿城晓月晴川",
+      "district_group": "环城四区",
+      "district": "西青区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "洋房98/116/132m²/143",
+      "price_segments": "98平：180-190万 116平：210-230万 132平：255-280万 143平：300-320万",
+      "finish_type": "毛坯",
+      "delivery_time": "2026-07-01",
+      "source": "YH-XLSX",
+      "source_row": 58,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "李七庄绿城品质好，可选，户型新，3.0产品",
+        "cons": "南侧大片空地，秀川路堵车，城市界面差",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_43d0e49fe4",
+      "name": "金地风华919",
+      "district_group": "环城四区",
+      "district": "西青区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "洋房：100/117/133/172㎡\n叠拼：130/143㎡",
+      "price_segments": "洋房：195-460万\n叠拼：375-510万",
+      "finish_type": "毛坯",
+      "delivery_time": "2025-12-31",
+      "source": "YH-XLSX",
+      "source_row": 59,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "户型好，中北镇配套成熟，价格合适",
+        "cons": "小区细长条设计，绿化设计相对差，南侧高压线，中北镇最西南侧",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_2b12f8b491",
+      "name": "信达格调美古花园",
+      "district_group": "市内六区",
+      "district": "和平区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "高层75平/100平",
+      "price_segments": "高层75平550万左右，100平750万左右",
+      "finish_type": "精装修",
+      "delivery_time": "2026-12-01",
+      "source": "YH-XLSX",
+      "source_row": 60,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "和平唯一在售新房，格调品质不错。",
+        "cons": "小区太小，园林少，价格高。",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_a00e5356c2",
+      "name": "南城拾壹方",
+      "district_group": "远郊五区",
+      "district": "宝坻区",
+      "available_units": {
+        "bucket": "10-50",
+        "raw": "10-50套"
+      },
+      "area_segments": "133、171、202、245、300、330㎡",
+      "price_segments": "187-429万/套",
+      "finish_type": "毛坯",
+      "delivery_time": "2025年10月底",
+      "source": "YH-XLSX",
+      "source_row": 61,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "价格合适",
+        "cons": "位置偏，产品参差不齐",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_42510d2317",
+      "name": "天宝福苑",
+      "district_group": "远郊五区",
+      "district": "宝坻区",
+      "available_units": {
+        "bucket": "10-50",
+        "raw": "10-50套"
+      },
+      "area_segments": "叠拼190-320",
+      "price_segments": "叠拼210-350万",
+      "finish_type": "毛坯",
+      "delivery_time": "现房",
+      "source": "YH-XLSX",
+      "source_row": 62,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "产品稀缺，别墅本地改善",
+        "cons": "位置偏，配套差，外地落户慎选",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_d3c02892cb",
+      "name": "农垦•含章宝邸",
+      "district_group": "远郊五区",
+      "district": "宝坻区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "小高85、87、99、117、170㎡",
+      "price_segments": "小高85平米：75-85万\n小高层87平米：86-99万\n小高层99平米：97-110万\n小高层117平米：123-150万\n小高层170平米：180万",
+      "finish_type": "毛坯",
+      "delivery_time": "现房",
+      "source": "YH-XLSX",
+      "source_row": 63,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "国企保障，户型可选，",
+        "cons": "位置偏，地缘性为主",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_a055e1964a",
+      "name": "首钢·柒里风华",
+      "district_group": "远郊五区",
+      "district": "宝坻区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "高层：53㎡/78㎡/89㎡\n洋房：101㎡/104㎡",
+      "price_segments": "高层：38万~65万    洋房：68~70万",
+      "finish_type": "毛坯",
+      "delivery_time": "现房",
+      "source": "YH-XLSX",
+      "source_row": 64,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "现房，宝坻新城高铁，价格便宜",
+        "cons": "位置偏，配套差远郊，价格不稳",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_161e079c05",
+      "name": "浩润嘉苑",
+      "district_group": "远郊五区",
+      "district": "宝坻区",
+      "available_units": {
+        "bucket": "10-50",
+        "raw": "10-50套"
+      },
+      "area_segments": "高层：86/97/105㎡ 洋房：112/117㎡",
+      "price_segments": "高层：62-90万洋房：123-169万",
+      "finish_type": "毛坯",
+      "delivery_time": "四期2023-6-30",
+      "source": "YH-XLSX",
+      "source_row": 66,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "门槛低，品质一般",
+        "cons": "位置偏，配套差远郊，价格不稳",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_fe8a422bb0",
+      "name": "建投·君诺学府",
+      "district_group": "远郊五区",
+      "district": "宝坻区",
+      "available_units": {
+        "bucket": "10-50",
+        "raw": "10-50套"
+      },
+      "area_segments": "96㎡1层、147㎡、205㎡",
+      "price_segments": "110-280万",
+      "finish_type": "毛坯",
+      "delivery_time": "现房",
+      "source": "YH-XLSX",
+      "source_row": 67,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "圈层好，大户型为主",
+        "cons": "位置偏，配套差远郊，价格不稳",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_48970b74f1",
+      "name": "南城时光",
+      "district_group": "远郊五区",
+      "district": "宝坻区",
+      "available_units": {
+        "bucket": "<10",
+        "raw": "＜10套"
+      },
+      "area_segments": "小高：120平",
+      "price_segments": "小高：140万",
+      "finish_type": "毛坯",
+      "delivery_time": "现房",
+      "source": "YH-XLSX",
+      "source_row": 68,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "价格合适产品单一",
+        "cons": "位置偏，配套差远郊，价格不稳",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_6781dfed1e",
+      "name": "林奇郡中心城",
+      "district_group": "远郊五区",
+      "district": "静海区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "高层86/88/109/112平；别墅251平",
+      "price_segments": "高层86/88平56万起，109/112平70万起；别墅251平260万起",
+      "finish_type": "毛坯",
+      "delivery_time": "现房",
+      "source": "YH-XLSX",
+      "source_row": 69,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "便宜，环境不错",
+        "cons": "团泊东饼也挺大，四大湖远近闻名",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_aab29a09b9",
+      "name": "林奇岛",
+      "district_group": "远郊五区",
+      "district": "静海区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "联排149/169/198平；叠拼147/148平",
+      "price_segments": "联排149平150-190万起,169平170-230万起，198平300-340万起；叠拼上叠148平120-145万，下叠147平150-180万",
+      "finish_type": "毛坯",
+      "delivery_time": "现房",
+      "source": "YH-XLSX",
+      "source_row": 70,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "便宜，环境不错",
+        "cons": "团泊东饼也挺大，四大湖远近闻名",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_9695e73412",
+      "name": "珊瑚海广场",
+      "district_group": "滨海新区",
+      "district": "塘沽区",
+      "available_units": {
+        "bucket": "10-50",
+        "raw": "10-50套"
+      },
+      "area_segments": "商业一层50-150㎡，二层50-130㎡，三层50-130㎡",
+      "price_segments": "商业一层190-520万，二层180-495万，商业三层150-380万",
+      "finish_type": "毛坯",
+      "delivery_time": "现房",
+      "source": "YH-XLSX",
+      "source_row": 79,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "现房",
+        "cons": "商业，可选性差，流通性问题",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_f1068cdbd9",
+      "name": "南湾壹号",
+      "district_group": "滨海新区",
+      "district": "塘沽区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "103/120/140",
+      "price_segments": "189-224 万",
+      "finish_type": "精装",
+      "delivery_time": "2025-10-30",
+      "source": "YH-XLSX",
+      "source_row": 80,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "稀缺景观资源与低密居住体验‌，配套成熟且教育资源突出‌",
+        "cons": "交通便利性不足‌，周边发展待完善‌小区体量较小，仅3种户型（101-140㎡），选择空间有限‌",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_6126fb5bcd",
+      "name": "中国铁建·滨海梧桐",
+      "district_group": "滨海新区",
+      "district": "塘沽区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "小高(一期）81/98㎡，洋房108/127/143㎡，小高（二期）90/105/115/123",
+      "price_segments": "一期小高90－150万，\n洋房152-250万，\n二期小高123-180万",
+      "finish_type": "毛坯",
+      "delivery_time": "一期小高2024年11月，洋房2025年10月，二期小高2025年10月",
+      "source": "YH-XLSX",
+      "source_row": 81,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "开发商实力与产品设计‌，紧邻滨海西站800米。交通与区位优势‌，生活配套与教育资源",
+        "cons": "区域成熟度与生活便利性，价格与性价比争议‌",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_6d8e180fe2",
+      "name": "泽信·渤龙云筑",
+      "district_group": "滨海新区",
+      "district": "塘沽区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "洋房90/100/110",
+      "price_segments": "洋房90平米： 82-90万；\n洋房100平米：92-102万；\n洋房110平米：105-112万；",
+      "finish_type": "毛坯",
+      "delivery_time": "现房",
+      "source": "YH-XLSX",
+      "source_row": 82,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "现房，可选性高，可转学",
+        "cons": "渤龙湖晋级为五大湖，周边人气少，配套问题",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_ff564b8a4c",
+      "name": "格调林泉",
+      "district_group": "滨海新区",
+      "district": "塘沽区",
+      "available_units": {
+        "bucket": "10-50",
+        "raw": "10-50套"
+      },
+      "area_segments": "小高109/125/145/160/180m²",
+      "price_segments": "295-510万",
+      "finish_type": "毛坯",
+      "delivery_time": "现房",
+      "source": "YH-XLSX",
+      "source_row": 83,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "‌交通便利性突出‌，教育资源丰富‌，周边3公里内拥有滨海金隅嘉品Mall、泰达MSD等商业综合体，产品设计与居住体验‌",
+        "cons": "临近洞庭路的楼栋存在交通噪音干扰，影响居住静谧性‌，区域以居住功能为主，缺乏产业支撑，高端商业配套仍需依赖远距离商圈‌",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_5aa19229b1",
+      "name": "际华园天津府",
+      "district_group": "滨海新区",
+      "district": "塘沽区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "小高：80/89/104/115m²",
+      "price_segments": "80户型精装132万起\n89户型精装164-169万\n104户型精装197-202万\n115户型精装208-215万",
+      "finish_type": "精装",
+      "delivery_time": "2025-09-01",
+      "source": "YH-XLSX",
+      "source_row": 84,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "创新设计与立体空间利用‌，入户暖廊‌，开发实力与交付保障‌",
+        "cons": "响螺湾板块，功能性与噪音问题‌，价格偏高，性价比争议较大‌",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_7e6071aa0a",
+      "name": "中铁滨城云著",
+      "district_group": "滨海新区",
+      "district": "塘沽区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "75/89/95/108m²",
+      "price_segments": "高层75平米：65-70万，高层89平米：75-85万，高层95平米：82-92万，高层108平米：95-105万",
+      "finish_type": "毛坯",
+      "delivery_time": "预计2025年底",
+      "source": "YH-XLSX",
+      "source_row": 85,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "央企开发商实力强，品牌保障‌\n低密生态设计，产品丰富，户型多样且功能性强‌\n价格优势明显，均价低于周边‌\n地铁B1线在建，未来交通改善‌\n教育资源丰富，实验学校等‌\n生活配套齐全，商业和会所设施",
+        "cons": "区域成熟度低，配套需时间完善‌\n当前交通依赖自驾，公共交通不足‌\n位置相对偏远，距离核心区较远‌",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_e120cdb8aa",
+      "name": "中交海河玺",
+      "district_group": "环城四区",
+      "district": "东丽区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "小高层：106/126143/173 洋房：129/143㎡",
+      "price_segments": "小高106平米:230-275万\n小高126平米：280-310万\n小高143平米：340-400万\n小高173平米：450-500万\n洋房129平米：360-400万\n洋房143平米：410-450万",
+      "finish_type": "毛坯",
+      "delivery_time": "2026.6.30",
+      "source": "YH-XLSX",
+      "source_row": 90,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "产品力强，物业不错，新一代设计",
+        "cons": "天钢板块第一个项目，周期长，工地生活要适应",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_a9f5f04ad1",
+      "name": "金地·水西印",
+      "district_group": "环城四区",
+      "district": "西青区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "洋房\n115㎡\n131㎡\n143㎡\n173㎡\n叠拼\n134㎡\n143㎡\n159㎡\n178㎡",
+      "price_segments": "洋房\n115㎡总价：290-330万\n131㎡总价：350-380万\n143㎡总价：420-460万\n173㎡总价：560-580万\n叠拼\n134㎡总价：480-490万\n143㎡总价：630-640万\n159㎡总价：610-680万\n178㎡总价：830-930万",
+      "finish_type": "毛坯",
+      "delivery_time": "2025-12-31",
+      "source": "YH-XLSX",
+      "source_row": 95,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "水西环境好，环线内湖景资源，价格适中",
+        "cons": "水西板块最边缘，离水西公园很远。",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_3642ba4edc",
+      "name": "中建悦庐棠墅",
+      "district_group": "环城四区",
+      "district": "津南区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "洋房:89-129平叠拼:136-168平平墅:155平",
+      "price_segments": "洋房\n89 平160-180万\n109平210-220万\n117平235-255万\n129平270-290万\n叠拼\n136平上叠中户310-350万\n145平上叠边户375-385万\n143下叠中户500万左右\n168下叠边户630万左右\n平墅\n155平385-400万",
+      "finish_type": "毛坯",
+      "delivery_time": "2026.5.15",
+      "source": "YH-XLSX",
+      "source_row": 96,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "产品力强户型好。开发商物业有保障",
+        "cons": "交付周期长，大期房，周边配套一般。",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_8dc3459712",
+      "name": "博岸名邸",
+      "district_group": "市内六区",
+      "district": "河西区",
+      "available_units": {
+        "bucket": "10-50",
+        "raw": "10-50套"
+      },
+      "area_segments": "洋房：133㎡大两室，147-189㎡三室，200-377平米跃层四-七室",
+      "price_segments": "两室133平米（487～527万）\n三室147平米（517～563万）\n三室150平米（526～571万）\n三室169平米（588～637万）",
+      "finish_type": "毛坯",
+      "delivery_time": "现房",
+      "source": "YH-XLSX",
+      "source_row": 97,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "现房，海河边，观景",
+        "cons": "快速路吵得要命，北向观海河，欧洲设计不符合国人审美",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_fa70bda3bb",
+      "name": "建投君诺壹號府",
+      "district_group": "远郊五区",
+      "district": "宝坻区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "108㎡、128㎡、141㎡、176㎡",
+      "price_segments": "108㎡：120-140万\n128㎡：145-175万\n141㎡：186-210万\n176㎡：280万左右",
+      "finish_type": "毛坯",
+      "delivery_time": "2026-08-01",
+      "source": "YH-XLSX",
+      "source_row": 98,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "品质不错，户型可选",
+        "cons": "位置偏，配套差远郊，价格不稳",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_bde8f7d88e",
+      "name": "东舍宅",
+      "district_group": "市内六区",
+      "district": "河西区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "29m²，36m²，42m²，58m²",
+      "price_segments": "29㎡一居总价160-180万\n   36㎡一居总价170-190万\n   42㎡一居总价180-190万\n   58㎡两居总价220-240万",
+      "finish_type": "精装",
+      "delivery_time": "2024-10-01",
+      "source": "YH-XLSX",
+      "source_row": 99,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "现房，河西一片转学。",
+        "cons": "价格高，可选性低，湘江道八号，，",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_1b2ceeafe2",
+      "name": "小岛壹号",
+      "district_group": "滨海新区",
+      "district": "大港区",
+      "available_units": {
+        "bucket": "10-50",
+        "raw": "10-50套"
+      },
+      "area_segments": "洋房140/160平米",
+      "price_segments": "220万-270万左右",
+      "finish_type": "毛坯",
+      "delivery_time": "2025-12-31",
+      "source": "YH-XLSX",
+      "source_row": 100,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "本地改善，准现房",
+        "cons": "偏，一般本地人都很少去，油田本地职工为主",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_25150d7fd3",
+      "name": "中海凌云源境",
+      "district_group": "市内六区",
+      "district": "河西区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "小高层：87、107㎡洋房：91.110.119.129㎡",
+      "price_segments": "126户型520-620万，108户型435-520万，91户型365-390万",
+      "finish_type": "毛坯",
+      "delivery_time": "2025-12-31",
+      "source": "YH-XLSX",
+      "source_row": 101,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "产品力强，户型好，设计新，架空层",
+        "cons": "陈塘庄需要一定周期，目前南侧空地相对较多，",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_8c53921b3a",
+      "name": "宝境棠棣",
+      "district_group": "远郊五区",
+      "district": "宝坻区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "88㎡、114㎡、118㎡、135㎡",
+      "price_segments": "88㎡：69-80万\n114㎡：98-103万\n118㎡：103-110万\n135㎡：115-120万",
+      "finish_type": "毛坯",
+      "delivery_time": "现房",
+      "source": "YH-XLSX",
+      "source_row": 102,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "现房落户，产品品质一般",
+        "cons": "位置偏，配套差远郊，价格不稳",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_d969375076",
+      "name": "创意之城锦园",
+      "district_group": "市内六区",
+      "district": "河西区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "高层：89、99、109㎡小高：128㎡",
+      "price_segments": "高层89平米:265-275万\n高层99平米：320-340万\n高层106平米：340-360万\n小高层128平米：420-460万",
+      "finish_type": "毛坯",
+      "delivery_time": "2026-12-31",
+      "source": "YH-XLSX",
+      "source_row": 103,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "可选，户型产品不错",
+        "cons": "一期价格高，柳林周期长，刚起步",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_96a1b2cf65",
+      "name": "纯皓家园",
+      "district_group": "市内六区",
+      "district": "河西区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "高层：91-94㎡",
+      "price_segments": "91-93全阳:255万起\n92-94平：南北通透:290万起",
+      "finish_type": "精装",
+      "delivery_time": "现房",
+      "source": "YH-XLSX",
+      "source_row": 104,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "河西二片，部分转学可选，价格便宜",
+        "cons": "二片是河西转学片区内最差的片了。",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_ba573100a3",
+      "name": "天逸华府",
+      "district_group": "滨海新区",
+      "district": "大港区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "叠拼：152㎡-276㎡（有赠送）洋房：145㎡",
+      "price_segments": "叠拼：275-380万 洋房220-290万",
+      "finish_type": "毛坯",
+      "delivery_time": "预计26.3月交房",
+      "source": "YH-XLSX",
+      "source_row": 106,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "本地改善，可选性多",
+        "cons": "偏，一般本地人都很少去，油田本地职工为主",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_d506785090",
+      "name": "金地时代印",
+      "district_group": "环城四区",
+      "district": "西青区",
+      "available_units": {
+        "bucket": "<10",
+        "raw": "＜10套"
+      },
+      "area_segments": "高层89㎡/103㎡/110㎡",
+      "price_segments": "高层89㎡：85万\n高层103㎡：110万 高层110㎡：125万",
+      "finish_type": "毛坯",
+      "delivery_time": "预计2027.5",
+      "source": "YH-XLSX",
+      "source_row": 108,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "大寺板块101汽车园隔壁，周边小区太多，价格相对合适",
+        "cons": "周边乱，地缘性为主，交付晚",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_9be31d6210",
+      "name": "御河臻璟",
+      "district_group": "环城四区",
+      "district": "西青区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "洋房：115/128/143㎡",
+      "price_segments": "115㎡：270万起\n128㎡：320万起\n143㎡：370万起",
+      "finish_type": "毛坯",
+      "delivery_time": "2026.10月",
+      "source": "YH-XLSX",
+      "source_row": 109,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "西青第一个架空层小区，设计新颖，户型相对还可以",
+        "cons": "新城代建，之前交付小区品质问题，大高层设计。",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_3db7bbd287",
+      "name": "绿地·津澜",
+      "district_group": "环城四区",
+      "district": "津南区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "89-110-130-160平米",
+      "price_segments": "89平115万起\n110平160万起\n130平200万起\n160平245万起",
+      "finish_type": "精装",
+      "delivery_time": "2026.12.31",
+      "source": "YH-XLSX",
+      "source_row": 110,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "辛庄周边成熟，价格便宜",
+        "cons": "绿地之前一段时间资金问题",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_be04315e90",
+      "name": "城投东方紫宸",
+      "district_group": "市内六区",
+      "district": "河东区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "小高89/105，洋房110/128",
+      "price_segments": "小高89：250-260万，小高105：300-320万，洋房110：340-370万  洋房128：410-440万",
+      "finish_type": "毛坯",
+      "delivery_time": "2026-09-01",
+      "source": "YH-XLSX",
+      "source_row": 111,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "可选性多，产品力强，园林绿化不错",
+        "cons": "小区整体位置较差，万爱板块最北侧，地铁远",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_a2362442fb",
+      "name": "建投誉河院",
+      "district_group": "市内六区",
+      "district": "红桥区",
+      "available_units": {
+        "bucket": "10-50",
+        "raw": "10-50套"
+      },
+      "area_segments": "小高层97/114/129 洋房135",
+      "price_segments": "小高层255-360w，洋房385-410w",
+      "finish_type": "毛坯",
+      "delivery_time": "2026-12-01",
+      "source": "YH-XLSX",
+      "source_row": 112,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "产品力强，大开间落地窗，价格合适",
+        "cons": "周边都是荒地，西于庄刚开始开发有周期，目前十期开发",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_0f491ba557",
+      "name": "华勘鈺府",
+      "district_group": "市内六区",
+      "district": "河东区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "小高：87/95/96/115平米、洋房：109/111/125/129/140/143平米",
+      "price_segments": "小高层均价2.4万元/平(18层到顶)\n87平两室205万起\n95平三室228万起\n96平三室230万起\n115平三室276万起\n洋房均价2.7万元/平（10层11层到顶）\n109平三室295万起\n111平三室299万起\n洋房均价2.9万元/平（8层到顶）\n125平三室362万起\n129平三室374万起\n140平三室406万起\n143平三室414万起",
+      "finish_type": "毛坯",
+      "delivery_time": "2026.6.30",
+      "source": "YH-XLSX",
+      "source_row": 113,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "可选性多，",
+        "cons": "价格贵，位置差，产品一般",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_6ac7b44738",
+      "name": "中海长林郡",
+      "district_group": "环城四区",
+      "district": "津南区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "洋房：80、89、107、129",
+      "price_segments": "80户型，135万-148万\n89户型，150万-166万\n107户型，185万-202万\n129户型，237-258万",
+      "finish_type": "毛坯",
+      "delivery_time": "2026年8月（5.15号后可以办房产证）",
+      "source": "YH-XLSX",
+      "source_row": 114,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "户型可选，央企品质，物业不错",
+        "cons": "近两年中海交付部分项目问题，周边配套问题，处于海教园北部片区",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_b7236acad0",
+      "name": "金地藝墅家·风华印",
+      "district_group": "环城四区",
+      "district": "西青区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "洋房：89、113、128㎡",
+      "price_segments": "洋房：146-240万",
+      "finish_type": "毛坯",
+      "delivery_time": "2026.12.31",
+      "source": "YH-XLSX",
+      "source_row": 116,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "精武镇大学城板块，周边人气足，价格相对合适",
+        "cons": "西侧空地，烂尾商业汇悦城，地铁远。学校一般",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_1d84fb0c64",
+      "name": "堤翠家园",
+      "district_group": "市内六区",
+      "district": "南开区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "高层88㎡、91㎡、108㎡、112㎡、129㎡、229㎡",
+      "price_segments": "88平米270万起\n91平米268万起\n108平米350万起\n112平米347万起\n129平米376万起\n229平米713万起",
+      "finish_type": "毛坯",
+      "delivery_time": "现房",
+      "source": "YH-XLSX",
+      "source_row": 117,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "价格便宜，现房",
+        "cons": "还迁房品质，户型一般",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_f58308291c",
+      "name": "保盈家园",
+      "district_group": "市内六区",
+      "district": "南开区",
+      "available_units": {
+        "bucket": "10-50",
+        "raw": "10-50套"
+      },
+      "area_segments": "洋房91㎡、123㎡",
+      "price_segments": "91平米的300万起\n123平米的453万起",
+      "finish_type": "毛坯",
+      "delivery_time": "现房",
+      "source": "YH-XLSX",
+      "source_row": 118,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "价格便宜，现房",
+        "cons": "还迁房品质，户型一般",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_e138ff350a",
+      "name": "彩虹城",
+      "district_group": "环城四区",
+      "district": "西青区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "高层：68-87㎡",
+      "price_segments": "55-70万",
+      "finish_type": "毛坯",
+      "delivery_time": "现房",
+      "source": "YH-XLSX",
+      "source_row": 119,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "现房，便宜",
+        "cons": "多年老盘，户型差，流通性问题",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_11b8b3eec1",
+      "name": "龙湖首创天琅",
+      "district_group": "环城四区",
+      "district": "西青区",
+      "available_units": {
+        "bucket": "<10",
+        "raw": "＜10套"
+      },
+      "area_segments": "高层：85平米 113平米 139平米",
+      "price_segments": "待售，未开盘",
+      "finish_type": "毛坯",
+      "delivery_time": "2026.6.30",
+      "source": "YH-XLSX",
+      "source_row": 121,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "中北龙湖二期，价格相对合适",
+        "cons": "北侧高铁噪音，小区南侧正荣的大高层，采光问题",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_716cb8b83b",
+      "name": "复地湖滨广场",
+      "district_group": "环城四区",
+      "district": "东丽区",
+      "available_units": {
+        "bucket": "10-50",
+        "raw": "10-50套"
+      },
+      "area_segments": "30-7000平",
+      "price_segments": "120-4900万",
+      "finish_type": "毛坯",
+      "delivery_time": "现房",
+      "source": "YH-XLSX",
+      "source_row": 122,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "大平层，户型少",
+        "cons": "项目卖了很长时间",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_0d8f85d4c6",
+      "name": "心港东城名都",
+      "district_group": "滨海新区",
+      "district": "大港区",
+      "available_units": {
+        "bucket": "10-50",
+        "raw": "10-50套"
+      },
+      "area_segments": "洋房：94㎡/128㎡ 高层：72㎡-149㎡",
+      "price_segments": "洋房：124-172万 高层：82-193万",
+      "finish_type": "毛坯",
+      "delivery_time": "现房",
+      "source": "YH-XLSX",
+      "source_row": 127,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "现房，刚改",
+        "cons": "偏，一般本地人都很少去，油田本地职工为主",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_3493309817",
+      "name": "格调步庭",
+      "district_group": "市内六区",
+      "district": "河东区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "高层92/109/128小高层 124/139",
+      "price_segments": "高层92：249-284万\n高层109：300-335万\n高层128：350-400万\n小高层124：400万左右\n小高层139：430万左右",
+      "finish_type": "毛坯",
+      "delivery_time": "现房",
+      "source": "YH-XLSX",
+      "source_row": 128,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "园林户型好",
+        "cons": "四栋楼，整体看园林并不多，外包物业，设计偏老",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_1fa80b06dc",
+      "name": "香锦园",
+      "district_group": "环城四区",
+      "district": "西青区",
+      "available_units": {
+        "bucket": "10-50",
+        "raw": "10-50套"
+      },
+      "area_segments": "76平米/90平米/120平米/135平米/136平米",
+      "price_segments": "76平 ：104万起\n90平: 123万起\n120平:158万\n135平:156万\n136平:156万",
+      "finish_type": "简装",
+      "delivery_time": "现房",
+      "source": "YH-XLSX",
+      "source_row": 130,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "现房可选",
+        "cons": "价格高，张家窝本地楼盘，没绿化，地铁远",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_b6bc361eac",
+      "name": "中海镜映南开",
+      "district_group": "市内六区",
+      "district": "南开区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "洋房107/115/125",
+      "price_segments": "107平10层洋房:580-600只有顶楼\n115平8层洋房:620-700\n125平8层洋房:770-840",
+      "finish_type": "毛坯",
+      "delivery_time": "2025-10-01",
+      "source": "YH-XLSX",
+      "source_row": 131,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "户型好，品质不错，位置相对核心",
+        "cons": "可选性不高，老医院地块，价格不是所有户型都合适",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_6c2b59cfad",
+      "name": "体北金茂府",
+      "district_group": "市内六区",
+      "district": "河西区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "小高128m²143m²169m²189m²，\n高层143m² 169m² \n洋房236m²",
+      "price_segments": "小高128㎡/650-710万\n小高/高层143㎡/720-810万\n小高/高层169㎡/850-980万\n小高189㎡/1100-1200万\n洋房236㎡/1600-2000万",
+      "finish_type": "精装",
+      "delivery_time": "2026-06-01",
+      "source": "YH-XLSX",
+      "source_row": 132,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "品质 物业 产品都很不错，科技化住宅",
+        "cons": "周边老破小，小区内部改善，外部没有改善",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_7583ea8c87",
+      "name": "三源英华郡",
+      "district_group": "环城四区",
+      "district": "东丽区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "高层：92/94㎡，洋房：92㎡，别墅：233/290/309㎡",
+      "price_segments": "高层92平米(边）：49-55万；高层94平米（中）：43-52万；洋房92平米：55-62万；\n别墅233平米（联排）：233-320万；别墅290平米（双拼）：400-430万；别墅309平米（双拼）：490-520万",
+      "finish_type": "毛坯",
+      "delivery_time": "现房",
+      "source": "YH-XLSX",
+      "source_row": 133,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "便宜，环境还可以，东丽湖",
+        "cons": "在东丽湖里属于偏远位置。配套一般，远，修仙可以考虑。",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_96bf94822a",
+      "name": "诺金兰亭园",
+      "district_group": "远郊五区",
+      "district": "宝坻区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "洋房103、116㎡",
+      "price_segments": "洋房103㎡  105-127万                            洋房116㎡：119-142万",
+      "finish_type": "毛坯",
+      "delivery_time": "2026.8.30",
+      "source": "YH-XLSX",
+      "source_row": 134,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "大户型为主，地缘性",
+        "cons": "位置偏，配套差远郊，价格不稳",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_7639b923a7",
+      "name": "鹏飞·南开学苑",
+      "district_group": "市内六区",
+      "district": "南开区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "高层:78/85/98/99m²\n洋房：111m²/126m²",
+      "price_segments": "高层78平米:320万左右\n高层85平米:345-380万左右\n高层98/99平米:390-440万左右\n洋房111平米:560-610万左右\n洋房126平米:660-830万左右",
+      "finish_type": "毛坯",
+      "delivery_time": "A地块：2025年6月底 B地块：2025年年底",
+      "source": "YH-XLSX",
+      "source_row": 135,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "能转学，户型多，地铁近，有学校",
+        "cons": "价格贵，学校之前是汾水道小学，鹏飞在天津无交付社区",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_caa42c6852",
+      "name": "中海时光之镜",
+      "district_group": "市内六区",
+      "district": "河西区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "小高 106 113 130 143 185 237㎡",
+      "price_segments": "全部小高层：106平420-440万\n130平550-610万\n143平620-700万\n185平850-900万\n237平1100-1250万",
+      "finish_type": "精装",
+      "delivery_time": "2025-03-01",
+      "source": "YH-XLSX",
+      "source_row": 136,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "品质不错，产品力强",
+        "cons": "新梅江一部分纯改善不认可，价格掉的有点多",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_f7a51249e3",
+      "name": "天保意境芳华",
+      "district_group": "环城四区",
+      "district": "东丽区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "小高：89/95/110/125 洋房：125/145/ 165 叠拼：146/167",
+      "price_segments": "小高：160-280万 洋房：280-410万 叠拼：345-496万",
+      "finish_type": "毛坯",
+      "delivery_time": "2025/12/1底",
+      "source": "YH-XLSX",
+      "source_row": 137,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "产品力不错，准现房，空港一期，可选",
+        "cons": "挨着高速路有噪音，天保之前某项目交付水平一般般 口碑下降",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_61f66be8fd",
+      "name": "中海峰境南开",
+      "district_group": "市内六区",
+      "district": "南开区",
+      "available_units": {
+        "bucket": "10-50",
+        "raw": "10-50套"
+      },
+      "area_segments": "小高层143㎡，洋房120/175㎡",
+      "price_segments": "高层105平490-580万 高层125平590-680万 小高约143㎡三室780-850万\n洋房约120㎡三室750-800万\n洋房约175㎡四室1100-1300万",
+      "finish_type": "精装",
+      "delivery_time": "2026-03-01",
+      "source": "YH-XLSX",
+      "source_row": 139,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "户型好，品质不错，位置相对核心",
+        "cons": "可选性低，房源不全，价格不是都合适",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_bafd53a2ae",
+      "name": "想云湾",
+      "district_group": "环城四区",
+      "district": "东丽区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "洋房89㎡ 109㎡ 129㎡ 131㎡ 152㎡ 169㎡ 173㎡\n叠拼：134㎡、143㎡",
+      "price_segments": "洋房89㎡：145-170万左右\n洋房109㎡：195-210万左右\n洋房129㎡：250万左右\n洋房131㎡：260-275万\n洋房169㎡：360万左右\n洋房152㎡：315万左右\n洋房173㎡：365万左右\n叠拼134㎡：340万左右\n叠拼143㎡：420万左右",
+      "finish_type": "毛坯",
+      "delivery_time": "2024年12月底（现房）\n2025年3月底\n2026年4月底",
+      "source": "YH-XLSX",
+      "source_row": 140,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "价格便宜，可选性多，户型好，空港二期",
+        "cons": "二期啊，25块住宅用地，猴年马月搞完，周期长，一定要习惯生活在这种环境中",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_5b96a0819e",
+      "name": "天津·瑞府",
+      "district_group": "市内六区",
+      "district": "河西区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "高层104/122/140㎡ 小高层128/144/169㎡",
+      "price_segments": "高层：104平360-400万，122平425-450万，140平460-500万\n小高层128平480-500万，169平650-800万",
+      "finish_type": "精装",
+      "delivery_time": "一期169户型23.10月，二期所有户型24.10月",
+      "source": "YH-XLSX",
+      "source_row": 141,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "河西最南侧，可选性多，现房",
+        "cons": "产品稍微过时，大高层。学校一般",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_338f030ad2",
+      "name": "天保九如品筑",
+      "district_group": "环城四区",
+      "district": "东丽区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "洋房： 110 129 133 145 177 212㎡ 叠拼：240 300㎡",
+      "price_segments": "洋房：\n110㎡：200-210万左右（只有一楼）\n129㎡：235-250万左右\n133㎡：250-265万左右\n145㎡：285-300万左右\n177㎡：375-390万左右\n212㎡：515-530万左右\n叠拼：\n240㎡：550万起\n300㎡：810万起",
+      "finish_type": "毛坯",
+      "delivery_time": "现房",
+      "source": "YH-XLSX",
+      "source_row": 142,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "现房，产品还可以，二期",
+        "cons": "可选性低，交付水平一般般。周边慌。",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_2210b493f2",
+      "name": "保利拾光年",
+      "district_group": "环城四区",
+      "district": "西青区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "小高87、95㎡",
+      "price_segments": "87㎡：150-170万 95㎡：180-200万",
+      "finish_type": "毛坯",
+      "delivery_time": "现房",
+      "source": "YH-XLSX",
+      "source_row": 143,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "海泰板块，保利品质不错，相对可选",
+        "cons": "户型过时，产品一般，小高层体量大",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_b1bb0dfc99",
+      "name": "天保上城观景",
+      "district_group": "市内六区",
+      "district": "南开区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "高层：99/117/107/131/134/137㎡",
+      "price_segments": "99㎡：400万左右\n107㎡：420-460万\n117㎡：440万-460万\n131㎡：540-590万\n134㎡：570-600万\n137㎡：590-620万",
+      "finish_type": "毛坯",
+      "delivery_time": "现房",
+      "source": "YH-XLSX",
+      "source_row": 144,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "价格适中，可选性高，现房优势",
+        "cons": "天保这两年品质问题，位置一般，产品力一般",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_635e329518",
+      "name": "绿城桂语映月",
+      "district_group": "环城四区",
+      "district": "西青区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "小高85/105/125/130平米，高层85/130平米",
+      "price_segments": "小高85平米：170-185万\n小高105平米：240-280万\n小高125平米：240-250万\n小高130平米：300-320万\n高层85平米：150-170万\n高层130平米：240-280万",
+      "finish_type": "毛坯",
+      "delivery_time": "2025-12-01",
+      "source": "YH-XLSX",
+      "source_row": 145,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "西营门青云桥旁，绿城品质好，可选性高",
+        "cons": "噪音大，户型差。",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_863504f191",
+      "name": "水西雲庐",
+      "district_group": "环城四区",
+      "district": "西青区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "洋房119/140㎡/160㎡/180㎡/200/170㎡/220㎡/245㎡/125㎡/145㎡/230㎡/275㎡/310㎡；\n小高103㎡；\n别墅210㎡/225/230㎡",
+      "price_segments": "洋房450—1800万 \n小高260-275万\n别墅1000—1500万",
+      "finish_type": "小高别墅毛坯；洋房部分毛坯部分精装",
+      "delivery_time": "2023.12/2024.12/2025.5.30",
+      "source": "YH-XLSX",
+      "source_row": 146,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "绿城品质好，户型好，水西板块绿化环境好",
+        "cons": "水西板块内配套不成熟，周期会长一些，可选性不高",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_729275416e",
+      "name": "绿城柳岸晓风",
+      "district_group": "环城四区",
+      "district": "西青区",
+      "available_units": {
+        "bucket": "<10",
+        "raw": "＜10套"
+      },
+      "area_segments": "洋房跃层：170、230㎡",
+      "price_segments": "跃层：170平：280万；230平：460万",
+      "finish_type": "精装/跃层毛坯",
+      "delivery_time": "现房",
+      "source": "YH-XLSX",
+      "source_row": 147,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "绿城品质好，户型好，生活成熟",
+        "cons": "大寺板块相对较乱，价格不太友好，可选性低",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_7b872a9519",
+      "name": "绿城·鳳起悦鸣",
+      "district_group": "市内六区",
+      "district": "南开区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "小高 150/180平 /215平",
+      "price_segments": "小高 150平 840-960万\n小高180平 1150-1250万\n小高215平只有下跃两套1760万",
+      "finish_type": "精装",
+      "delivery_time": "2024年10月底",
+      "source": "YH-XLSX",
+      "source_row": 148,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "产品好，品质高，服装街地块位置核心",
+        "cons": "价格高，做不到入则宁静出则繁华，周边人流量很大",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_3187be3d9a",
+      "name": "上东金茂晓棠",
+      "district_group": "环城四区",
+      "district": "东丽区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "晓棠小高：94-114㎡ 晓棠洋房：101-120㎡",
+      "price_segments": "晓棠小高94㎡：192-205万\n晓棠小高114㎡：240-245万\n晓棠洋房101㎡：248-260万\n晓棠洋房120㎡：320-330万",
+      "finish_type": "精装",
+      "delivery_time": "晓棠一期 2026/6 晓棠二期2027/4",
+      "source": "YH-XLSX",
+      "source_row": 149,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "产品好，物业好，开发商好，规划好，地铁近",
+        "cons": "大饼，览秀城还没动呢，真的再造一座城。周边设施完善需要太长时间。",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_da340e983b",
+      "name": "中国铁建·花语澜廷",
+      "district_group": "环城四区",
+      "district": "津南区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "毛坯洋房139㎡",
+      "price_segments": "139平260万\n只剩二楼顶楼",
+      "finish_type": "毛坯",
+      "delivery_time": "2024-06-30",
+      "source": "YH-XLSX",
+      "source_row": 150,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "临近地铁，价格适中",
+        "cons": "国展大饼，消化不良，价格降了n次",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_7bf16ba994",
+      "name": "融金财富中心",
+      "district_group": "环城四区",
+      "district": "津南区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "高层33-1000㎡",
+      "price_segments": "28万～800万",
+      "finish_type": "毛坯",
+      "delivery_time": "现房",
+      "source": "YH-XLSX",
+      "source_row": 151,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "现房，便宜",
+        "cons": "公寓，年限问题，流通性问题",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_e8e7e2bc1c",
+      "name": "绿城桂语朝阳",
+      "district_group": "环城四区",
+      "district": "西青区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "高层：76、89、108、115、126㎡",
+      "price_segments": "高层：76㎡:79-85万，89㎡:105-125万，108㎡:140-155万，115㎡:135-155万，126㎡:160-170万",
+      "finish_type": "毛坯",
+      "delivery_time": "一期现房，二期2025年6月",
+      "source": "YH-XLSX",
+      "source_row": 152,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "绿城品质好，户型相对还可以，可选性多",
+        "cons": "大寺边缘位置，周边慌的很，配套差",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_55d9bcd127",
+      "name": "万科翡翠嘉和",
+      "district_group": "环城四区",
+      "district": "西青区",
+      "available_units": {
+        "bucket": "10-50",
+        "raw": "10-50套"
+      },
+      "area_segments": "洋房：119/133㎡",
+      "price_segments": "119㎡：275-300万\n133㎡：340万",
+      "finish_type": "精装",
+      "delivery_time": "2025.6月",
+      "source": "YH-XLSX",
+      "source_row": 153,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "中北配套成熟，小区现房准现房，绿化好南侧南运河",
+        "cons": "北侧高铁噪音，小区户型较差，可选性低",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_d39016448b",
+      "name": "中交春风景里",
+      "district_group": "市内六区",
+      "district": "红桥区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "高层：77/89/100/112平/126平；",
+      "price_segments": "一期高层：\n126平245-255万\n二期高层（价差5万）\n77平140万；\n89平157万；\n100平177万；\n112平198万；\n126平222万",
+      "finish_type": "简装",
+      "delivery_time": "一期现房 二期25年12月底",
+      "source": "YH-XLSX",
+      "source_row": 154,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "价格便宜，市区上车门槛，央企开发，绿城物业",
+        "cons": "户型一般，设计老，红桥边缘位置，双环屯板块",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_3a5c573735",
+      "name": "中交春映海河",
+      "district_group": "市内六区",
+      "district": "河东区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "小高:95/120/128/140平",
+      "price_segments": "洋房128平米：460-490万\n小高95平米：320-350万\n小高120平米：420-440万\n小高140平米：530-560万",
+      "finish_type": "精装",
+      "delivery_time": "现房",
+      "source": "YH-XLSX",
+      "source_row": 158,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "海河旁边，可选性多",
+        "cons": "不能直观海河，价格高，周边城市界面一般。",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_46b3d13f54",
+      "name": "津铁镜界",
+      "district_group": "远郊五区",
+      "district": "静海区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "洋房：80/90/108/142；叠拼:上叠132平，下叠售罄",
+      "price_segments": "洋房：80平 100-117万左右，90平127-140万左右，108平133-165万左右，142平185-208万左右\n别墅：132平上叠200万左右",
+      "finish_type": "毛坯 /精装（住宅80/90平精装）",
+      "delivery_time": "一期2025年10月底，二期2026年3月底",
+      "source": "YH-XLSX",
+      "source_row": 160,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "产品力强，户型好，纯洋房",
+        "cons": "团泊西相对好一些但是项目处于板块最南侧，周边配套一个养老院剩下啥也没有南侧村里",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_28dbe4c129",
+      "name": "龙曜城",
+      "district_group": "环城四区",
+      "district": "北辰区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "高层：89㎡、110m ²洋房：123㎡、140㎡、176㎡",
+      "price_segments": "高层89平米137-160万；高层110㎡167-190万，\n洋房123㎡270-290万,140㎡295-330万，176㎡390-420万",
+      "finish_type": "毛坯",
+      "delivery_time": "2025/12/31/和2026/4/30和2026/6/30",
+      "source": "YH-XLSX",
+      "source_row": 161,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "产品力强，龙湖园林一流，物业不错，中环线旁",
+        "cons": "板块周期长，未来很长时间生活在嘈杂环境中。",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_b769892a30",
+      "name": "绿城锦玉兰",
+      "district_group": "环城四区",
+      "district": "北辰区",
+      "available_units": {
+        "bucket": "10-50",
+        "raw": "10-50套"
+      },
+      "area_segments": "洋房106/126/143",
+      "price_segments": "106平米:240-255万 126平米：295-310万 143平米:345万-360万",
+      "finish_type": "精装",
+      "delivery_time": "2026-10-01",
+      "source": "YH-XLSX",
+      "source_row": 162,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "产品力强，绿城源于江南园林，绿化，服务都很不错。",
+        "cons": "大户型为主，周边城市界面一般，地缘性改善可看，刚需刚改不太友好。",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_942ff08e46",
+      "name": "金隅金成府",
+      "district_group": "环城四区",
+      "district": "北辰区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "82m²，99m²，105m²，116m²",
+      "price_segments": "小高层：165-260万；洋房：280-300万",
+      "finish_type": "精装",
+      "delivery_time": "现房",
+      "source": "YH-XLSX",
+      "source_row": 163,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "现房即买即住，周边天穆镇生活气息浓郁。",
+        "cons": "可选行不多，一期价格偏高，属于板块边缘位置",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_c888151d35",
+      "name": "金隅金成熙府",
+      "district_group": "环城四区",
+      "district": "北辰区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "79m²，89m²，124m²",
+      "price_segments": "小高层：120-230万",
+      "finish_type": "精装",
+      "delivery_time": "现房",
+      "source": "YH-XLSX",
+      "source_row": 164,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "即买即住，可选性多一些，价格相对合适一些",
+        "cons": "项目产品力一般，位置板块内较差。",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_9e4cdd229f",
+      "name": "通新润府",
+      "district_group": "环城四区",
+      "district": "津南区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "高层：98.115㎡ 小高92.113㎡ 洋房124㎡",
+      "price_segments": "高层：71-95万 小高：79-107万 洋房：113-125万",
+      "finish_type": "精装修",
+      "delivery_time": "现房",
+      "source": "YH-XLSX",
+      "source_row": 165,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "价格便宜，现房带装修",
+        "cons": "偏",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_b4f24080f3",
+      "name": "恒基旭辉都会江来",
+      "district_group": "环城四区",
+      "district": "东丽区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "小高：105m³、洋房：98/112/120平米",
+      "price_segments": "小高105平米:163万左右 洋房98平米:160万 洋房112平米:195-215万 洋房122平米:240-270万",
+      "finish_type": "毛坯",
+      "delivery_time": "现房",
+      "source": "YH-XLSX",
+      "source_row": 166,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "即买即住，可选，价格合适",
+        "cons": "旭辉已经不行啦，物业得不到原有品质保障，周边慌的很。地铁远",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_d22682d1e2",
+      "name": "平安泰达金融中心-马场道57号",
+      "district_group": "市内六区",
+      "district": "河西区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "高层86-91㎡1居\n高层119-136㎡2居\n高层160-190㎡3居",
+      "price_segments": "高层86-91㎡1居：180-200万\n高层119-136㎡2居:270-350万",
+      "finish_type": "精装",
+      "delivery_time": "2025-06-01",
+      "source": "YH-XLSX",
+      "source_row": 167,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "可选性高，超高层",
+        "cons": "公寓，年限问题，流通性问题",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_719aef8ce7",
+      "name": "中建玖樾府",
+      "district_group": "环城四区",
+      "district": "东丽区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "小高：85平米 洋房：108㎡",
+      "price_segments": "小高：85平米138-160万，\n洋房：108平米 200-230万",
+      "finish_type": "毛坯",
+      "delivery_time": "现房",
+      "source": "YH-XLSX",
+      "source_row": 168,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "现房即买即住，价格合适，配套全",
+        "cons": "产品力一般哇，新立板块位置较差的项目，可选性不多",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_62e12075cd",
+      "name": "复地林与里",
+      "district_group": "环城四区",
+      "district": "东丽区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "洋房120/140平",
+      "price_segments": "洋房120平米：170-190万\n洋房140平米：200-220万",
+      "finish_type": "毛坯",
+      "delivery_time": "现房",
+      "source": "YH-XLSX",
+      "source_row": 169,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "便宜，空港二期",
+        "cons": "空港二期里最差位置，周边没有邻居只有自己，要习惯孤独",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_aae0637aab",
+      "name": "大华清水湾",
+      "district_group": "市内六区",
+      "district": "河东区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "小高层83//103/106 洋房125/141",
+      "price_segments": "小高层83：245-265万\n小高层103：270-280万\n小高层106：300-320万\n洋房125：370-420万\n洋房141：400-500万",
+      "finish_type": "精装",
+      "delivery_time": "2025-12-01",
+      "source": "YH-XLSX",
+      "source_row": 174,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "户型好，设计不错，万爱板块可选性多",
+        "cons": "大华在天津的项目套路深，可以等等准现房现房",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_a5e60451c5",
+      "name": "北科建·水岸华府",
+      "district_group": "环城四区",
+      "district": "北辰区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "小高：79、98、100、104平米",
+      "price_segments": "小高：79㎡65万，98、100平米78万，104㎡82-84万",
+      "finish_type": "毛坯",
+      "delivery_time": "现房",
+      "source": "YH-XLSX",
+      "source_row": 176,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "便宜，地铁旁",
+        "cons": "位置干哪去了？五号线终点站只有自己一个项目，孤盘",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_dfd0ed757b",
+      "name": "首创禧瑞府",
+      "district_group": "市内六区",
+      "district": "红桥区",
+      "available_units": {
+        "bucket": "10-50",
+        "raw": "10-50套"
+      },
+      "area_segments": "别墅168m²",
+      "price_segments": "别墅：470-690万",
+      "finish_type": "毛坯",
+      "delivery_time": "现房",
+      "source": "YH-XLSX",
+      "source_row": 179,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "现房，别墅产品，市区稀缺",
+        "cons": "户型拉胯，北侧火车到，西侧旧厂房，南面快速路",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_a421cb38e8",
+      "name": "远洋潮起东方",
+      "district_group": "环城四区",
+      "district": "东丽区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "洋房115㎡   叠拼142㎡",
+      "price_segments": "洋房114㎡ ：190-210万\n叠拼142㎡ ：上叠 310万左右\n下叠420万左右（叠拼现房）",
+      "finish_type": "毛坯",
+      "delivery_time": "洋房：2026/5/30   叠拼（现房）",
+      "source": "YH-XLSX",
+      "source_row": 180,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "产品不错，空港二期",
+        "cons": "远洋有一段时间资金问题，空港二期周期问题",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_8d85512eda",
+      "name": "天房海河湾",
+      "district_group": "市内六区",
+      "district": "河西区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "53㎡\n83㎡\n90㎡",
+      "price_segments": "53㎡:145万-155万\n83㎡:245万左右（仅两套5F/6F）\n90㎡:255万-275万",
+      "finish_type": "毛坯",
+      "delivery_time": "现房",
+      "source": "YH-XLSX",
+      "source_row": 181,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "价格便宜，可选性多，",
+        "cons": "天房项目，户型一般。",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_432c3a0229",
+      "name": "经纬城市绿洲滨海",
+      "district_group": "滨海新区",
+      "district": "大港区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "高层三室136/143㎡高层两室90/108㎡",
+      "price_segments": "高层90平：60-80万 \n高层108平：88-100万 \n高层143平：120-130万 \n高层136平：125-145万左右",
+      "finish_type": "毛坯",
+      "delivery_time": "海佳园2025/6/30、海居园2期2025/11/30、海居5期2026/12月底",
+      "source": "YH-XLSX",
+      "source_row": 182,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "现房，刚改，可选性多",
+        "cons": "偏，一般本地人都很少去，油田本地职工为主",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_c48ccec0d8",
+      "name": "路劲太阳城壹号著区",
+      "district_group": "市内六区",
+      "district": "河东区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "高层：99/109/115/127",
+      "price_segments": "99㎡：228万起\n109㎡：256万起\n115㎡：265万起\n127㎡：299万起",
+      "finish_type": "精装",
+      "delivery_time": "2026-06-01",
+      "source": "YH-XLSX",
+      "source_row": 183,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "配套成熟，人气很足，大型居住板块，刚需上车门槛",
+        "cons": "设计老，大高层，地势低，土地年限",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_45738a9c4e",
+      "name": "天津万达自在澜湾",
+      "district_group": "远郊五区",
+      "district": "静海区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "二期80/110/124平；三期85/95/112/144",
+      "price_segments": "二期80平95万110平136万左右124平145万左右；三期85平92万左右，95平103万左右，112平128万左右144平172万左右",
+      "finish_type": "毛坯",
+      "delivery_time": "二期2024年11月底，三期2026年6月底",
+      "source": "YH-XLSX",
+      "source_row": 184,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "产品力强，户型好，纯洋房",
+        "cons": "静海万达出现过一段时间问题，城投共同开发，后期品质问题",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_3ee5c30dbd",
+      "name": "中车津浦智汇港",
+      "district_group": "市内六区",
+      "district": "河北区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "高层76/86/87/89/110/122平米",
+      "price_segments": "76㎡   2室    179万-183万【剩余2/3/18/顶】\n87㎡    3室    208万-217万【剩余2/顶】\n86㎡    3室    217万-226万【楼层可选】\n89㎡    3室    210万-225万【楼层可选】\n110㎡   3室    270万-276万【楼层可选】\n122㎡   3室    323万-346万【楼层可选】",
+      "finish_type": "毛坯",
+      "delivery_time": "工期在25年年底，合同交房时间写26.3月底",
+      "source": "YH-XLSX",
+      "source_row": 186,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "产品力不错，可选，户型多",
+        "cons": "周边铁路 快速噪音问题，隔壁一条街不太理想，空地还很多待开发",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_26d0efb8a9",
+      "name": "天津华侨城",
+      "district_group": "环城四区",
+      "district": "东丽区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "别墅206-280",
+      "price_segments": "别墅206-214（联排中户）：189万起；别墅250-170（联排边户）：251万起；双拼251-290平米：300万起",
+      "finish_type": "毛坯",
+      "delivery_time": "现房",
+      "source": "YH-XLSX",
+      "source_row": 187,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "环境好，东丽湖，现房央企，天天做过山车",
+        "cons": "玩可以，住着没那么方便，东丽湖，项目卖了n多年",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_0f1e42a72a",
+      "name": "中储城邦",
+      "district_group": "环城四区",
+      "district": "北辰区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "高层 90/110/120 洋房 143 叠拼 135/156",
+      "price_segments": "高层 110-165 万 洋房 245 万起 叠拼 255-300 万",
+      "finish_type": "毛坯",
+      "delivery_time": "现房",
+      "source": "YH-XLSX",
+      "source_row": 190,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "现房，价格便宜",
+        "cons": "守住快速路，噪音，产品力，人气",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_9313608cf3",
+      "name": "远洋未来城",
+      "district_group": "环城四区",
+      "district": "北辰区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "高层：83、89、105㎡小高层：115、118㎡洋房：125、143㎡",
+      "price_segments": "高层：82m²115-130万\n89m²135-150万\n105m²155-170万\n小高层：115m²185-200万\n118m²195-220万\n洋房：125m²210-300万\n142m²240-360万",
+      "finish_type": "毛坯/洋房精装/洋房毛坯",
+      "delivery_time": "一标段2025年12月\n二标段2026年12月",
+      "source": "YH-XLSX",
+      "source_row": 191,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "可选性多，周边配套逐步完善，双轨道交通",
+        "cons": "开发商有一段时间资金出现问题，本地还迁房问题，交付品质问题。",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_ea82dedff1",
+      "name": "和融广场悦湾公馆",
+      "district_group": "市内六区",
+      "district": "河北区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "公寓66/86/92/120平米",
+      "price_segments": "公寓一室61/64/66平米：130-150万\n公寓两室86/89平米：190-230万\n公寓三室120平米：330万起",
+      "finish_type": "精装",
+      "delivery_time": "现房",
+      "source": "YH-XLSX",
+      "source_row": 193,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "现房，便宜",
+        "cons": "公寓，年限问题，流通性问题",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_eb609d18f9",
+      "name": "万科运河文化村",
+      "district_group": "环城四区",
+      "district": "北辰区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "高层：86/89/99/101平\n洋房：105／120平米",
+      "price_segments": "高层：\n86平米62-77万\n89平米68-86万\n99平米77-96万\n101平米84-93万\n洋房：\n105平米110-135万\n120平米140-150万",
+      "finish_type": "精装/简装",
+      "delivery_time": "四期25年12月底\n五期26年9月底",
+      "source": "YH-XLSX",
+      "source_row": 194,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "便宜，万科物业园林不错",
+        "cons": "偏到了村里，村中盘，盘中村",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_6ff5774a97",
+      "name": "新城悦隽风华·悦城",
+      "district_group": "环城四区",
+      "district": "北辰区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "小高82平，洋房96平",
+      "price_segments": "82平米59-75万；96平米75-85万",
+      "finish_type": "毛坯",
+      "delivery_time": "现房",
+      "source": "YH-XLSX",
+      "source_row": 195,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "现房，便宜",
+        "cons": "同样到了村里面",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_28b4828f27",
+      "name": "远洋寛阅时光",
+      "district_group": "环城四区",
+      "district": "东丽区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "洋房98/110/120㎡",
+      "price_segments": "洋房98㎡：166万左右\n洋房110㎡：190-220万\n洋房120㎡：227-240万",
+      "finish_type": "精装/毛坯",
+      "delivery_time": "现房",
+      "source": "YH-XLSX",
+      "source_row": 196,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "即买即住，价格合适",
+        "cons": "远洋有一段时间资金问题，李明庄还迁房多，周边慌",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_837c068e55",
+      "name": "天房六合国际",
+      "district_group": "市内六区",
+      "district": "河西区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "小高96/100",
+      "price_segments": "96:330-370    100：350-390",
+      "finish_type": "毛坯",
+      "delivery_time": "现房",
+      "source": "YH-XLSX",
+      "source_row": 198,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "价格便宜，现房",
+        "cons": "户型过时，产品一般",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_0faa99ca81",
+      "name": "天津锦绣学府",
+      "district_group": "远郊五区",
+      "district": "静海区",
+      "available_units": {
+        "bucket": "10-50",
+        "raw": "10-50套"
+      },
+      "area_segments": "高层:71.84㎡/80.18㎡",
+      "price_segments": "58-73万",
+      "finish_type": "毛坯",
+      "delivery_time": "2025年4月底",
+      "source": "YH-XLSX",
+      "source_row": 199,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "便宜",
+        "cons": "荣盛本身资金问题，西侧大片空地，小区内部品质问题",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_d624030ad8",
+      "name": "松江东湖嘉庭",
+      "district_group": "环城四区",
+      "district": "东丽区",
+      "available_units": {
+        "bucket": "10-50",
+        "raw": "10-50套"
+      },
+      "area_segments": "高层：78/93",
+      "price_segments": "40-58万",
+      "finish_type": "毛坯",
+      "delivery_time": "现房",
+      "source": "YH-XLSX",
+      "source_row": 201,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "即买即住，价格合适",
+        "cons": "东丽湖偏，小区进过抵押，产品力拉胯",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_b7a11223d0",
+      "name": "体北鲁能公馆",
+      "district_group": "市内六区",
+      "district": "河西区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "高层：81,101,107,117㎡\n小高层:136㎡ \n洋房:161-166㎡",
+      "price_segments": "高层:81平米:388-410万\n101平米:490-510万\n107平米:550-570万\n117平米:590-610万\n小高:136平米:750-820万\n洋房:166/161平米:1000-1200万",
+      "finish_type": "精装",
+      "delivery_time": "2023年7月31日，2023年9月30日",
+      "source": "YH-XLSX",
+      "source_row": 203,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "可选，体北板块，地缘性为主",
+        "cons": "产品过时，周边一般",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_7f13a8db55",
+      "name": "绿城桂月云翠",
+      "district_group": "环城四区",
+      "district": "东丽区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "洋房79/89/107/130/143",
+      "price_segments": "79㎡：158-178万\n89㎡：178-208万\n107㎡：228-258万\n130㎡：278-308万\n143㎡： 338-368万",
+      "finish_type": "毛坯",
+      "delivery_time": "预计2026年9月30",
+      "source": "YH-XLSX",
+      "source_row": 204,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "产品好，物业好，开发商好",
+        "cons": "空港一期中位置稍差，交付时间稍晚",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_61ab81b738",
+      "name": "鲁能泰山7号",
+      "district_group": "环城四区",
+      "district": "津南区",
+      "available_units": {
+        "bucket": "10-50",
+        "raw": "10-50套"
+      },
+      "area_segments": "联排215平，商铺60-1200平",
+      "price_segments": "联排550万起，商铺120万起",
+      "finish_type": "毛坯",
+      "delivery_time": "现房",
+      "source": "YH-XLSX",
+      "source_row": 205,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "商铺和部分别墅",
+        "cons": "可选性很小",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_ba55870a99",
+      "name": "珺悦峰",
+      "district_group": "远郊五区",
+      "district": "宝坻区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "高层79、88、97、95、112小高95、97（1楼）",
+      "price_segments": "高层79㎡：55-65万；  高层88㎡：65-72万；高层97㎡:75-78万  高层95㎡：80-86万  高层112㎡：90-103万； 小高95、97㎡：86万左右；",
+      "finish_type": "毛坯",
+      "delivery_time": "现房",
+      "source": "YH-XLSX",
+      "source_row": 207,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "户型多，价格便宜",
+        "cons": "位置偏，配套差远郊，价格不稳",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_b3959eb31b",
+      "name": "玺悦峰",
+      "district_group": "远郊五区",
+      "district": "宝坻区",
+      "available_units": {
+        "bucket": "10-50",
+        "raw": "10-50套"
+      },
+      "area_segments": "高层92、124㎡；小高135㎡",
+      "price_segments": "高层92㎡：94-103万\n高层124㎡：133-140万\n小高层135㎡：145万左右",
+      "finish_type": "毛坯",
+      "delivery_time": "现房",
+      "source": "YH-XLSX",
+      "source_row": 208,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "现房，房源不多",
+        "cons": "位置偏，配套差远郊，价格不稳",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_01936cbc5a",
+      "name": "中交香颂",
+      "district_group": "远郊五区",
+      "district": "宝坻区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "高层：90、101平洋房93、123、143",
+      "price_segments": "高层：65-150万",
+      "finish_type": "毛坯",
+      "delivery_time": "现房",
+      "source": "YH-XLSX",
+      "source_row": 209,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "央企背景，户型不错，价格合适现房",
+        "cons": "位置偏，配套差远郊，价格不稳",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_201b4ad945",
+      "name": "弘业云邸",
+      "district_group": "远郊五区",
+      "district": "宝坻区",
+      "available_units": {
+        "bucket": "10-50",
+        "raw": "10-50套"
+      },
+      "area_segments": "126-211平米",
+      "price_segments": "126平米：（145万-150万\n142平米：（155万-168万）\n149平米：（190万-195万）\n164平米：（220万-240万）\n211 平米：（310万-320万）",
+      "finish_type": "毛坡",
+      "delivery_time": "2026-10-01",
+      "source": "YH-XLSX",
+      "source_row": 213,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "大户型偏改善，地缘性",
+        "cons": "位置偏，配套差远郊，价格不稳",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_2730ba37df",
+      "name": "津铁格调罗宁花园",
+      "district_group": "市内六区",
+      "district": "河东区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "小高89/102㎡  洋房107/127㎡",
+      "price_segments": "小高89㎡：250-270万\n小高102㎡：290-320万\n洋房107㎡:360-390万\n洋房127㎡：430-470万",
+      "finish_type": "毛坯",
+      "delivery_time": "2027-05-30",
+      "source": "YH-XLSX",
+      "source_row": 214,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "园林品质好，可选性多",
+        "cons": "大期房，位置王串场，价格高。",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_78b0b10b34",
+      "name": "城投时代之城",
+      "district_group": "环城四区",
+      "district": "东丽区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "2#、3#4#小高89中户、104边户；\n6#16#中户84平、边户89平；\n10#11#洋房118平；\n15#洋房139平；\n1#7#13#14#售罄",
+      "price_segments": "2#、3#4#小高89中户140-160万、\n边户104平178-200\n6#16#小高中户84平137-155万、\n边户89平150-170万\n10#11#洋房118平240-260万；\n8#、15#洋房139平285-324万",
+      "finish_type": "毛坯（团装项目）",
+      "delivery_time": "2025-10-01",
+      "source": "YH-XLSX",
+      "source_row": 215,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "户型多，可选，位置不错",
+        "cons": "赵沽里板块周期长，项目还处于一期 后面还有五块地待开发，主干路交汇处",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_57a6b18294",
+      "name": "中建玖棠府",
+      "district_group": "环城四区",
+      "district": "东丽区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "95-115-125㎡",
+      "price_segments": "95㎡：68-85万\n115㎡：78-100万\n125㎡：100-115万",
+      "finish_type": "毛坯",
+      "delivery_time": "现房",
+      "source": "YH-XLSX",
+      "source_row": 216,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "东丽湖环境不错，价格便宜，可选",
+        "cons": "产品力一般，对于其他板块内项目稍贵，配套问题",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_4bf0abcf64",
+      "name": "中交雅郡·城东春晓",
+      "district_group": "环城四区",
+      "district": "东丽区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "小高层：75/82/85/87/89/95\n洋房：95/100/106/110//118/125",
+      "price_segments": "小高层：\n75㎡：92万-110万\n82㎡：106万-112万\n85㎡：113万-120万\n87㎡：116万-117万\n89㎡：121万-130万\n95㎡：135万-145万\n洋房：\n95㎡：140万\n100㎡：150万－160万\n106㎡：160万－260万 \n110㎡：165万－170万 \n118㎡：182万—205万\n125㎡：240万－255万",
+      "finish_type": "二/三期简装/四期毛坯",
+      "delivery_time": "二期现房，三期现房，四期2025/10/31",
+      "source": "YH-XLSX",
+      "source_row": 217,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "金钟街板块，价格合适，可选性多，一共四期，地铁上盖，人气足",
+        "cons": "有个庙在小区隔壁，隔壁五金城",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    },
+    {
+      "id": "cmp_0d53bc47b4",
+      "name": "中国铁建·花语尚东",
+      "district_group": "环城四区",
+      "district": "东丽区",
+      "available_units": {
+        "bucket": ">50",
+        "raw": "＞50套"
+      },
+      "area_segments": "一期洋房：113，125；二期小高：84/105，洋房：93/110/125/142\n三期小高：75/84/86/99",
+      "price_segments": "小高层：\n74㎡：90万-96万\n84㎡：99万-145万\n86㎡：107万-115万\n99㎡：120万-130万\n105㎡：135万\n洋房：\n93㎡：145万\n110㎡：180万－230万\n125㎡：235万－265万 \n143㎡：280万－310万",
+      "finish_type": "毛坯",
+      "delivery_time": "一期现房，二期：2024年12月底，三期：2025年底",
+      "source": "YH-XLSX",
+      "source_row": 218,
+      "is_new_house": true,
+      "sensitive": {
+        "pros": "产品力不错，可选，央企开发自持物业",
+        "cons": "价格板块内稍高，刚需合适，改善谨慎",
+        "source": "YH-XLSX",
+        "note": "永辉房产主观点评, 仅作参考"
+      }
+    }
+  ],
+  "source_codes": {
+    "YH-XLSX": "永辉房产 2026 新房 xlsx (2026年永辉选房全天津项目优缺点)"
+  },
+  "sensitive": true,
+  "sensitive_reason": "永辉房产 2026 新房清单, 含商业价值, 不对外公开"
+}

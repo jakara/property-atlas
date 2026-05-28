@@ -39,6 +39,10 @@
         "tuition":    { "type": ["string", "null"] },
         "note":       { "type": ["string", "null"] },
         "communities_text": { "type": ["string", "null"] },
+        "lat":                { "type": ["number", "null"], "minimum": 38.5, "maximum": 40.3 },
+        "lon":                { "type": ["number", "null"], "minimum": 116.7, "maximum": 118.0 },
+        "geocode_source":     { "$ref": "_common.schema.json#/$defs/geocode_source" },
+        "geocode_confidence": { "$ref": "_common.schema.json#/$defs/geocode_confidence" },
         "source":     { "$ref": "_common.schema.json#/$defs/source_code" },
         "sensitive":  { "$ref": "#/$defs/SchoolSensitive" }
       }
@@ -56,6 +60,7 @@
         "comment":         { "type": ["string", "null"] },
         "data_origin":     { "type": ["string", "null"] },
         "source":          { "$ref": "_common.schema.json#/$defs/source_code" },
+        "source_url":      { "type": ["string", "null"] },
         "note":            { "type": ["string", "null"] }
       }
     }
