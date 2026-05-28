@@ -37,6 +37,35 @@ struct LegacyMigratorTests {
         #expect(datasets.isEmpty)
     }
 
+    @Test func migrateConvertsLegacySchoolsToNewSchools() throws {
+        let container = try TestContainer.makeInMemory(for: ModelSchema.allTypes)
+        let ctx = ModelContext(container)
+        let ls = LegacySchool(name: "鞍山道小学", type: "小学", district: "和平区", tier: "重点")
+        ls.lat = 39.122
+        ls.lon = 117.193
+        ls.isJiunian = false
+        ls.is12Year = false
+        ls.isMarketKey = true
+        ls.communitiesText = "静安社区..."
+        ls.foundedYear = 1954
+        ctx.insert(ls)
+        try ctx.save()
+        try LegacyMigrator.run(in: ctx)
+        let schools = try ctx.fetch(FetchDescriptor<School>())
+        #expect(schools.count == 1)
+        let s = try #require(schools.first)
+        #expect(s.name == "鞍山道小学")
+        #expect(s.category == "小学")
+        #expect(s.grade == "重点")
+        #expect(s.form == "普通")
+        #expect(s.latitude == 39.122)
+        #expect(s.longitude == 117.193)
+        #expect(s.foundYear == 1954)
+        let defs = try ctx.fetch(FetchDescriptor<CustomFieldDef>())
+            .filter { $0.entityType == "school" }
+        #expect(defs.contains { $0.key == "isMarketKey" })
+    }
+
     @Test func migrateConvertsSchoolZonesToAreas() throws {
         let container = try TestContainer.makeInMemory(for: ModelSchema.allTypes)
         let ctx = ModelContext(container)
