@@ -36,6 +36,15 @@ enum SeedImporter {
         into context: ModelContext,
         progress: @escaping (Double, String) -> Void = { _, _ in }
     ) throws -> Bool {
+        // P1: Try legacy migration first (idempotent)
+        try LegacyMigrator.run(in: context)
+        // If migration produced a Dataset, skip the rest (already migrated)
+        let datasets = try context.fetch(FetchDescriptor<Dataset>())
+        if !datasets.isEmpty {
+            progress(1.0, "已迁移")
+            return false
+        }
+
         guard needsImport(context) else {
             progress(1.0, "已导入")
             return false
