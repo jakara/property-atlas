@@ -17,10 +17,10 @@ struct PropertyAtlasApp: App {
             let schema = Schema([
                 LegacySchoolZone.self, LegacyCompound.self, Compound.self, LegacySchool.self, School.self,
                 SchoolGroup.self, Policy.self, AdmissionRate.self, CompoundSchoolMatch.self,
-                SchoolScore.self, AdmissionDoc.self, BuiltinTag.self,
+                SchoolScore.self, LegacyAdmissionDoc.self, BuiltinTag.self,
                 PropertyMark.self, Visit.self, VisitPhoto.self,
                 TagExtension.self, VisitTag.self, UserArea.self, ShareSubmission.self,
-                Dataset.self, POI.self, Area.self, StyleRule.self, Palette.self, Theme.self, Layer.self, FilterFieldConfig.self, Photo.self,
+                Dataset.self, POI.self, Area.self, StyleRule.self, Palette.self, Theme.self, Layer.self, FilterFieldConfig.self, Photo.self, Document.self,
             ])
             #if targetEnvironment(macCatalyst)
             // Mac Catalyst: 关 CloudKit 镜像 (entitlement 在但不接 iCloud); 否则会 ServerRejected

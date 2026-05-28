@@ -1,7 +1,7 @@
 import Foundation
 import SwiftData
 
-@Model final class AdmissionDoc {
+@Model final class LegacyAdmissionDoc {
     var id: UUID = UUID()
     var title: String = ""
     var district: String = ""
@@ -11,7 +11,7 @@ import SwiftData
     var ocrText: String?
     var createdAt: Date = Date()
 
-    init(id: UUID = UUID(), title: String, district: String, year: Int) {
+    init(id: UUID = UUID(), title: String, district: String, year: Int) { // swiftlint:disable:this function_parameter_count
         self.id = id
         self.title = title
         self.district = district
