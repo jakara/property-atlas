@@ -248,4 +248,32 @@ struct LegacyMigratorTests {
             .map(\.fieldKey)
         #expect(compoundSlots == ["finishType", "isNewHouse"])
     }
+
+    @Test func migrateSeedsPalettesThemesAndDefaultLayer() throws {
+        let container = try TestContainer.makeInMemory(for: ModelSchema.allTypes)
+        let ctx = ModelContext(container)
+        let lc = LegacyCompound(name: "x", district: "和平区", latitude: 39.1, longitude: 117.2)
+        ctx.insert(lc)
+        try ctx.save()
+        try LegacyMigrator.run(in: ctx)
+
+        let palettes = try ctx.fetch(FetchDescriptor<Palette>())
+        let names = Set(palettes.map(\.name))
+        #expect(names.contains("default-rainbow"))
+        #expect(names.contains("category-cool"))
+        #expect(names.contains("category-warm"))
+        #expect(names.contains("mono-blue"))
+
+        let themes = try ctx.fetch(FetchDescriptor<Theme>())
+        #expect(themes.contains { $0.name == "字段总览" })
+        #expect(themes.contains { $0.name == "学区视图" })
+        #expect(themes.contains { $0.name == "商圈视图" })
+        #expect(themes.contains { $0.name == "新房地图" })
+
+        let layers = try ctx.fetch(FetchDescriptor<Layer>())
+        #expect(layers.contains { $0.isDefault && $0.name == "全部" })
+
+        let datasets = try ctx.fetch(FetchDescriptor<Dataset>())
+        #expect(datasets.first?.activeThemeId != nil)
+    }
 }

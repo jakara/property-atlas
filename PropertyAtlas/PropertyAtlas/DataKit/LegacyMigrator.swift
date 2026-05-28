@@ -27,6 +27,7 @@ enum LegacyMigrator {
         try migrateEdges(dataset: dataset, in: ctx)
         try seedEnumOptions(dataset: dataset, in: ctx)
         try seedFilterFields(dataset: dataset, in: ctx)
+        try seedPalettesThemesLayers(dataset: dataset, in: ctx)
         try ctx.save()
     }
 
@@ -459,6 +460,62 @@ enum LegacyMigrator {
                 ctx.insert(c)
             }
         }
+    }
+
+    // MARK: stage 8 — Palette + Theme + Layer seeds
+
+    private static func seedPalettesThemesLayers(dataset: Dataset, in ctx: ModelContext) throws {
+        let palettes: [(name: String, colors: [String])] = [
+            ("default-rainbow", ["#FF3B30", "#FF9500", "#FFCC00", "#34C759", "#5AC8FA", "#007AFF", "#5856D6", "#AF52DE", "#FF2D55", "#A2845E"]),
+            ("category-cool", ["#5AC8FA", "#34C759", "#007AFF", "#5856D6", "#00C7BE", "#30B0C7"]),
+            ("category-warm", ["#FF3B30", "#FF9500", "#FFCC00", "#FF2D55", "#FF6482", "#D02D7E"]),
+            ("mono-blue", ["#E1F0FF", "#9CCBFB", "#4DA3F0", "#1B69D6"]),
+        ]
+        for (idx, p) in palettes.enumerated() {
+            let palette = Palette(name: p.name, colorsHex: p.colors, builtIn: true)
+            palette.sortOrder = idx
+            ctx.insert(palette)
+        }
+
+        let defaultLayer = Layer(datasetId: dataset.id, name: "全部")
+        defaultLayer.isDefault = true
+        defaultLayer.enabled = true
+        defaultLayer.dynamicQueryJSON = nil
+        defaultLayer.sortOrder = 0
+        ctx.insert(defaultLayer)
+
+        let baseVisibility = #"{"compound":true,"school":true,"poi":true,"area":true}"#
+        let onlyPOIAndArea = #"{"compound":false,"school":false,"poi":true,"area":true}"#
+        let onlyCompound = #"{"compound":true,"school":false,"poi":false,"area":false}"#
+
+        let t1 = Theme(datasetId: dataset.id, name: "字段总览")
+        t1.visibilityJSON = baseVisibility
+        t1.defaultEnabledLayerIds = [defaultLayer.id]
+        t1.sortOrder = 0
+        t1.isActive = true
+        ctx.insert(t1)
+
+        let t2 = Theme(datasetId: dataset.id, name: "学区视图")
+        t2.visibilityJSON = baseVisibility
+        t2.defaultEnabledLayerIds = [defaultLayer.id]
+        t2.sortOrder = 1
+        t2.copyTitle = "学区分布图"
+        t2.copySubtitle = "2026 招生季"
+        ctx.insert(t2)
+
+        let t3 = Theme(datasetId: dataset.id, name: "商圈视图")
+        t3.visibilityJSON = onlyPOIAndArea
+        t3.defaultEnabledLayerIds = [defaultLayer.id]
+        t3.sortOrder = 2
+        ctx.insert(t3)
+
+        let t4 = Theme(datasetId: dataset.id, name: "新房地图")
+        t4.visibilityJSON = onlyCompound
+        t4.defaultEnabledLayerIds = [defaultLayer.id]
+        t4.sortOrder = 3
+        ctx.insert(t4)
+
+        dataset.activeThemeId = t1.id
     }
 
     static func registerCustomFieldDef(
