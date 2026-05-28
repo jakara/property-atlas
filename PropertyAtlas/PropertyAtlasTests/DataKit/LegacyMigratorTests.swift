@@ -311,4 +311,19 @@ struct LegacyMigratorTests {
         #expect(d.kind == "pdf")
         #expect(d.ocrText == "...")
     }
+
+    @Test func migrateConvertsBuiltinTagsToTags() throws {
+        let container = try TestContainer.makeInMemory(for: ModelSchema.allTypes)
+        let ctx = ModelContext(container)
+        let bt = BuiltinTag(category: "感受", label: "通风良好", polarity: "正")
+        ctx.insert(bt)
+        let lc = LegacyCompound(name: "x", district: "和平区", latitude: 39.1, longitude: 117.2)
+        ctx.insert(lc)
+        try ctx.save()
+        try LegacyMigrator.run(in: ctx)
+        let tags = try ctx.fetch(FetchDescriptor<PropertyAtlas.Tag>())
+        #expect(tags.count == 1)
+        #expect(tags.first?.label == "通风良好")
+        #expect(tags.first?.polarity == "positive")
+    }
 }

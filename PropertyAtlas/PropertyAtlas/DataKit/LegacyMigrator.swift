@@ -30,6 +30,7 @@ enum LegacyMigrator {
         try seedPalettesThemesLayers(dataset: dataset, in: ctx)
         try seedCameraPresets(dataset: dataset, in: ctx)
         try migrateAdmissionDocs(dataset: dataset, in: ctx)
+        try migrateTags(dataset: dataset, in: ctx)
         try ctx.save()
     }
 
@@ -562,6 +563,28 @@ enum LegacyMigrator {
             d.id = ld.id
             d.ocrText = ld.ocrText
             ctx.insert(d)
+        }
+    }
+
+    // MARK: stage 11 — BuiltinTag → Tag
+
+    private static func migrateTags(dataset: Dataset, in ctx: ModelContext) throws {
+        let builtin = try ctx.fetch(FetchDescriptor<BuiltinTag>())
+        for bt in builtin {
+            let polarity = switch bt.polarity {
+            case "正": "positive"
+            case "负": "negative"
+            default: "neutral"
+            }
+            let t = Tag(
+                datasetId: dataset.id,
+                category: bt.category,
+                label: bt.label,
+                polarity: polarity
+            )
+            t.id = bt.id
+            t.sortOrder = bt.sortOrder
+            ctx.insert(t)
         }
     }
 
