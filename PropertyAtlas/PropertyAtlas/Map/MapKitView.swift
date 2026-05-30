@@ -61,13 +61,13 @@ struct MapKitView: UIViewRepresentable {
 
         #if targetEnvironment(macCatalyst)
         func mapView(_ mv: MKMapView, didSelect view: MKAnnotationView) {
-            if let s = view.annotation as? SchoolAnnotation {
-                onSchoolSelect?(s.schoolId)
+            if let pin = view.annotation as? PinAnnotation {
+                onSchoolSelect?(pin.entityId)
             }
         }
 
         func mapView(_ mv: MKMapView, didDeselect view: MKAnnotationView) {
-            if view.annotation is SchoolAnnotation {
+            if view.annotation is PinAnnotation {
                 onSchoolSelect?(nil)
             }
         }
@@ -101,11 +101,7 @@ struct MapKitView: UIViewRepresentable {
             #endif
             if let poly = overlay as? MKPolygon {
                 let r = MKPolygonRenderer(polygon: poly)
-                #if targetEnvironment(macCatalyst)
-                let color = ZoneColorPalette.color(fromHex: poly.title ?? "")
-                #else
                 let color = UIColor.systemTeal
-                #endif
                 r.fillColor = color.withAlphaComponent(0.28)
                 r.strokeColor = color.withAlphaComponent(0.85)
                 r.lineWidth = 1.6
@@ -123,38 +119,7 @@ struct MapKitView: UIViewRepresentable {
                 v.displayPriority = .required
                 return v
             }
-            if let s = annotation as? SchoolAnnotation {
-                let v = (mv.dequeueReusableAnnotationView(withIdentifier: SchoolPinView.reuseIdentifier) as? SchoolPinView)
-                    ?? SchoolPinView(annotation: s, reuseIdentifier: SchoolPinView.reuseIdentifier)
-                v.annotation = s
-                v.displayPriority = .required
-                return v
-            }
-            if let z = annotation as? ZoneCentroidAnnotation {
-                let v = MKMarkerAnnotationView(annotation: z, reuseIdentifier: "zone")
-                v.markerTintColor = ZoneColorPalette.color(for: z.name)
-                v.glyphText = "区"
-                v.glyphTintColor = .white
-                v.titleVisibility = .visible
-                return v
-            }
             return nil
-        }
-
-        /// 小学 = accent500 棕 (#B5703A); 中学/九年一贯 = 深靛 (#364E6B)
-        static func colorForLevel(_ level: String) -> UIColor {
-            if level.contains("小") {
-                return UIColor(red: 0xB5 / 255.0, green: 0x70 / 255.0, blue: 0x3A / 255.0, alpha: 1)
-            }
-            return UIColor(red: 0x36 / 255.0, green: 0x4E / 255.0, blue: 0x6B / 255.0, alpha: 1)
-        }
-
-        /// Used when shortLabel empty (郊区 etc.) — fall back to level glyph.
-        static func fallbackGlyph(_ level: String) -> String {
-            if level.contains("小") { return "小" }
-            if level.contains("九") { return "九" }
-            if level.contains("中") || level.contains("初") { return "中" }
-            return "校"
         }
         #endif
     }

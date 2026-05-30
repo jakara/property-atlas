@@ -10,7 +10,7 @@ struct StudioLegend: View {
         let colorHex: String
         let count: Int // 学校数 (全 zone, 过滤后)
         var color: Color {
-            Color(uiColor: ZoneColorPalette.color(fromHex: colorHex))
+            Color(uiColor: HexColor.parse(colorHex) ?? .gray)
         }
     }
 
