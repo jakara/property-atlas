@@ -14,7 +14,8 @@ iPad-first iOS 17+ app for property research in Tianjin. Stack: SwiftUI · MapKi
 - Studio plan: `docs/superpowers/plans/2026-05-26-studio-mode.md`
 - 新方向 spec (2026-05-28 重定位): `docs/superpowers/specs/2026-05-28-generic-map-tool-design.md`
 - 实施计划 P1 (已完成): `docs/superpowers/plans/2026-05-28-p1-data-model-migration.md`
-- P2-P5 计划: 待写
+- 实施计划 P2 (已完成): `docs/superpowers/plans/2026-05-29-p2-style-engine-map-render.md`
+- P3-P5 计划: 待写
 
 ## 拆分文档 (`docs/claude/`) — 按需读
 
@@ -58,6 +59,13 @@ Never sync `pub_*` or `loc_*` to CloudKit.
 > `@available(*, deprecated)` 标记, 由 `LegacyMigrator` 一次性消化
 > 到新 entity, P5 删除文件. usr_* 类 (PropertyMark/Visit/...) 当前
 > 保留不动, 后续 plan 决定去留.
+
+> **P2 (2026-05-29) 完成后**: Studio 渲染走 `MapRender/StyleResolver`
+> (default → matching rules → entity override 三段求值). 旧
+> `SchoolPinView` / `ZoneGeometryImporter` / `ZoneColorPalette` /
+> `LegacyShim` 删除. Theme 切换由 `ThemeContext` 驱动. §5.7 Filter
+> 视图内计数 + §5.8 Layer 留待 P4. `PinFilter` / `StudioLegend` /
+> `SchoolDetailCard` + 极小 `LegacyStudioAccessors` shim 暂留, P4 重做后删.
 
 ### School district logic
 
