@@ -6,6 +6,7 @@ struct MapKitView: UIViewRepresentable {
     var overlays: [MKOverlay] = []
     var annotations: [MKAnnotation] = []
     var configure: (MKMapView) -> Void = { _ in }
+    var rendererFor: ((MKOverlay) -> MKOverlayRenderer?)?
     var onRegionChange: ((MKCoordinateRegion) -> Void)?
     var onSchoolSelect: ((UUID?) -> Void)?
 
@@ -25,6 +26,7 @@ struct MapKitView: UIViewRepresentable {
         configure(v)
         context.coordinator.onRegionChange = onRegionChange
         context.coordinator.onSchoolSelect = onSchoolSelect
+        context.coordinator.rendererFor = rendererFor
         context.coordinator.cameraBinding = $camera
         context.coordinator.lastAppliedCamera = camera.copy() as? MKMapCamera
         return v
@@ -33,6 +35,7 @@ struct MapKitView: UIViewRepresentable {
     func updateUIView(_ v: MKMapView, context: Context) {
         context.coordinator.onRegionChange = onRegionChange
         context.coordinator.onSchoolSelect = onSchoolSelect
+        context.coordinator.rendererFor = rendererFor
         context.coordinator.cameraBinding = $camera
         // Only push camera if it actually changed (preset 跳转); 否则用户拖动/缩放会被覆盖
         if !Coordinator.cameraEquals(context.coordinator.lastAppliedCamera, camera) {
@@ -52,6 +55,7 @@ struct MapKitView: UIViewRepresentable {
     final class Coordinator: NSObject, MKMapViewDelegate {
         var onRegionChange: ((MKCoordinateRegion) -> Void)?
         var onSchoolSelect: ((UUID?) -> Void)?
+        var rendererFor: ((MKOverlay) -> MKOverlayRenderer?)?
         var cameraBinding: Binding<MKMapCamera>?
         var lastAppliedCamera: MKMapCamera?
 
@@ -87,6 +91,9 @@ struct MapKitView: UIViewRepresentable {
         }
 
         func mapView(_ mv: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
+            if let renderer = rendererFor?(overlay) {
+                return renderer
+            }
             #if targetEnvironment(macCatalyst)
             if let raster = overlay as? CalibratedImageOverlay {
                 return CalibratedImageOverlayRenderer(overlay: raster)
@@ -109,6 +116,13 @@ struct MapKitView: UIViewRepresentable {
 
         #if targetEnvironment(macCatalyst)
         func mapView(_ mv: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+            if let pin = annotation as? PinAnnotation {
+                let v = (mv.dequeueReusableAnnotationView(withIdentifier: PinAnnotationView.reuseIdentifier) as? PinAnnotationView)
+                    ?? PinAnnotationView(annotation: pin, reuseIdentifier: PinAnnotationView.reuseIdentifier)
+                v.annotation = pin
+                v.displayPriority = .required
+                return v
+            }
             if let s = annotation as? SchoolAnnotation {
                 let v = (mv.dequeueReusableAnnotationView(withIdentifier: SchoolPinView.reuseIdentifier) as? SchoolPinView)
                     ?? SchoolPinView(annotation: s, reuseIdentifier: SchoolPinView.reuseIdentifier)

@@ -5,6 +5,7 @@ struct MapContainerView: View {
     @Binding var camera: MKMapCamera
     var overlays: [MKOverlay] = []
     var annotations: [MKAnnotation] = []
+    var rendererFor: ((MKOverlay) -> MKOverlayRenderer?)?
     var onRegionChange: ((MKCoordinateRegion) -> Void)?
     var onSchoolSelect: ((UUID?) -> Void)?
 
@@ -12,6 +13,7 @@ struct MapContainerView: View {
         camera: Binding<MKMapCamera>? = nil,
         overlays: [MKOverlay] = [],
         annotations: [MKAnnotation] = [],
+        rendererFor: ((MKOverlay) -> MKOverlayRenderer?)? = nil,
         onRegionChange: ((MKCoordinateRegion) -> Void)? = nil,
         onSchoolSelect: ((UUID?) -> Void)? = nil
     ) {
@@ -29,6 +31,7 @@ struct MapContainerView: View {
         }
         self.overlays = overlays
         self.annotations = annotations
+        self.rendererFor = rendererFor
         self.onRegionChange = onRegionChange
         self.onSchoolSelect = onSchoolSelect
     }
@@ -38,6 +41,7 @@ struct MapContainerView: View {
             camera: $camera,
             overlays: overlays,
             annotations: annotations,
+            rendererFor: rendererFor,
             onRegionChange: onRegionChange,
             onSchoolSelect: onSchoolSelect
         )
