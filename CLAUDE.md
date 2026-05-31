@@ -18,7 +18,9 @@ iPad-first iOS 17+ app for property research in Tianjin. Stack: SwiftUI · MapKi
 - 实施计划 P3 (已完成): `docs/superpowers/plans/2026-05-31-p3-interaction-editing-core.md`
 - 实施计划 P4 (已完成): `docs/superpowers/plans/2026-06-01-p4-legend-filter-layer.md`
 - 实施计划 P5 (已完成): `docs/superpowers/plans/2026-05-31-p5-data-integrity-school-display.md`
-- P6 计划: 待写 (Settings 编辑页 + CloudKit + 删 Legacy*)
+- 通用过滤/图例/染色 重设计 spec: `docs/superpowers/specs/2026-05-31-generic-filter-legend-color-redesign.md`
+- 实施计划 P6 (已完成): `docs/superpowers/plans/2026-05-31-p6-relation-unification.md`
+- P7/P8/P9 计划: 待写 (见 spec §9 — Dimension+Filter 引擎 / View+Theme下沉+染色 / Settings+CloudKit+删Legacy*)
 
 ## 拆分文档 (`docs/claude/`) — 按需读
 
@@ -97,6 +99,13 @@ Never sync `pub_*` or `loc_*` to CloudKit.
 > (修跨 dataset bleed)。学校 StyleRules seed(名称 labelVisible + grade→重/普 glyph +
 > tier 配色)挂进"字段总览"/"学区视图" theme — 修学校无名字/无等级标识。
 > 延后 P6: Settings 全编辑页 + CloudKit `.private` + 删 Legacy* @Model。
+
+> **P6 (2026-05-31) 完成后**: 关系模型统一。`primaryAreaId` FK 删除(3 实体),
+> 迁成 `Edge(label="所属片区")`(`LegacyMigrator.migratePrimaryArea`);edge.label
+> 枚举加 "所属片区"。新增 `EdgeStore.relatedFieldValues(of:edgeLabel:direction:
+> targetField:)` + `EdgeDirection` —— 关系投影原语,给 Dimension.edgeField 用
+> (按 edge 上/下游实体字段过滤/分组/染色)。见重设计 spec。
+> 后续 P7(Dimension+Filter 引擎)/ P8(View+Theme下沉+染色)/ P9(Settings+CloudKit+删Legacy*)。
 
 ### School district logic
 
