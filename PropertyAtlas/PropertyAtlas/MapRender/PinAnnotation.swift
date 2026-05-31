@@ -8,6 +8,8 @@ final class PinAnnotation: NSObject, MKAnnotation {
     let name: String
     let coordinate: CLLocationCoordinate2D
     let style: PinStyle
+    var dimmed: Bool = false
+    var highlighted: Bool = false
 
     init(
         entityId: UUID,

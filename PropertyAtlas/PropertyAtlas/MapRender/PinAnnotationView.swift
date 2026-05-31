@@ -82,6 +82,20 @@ final class PinAnnotationView: MKAnnotationView {
             frame = dot.frame
         }
         centerOffset = CGPoint(x: (frame.width - dotSize) / 2, y: 0)
+        if let a = annotation as? PinAnnotation {
+            alpha = a.dimmed ? 0.28 : 1.0
+            if a.highlighted {
+                shapeLayer.shadowColor = UIColor.systemYellow.cgColor
+                shapeLayer.shadowOpacity = 0.9
+                shapeLayer.shadowRadius = 5
+                shapeLayer.lineWidth = 2.5
+            } else {
+                shapeLayer.shadowColor = UIColor.black.cgColor
+                shapeLayer.shadowOpacity = 0.25
+                shapeLayer.shadowRadius = 2
+                shapeLayer.lineWidth = 1.5
+            }
+        }
     }
 }
 
