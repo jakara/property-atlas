@@ -16,7 +16,8 @@ iPad-first iOS 17+ app for property research in Tianjin. Stack: SwiftUI · MapKi
 - 实施计划 P1 (已完成): `docs/superpowers/plans/2026-05-28-p1-data-model-migration.md`
 - 实施计划 P2 (已完成): `docs/superpowers/plans/2026-05-29-p2-style-engine-map-render.md`
 - 实施计划 P3 (已完成): `docs/superpowers/plans/2026-05-31-p3-interaction-editing-core.md`
-- P4-P5 计划: 待写
+- 实施计划 P4 (已完成): `docs/superpowers/plans/2026-06-01-p4-legend-filter-layer.md`
+- P5 计划: 待写
 
 ## 拆分文档 (`docs/claude/`) — 按需读
 
@@ -76,6 +77,16 @@ Never sync `pub_*` or `loc_*` to CloudKit.
 > (`SpotlightResolver`) + drawEdgeLines(`EdgeLineFactory`) 已接。长按/右键建 Pin。
 > 延后: POI 外部搜索 / Area 绘制+raster / PhotosPicker → P3.5；
 > Settings / §5.7 Filter / §5.8 Layer → P4。
+
+> **P4 (2026-06-01) 完成后**: 左抽屉回归 — 通用 Legend(`LegendCounter` 按
+> type×field×value 分组 + viewport/全集双计数, swatch 由 `LegendSwatch` 经
+> StyleResolver 求, chip toggle 走 `FilterState`/`FilterPredicate`, AND 跨 slot)
+> + Layers(`LayerEvaluator` enabled×zoom×成员 → 可见 id 集, `LayerState` 运行时态,
+> `Theme.defaultEnabledLayerIds` 初始化)。可见集 = visibility × Layer × Filter；
+> area 也进 layer 候选集(否则 match-all 层会漏掉)。zoom 由 `ZoomLevel` 从 region 推。
+> 天津专用 `PinFilter`/`StudioLegend`/`SchoolDetailCard` + `LegacyStudioAccessors` 删除。
+> 延后: Settings 编辑页(Layer/FilterFieldConfig 编辑、新建) + CloudKit `.private`
+> + 删 Legacy* @Model → P5。
 
 ### School district logic
 
