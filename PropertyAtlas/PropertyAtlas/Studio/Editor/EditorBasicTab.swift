@@ -86,11 +86,3 @@ private struct BoolFieldEditor: View {
     }
 }
 #endif
-
-#if targetEnvironment(macCatalyst)
-struct StyleOverrideSection: View { let ref: EntityRef
-    var body: some View {
-        EmptyView()
-    }
-}
-#endif
