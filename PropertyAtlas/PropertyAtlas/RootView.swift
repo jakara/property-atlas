@@ -64,7 +64,11 @@ struct StudioRootView: View {
     @Query private var areas: [Area]
     @Query private var styleRules: [StyleRule]
     @Query private var palettes: [Palette]
+    @Query private var layersQuery: [Layer]
+    @Query private var filterConfigs: [FilterFieldConfig]
 
+    @State private var filterState = FilterState()
+    @State private var layerState = LayerState()
     @State private var themeContext: ThemeContext?
     @State private var title: String = ""
     @State private var subtitle: String = ""
@@ -97,15 +101,49 @@ struct StudioRootView: View {
             enabled: activeTheme?.spotlightOnSelect ?? false
         )
 
+        let zoom = visibleRegion.map { ZoomLevel.from(region: $0) } ?? 12
+        let _: Void = layerState.initializeIfNeeded(enabledIds: activeTheme?.defaultEnabledLayerIds ?? [])
+        let items = legendItems()
+        let activeLayers = layersForDataset(dsId).map {
+            LayerEvaluator.ActiveLayer(
+                query: LayerQuery(staticRefsJSON: $0.staticRefsJSON, dynamicQueryJSON: $0.dynamicQueryJSON),
+                enabled: layerState.isEnabled($0.id), minZoom: $0.minZoom, maxZoom: $0.maxZoom
+            )
+        }
+        let layerCands = items.map { LayerEvaluator.Candidate(id: $0.id, type: $0.type, entity: $0.entity) }
+        let layerVisible = LayerEvaluator.visibleIds(layers: activeLayers, zoom: zoom, candidates: layerCands)
+        let predicate = filterState.predicate
+        let legendRows = LegendCounter.rows(
+            items: items, configs: filterConfigs.filter { $0.datasetId == dsId },
+            region: visibleRegion, filter: predicate, layerVisible: layerVisible,
+            swatch: { type, field, value in
+                LegendSwatch.fillHex(
+                    entityType: type,
+                    fieldKey: field,
+                    value: value,
+                    theme: activeTheme,
+                    rules: rulesForTheme,
+                    palettes: palettesById
+                )
+            }
+        )
+
         let pins = buildPins(
             compounds: visibility["compound"] == true ? compounds : [],
             schools: visibility["school"] == true ? schools : [],
             pois: visibility["poi"] == true ? pois : [],
             theme: activeTheme, rules: rulesForTheme, palettes: palettesById,
-            highlight: highlight
+            highlight: highlight,
+            layerVisible: layerVisible, filterPredicate: predicate, datasetId: dsId
         )
         let (areaOverlays, styleMap) = visibility["area"] == true
-            ? buildAreaOverlays(areas: areas, theme: activeTheme, rules: rulesForTheme, palettes: palettesById)
+            ? buildAreaOverlays(
+                areas: areas,
+                theme: activeTheme,
+                rules: rulesForTheme,
+                palettes: palettesById,
+                layerVisible: layerVisible
+            )
             : ([], [:])
         let edgeLines = buildEdgeLines(theme: activeTheme, datasetId: dsId)
         let overlays = areaOverlays + edgeLines
@@ -148,6 +186,23 @@ struct StudioRootView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
             .animation(.easeInOut(duration: 0.2), value: appState.selectedRef)
+
+            HStack {
+                LeftDrawerView(
+                    legendRows: legendRows,
+                    layers: layersForDataset(dsId),
+                    currentZoom: zoom,
+                    filterState: filterState,
+                    layerState: layerState
+                )
+                .padding(.top, 80).padding(.leading, 16)
+                Spacer()
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        }
+        .onChange(of: themeContext?.activeTheme?.id) { _, _ in
+            layerState.resetForTheme(enabledIds: themeContext?.activeTheme?.defaultEnabledLayerIds ?? [])
+            filterState.reset()
         }
         .confirmationDialog("新建实体", isPresented: $showCreateMenu, titleVisibility: .visible) {
             Button("+ 小区") { createPin(.compound) }
@@ -212,6 +267,28 @@ struct StudioRootView: View {
         return obj
     }
 
+    private func layersForDataset(_ dsId: UUID) -> [Layer] {
+        layersQuery.filter { $0.datasetId == dsId && !$0.deleted }.sorted { $0.sortOrder < $1.sortOrder }
+    }
+
+    private func legendItems() -> [LegendCounter.Item] {
+        var out: [LegendCounter.Item] = []
+        for c in compounds where !c.deleted {
+            out.append(.init(id: c.id, type: "compound", entity: c.styleEntity, coordinate: c.coordinate))
+        }
+        for s in schools where !s.deleted {
+            out.append(.init(id: s.id, type: "school", entity: s.styleEntity, coordinate: s.coordinate))
+        }
+        for p in pois where !p.deleted {
+            out.append(.init(id: p.id, type: "poi", entity: p.styleEntity, coordinate: p.coordinate))
+        }
+        return out
+    }
+
+    private func fieldKeys(_ dsId: UUID, _ entityType: String) -> [String] {
+        filterConfigs.filter { $0.datasetId == dsId && $0.entityType == entityType && !$0.deleted }.map(\.fieldKey)
+    }
+
     private func buildPins(
         compounds: [Compound],
         schools: [School],
@@ -219,10 +296,15 @@ struct StudioRootView: View {
         theme: Theme?,
         rules: [StyleRule],
         palettes: [UUID: Palette],
-        highlight: Set<UUID>?
+        highlight: Set<UUID>?,
+        layerVisible: Set<UUID>,
+        filterPredicate: FilterPredicate,
+        datasetId: UUID
     ) -> [MKAnnotation] {
         var result: [MKAnnotation] = []
         for c in compounds where !c.deleted && (c.latitude != 0 || c.longitude != 0) {
+            guard layerVisible.contains(c.id) else { continue }
+            guard filterPredicate.passes(c.styleEntity, fieldKeys: fieldKeys(datasetId, "compound")) else { continue }
             let style = StyleResolver.resolvePin(entity: c.styleEntity, theme: theme, rules: rules, palettes: palettes)
             let pin = PinAnnotation(
                 entityId: c.id, entityType: "compound", name: c.name,
@@ -235,6 +317,8 @@ struct StudioRootView: View {
             result.append(pin)
         }
         for s in schools where !s.deleted && (s.latitude != 0 || s.longitude != 0) {
+            guard layerVisible.contains(s.id) else { continue }
+            guard filterPredicate.passes(s.styleEntity, fieldKeys: fieldKeys(datasetId, "school")) else { continue }
             let style = StyleResolver.resolvePin(entity: s.styleEntity, theme: theme, rules: rules, palettes: palettes)
             let pin = PinAnnotation(
                 entityId: s.id, entityType: "school", name: s.name,
@@ -247,6 +331,8 @@ struct StudioRootView: View {
             result.append(pin)
         }
         for p in pois where !p.deleted && (p.latitude != 0 || p.longitude != 0) {
+            guard layerVisible.contains(p.id) else { continue }
+            guard filterPredicate.passes(p.styleEntity, fieldKeys: fieldKeys(datasetId, "poi")) else { continue }
             let style = StyleResolver.resolvePin(entity: p.styleEntity, theme: theme, rules: rules, palettes: palettes)
             let pin = PinAnnotation(
                 entityId: p.id, entityType: "poi", name: p.name,
@@ -265,11 +351,13 @@ struct StudioRootView: View {
         areas: [Area],
         theme: Theme?,
         rules: [StyleRule],
-        palettes: [UUID: Palette]
+        palettes: [UUID: Palette],
+        layerVisible: Set<UUID>
     ) -> ([MKOverlay], [ObjectIdentifier: AreaStyle]) {
         var overlays: [MKOverlay] = []
         var map: [ObjectIdentifier: AreaStyle] = [:]
         for a in areas where !a.deleted {
+            guard layerVisible.contains(a.id) else { continue }
             let style = StyleResolver.resolveArea(entity: a.styleEntity, theme: theme, rules: rules, palettes: palettes)
             if let r = AreaOverlayFactory.makeOverlay(for: a, style: style) {
                 overlays.append(r.overlay)
