@@ -48,4 +48,37 @@ enum EdgeStore {
         }
         return order.map { RelationGroup(label: $0, items: byLabel[$0] ?? []) }
     }
+
+    enum AddResult: Equatable { case added, rejectedSelfLink, skippedDuplicate }
+
+    @discardableResult
+    static func add(
+        datasetId: UUID,
+        from: EntityRef,
+        to: EntityRef,
+        label: String,
+        directed: Bool = false,
+        note: String? = nil,
+        in context: ModelContext
+    ) -> AddResult {
+        guard from.id != to.id else { return .rejectedSelfLink }
+        let dsId = datasetId
+        let fid = from.id, tid = to.id
+        let fd = FetchDescriptor<Edge>(predicate: #Predicate {
+            $0.datasetId == dsId && !$0.deleted && $0.label == label &&
+                (($0.fromId == fid && $0.toId == tid) || ($0.fromId == tid && $0.toId == fid))
+        })
+        if ((try? context.fetch(fd)) ?? []).isEmpty == false { return .skippedDuplicate }
+        context.insert(Edge(
+            datasetId: datasetId,
+            fromId: from.id,
+            fromType: from.typeString,
+            toId: to.id,
+            toType: to.typeString,
+            label: label,
+            directed: directed,
+            note: note
+        ))
+        return .added
+    }
 }
