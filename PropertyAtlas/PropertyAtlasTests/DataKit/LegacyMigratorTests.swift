@@ -372,4 +372,24 @@ struct LegacyMigratorTests {
         let ruleIds = Set(schoolRules.map(\.id))
         #expect(overview.styleRuleIds.contains { ruleIds.contains($0) })
     }
+
+    @Test func migratesPrimaryAreaToEdge() throws {
+        let container = try TestContainer.makeInMemory(for: ModelSchema.allTypes)
+        let ctx = ModelContext(container)
+        let zone = LegacySchoolZone(name: "和平一片区", tier: "普通", primaryDistrict: "和平区", geometry: "", geometryStage: "hull")
+        ctx.insert(zone)
+        let lc = LegacyCompound(name: "测试小区", district: "和平区", latitude: 39.1, longitude: 117.2)
+        lc.zoneId = zone.id
+        ctx.insert(lc)
+        let ls = LegacySchool(name: "测试小学", type: "小学", district: "和平区", tier: "普通")
+        ls.zoneId = zone.id
+        ctx.insert(ls)
+        try ctx.save()
+
+        try LegacyMigrator.run(in: ctx)
+
+        let edges = try ctx.fetch(FetchDescriptor<Edge>()).filter { $0.label == "所属片区" }
+        #expect(edges.contains { $0.fromId == lc.id && $0.toId == zone.id && $0.fromType == "compound" && $0.toType == "area" })
+        #expect(edges.contains { $0.fromId == ls.id && $0.toId == zone.id && $0.fromType == "school" && $0.toType == "area" })
+    }
 }

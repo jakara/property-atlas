@@ -135,7 +135,6 @@ enum LegacyMigrator {
             s.category = ls.type.isEmpty ? nil : ls.type
             s.grade = ls.tier.isEmpty ? nil : ls.tier
             s.form = ls.is12Year ? "十二年制" : (ls.isJiunian ? "九年一贯" : "普通")
-            s.primaryAreaId = ls.zoneId
             s.address = ls.address
             s.phone = ls.phone
             s.communitiesText = ls.communitiesText
@@ -237,7 +236,6 @@ enum LegacyMigrator {
             c.id = lc.id
             c.aliases = lc.aliases
             c.address = lc.address
-            c.primaryAreaId = lc.zoneId
             c.buildYear = lc.buildYear
             c.developer = lc.developer
             c.propertyMgmt = lc.propertyMgmt
@@ -329,6 +327,35 @@ enum LegacyMigrator {
         try migratePrimarySchoolId(dataset: dataset, in: ctx)
         try migrateZoneMiddleSchoolPool(dataset: dataset, in: ctx)
         try migrateSchoolGroups(dataset: dataset, in: ctx)
+        try migratePrimaryArea(dataset: dataset, in: ctx)
+    }
+
+    private static func migratePrimaryArea(dataset: Dataset, in ctx: ModelContext) throws {
+        let dsId = dataset.id
+        for lc in try ctx.fetch(FetchDescriptor<LegacyCompound>()) {
+            guard let to = lc.zoneId else { continue }
+            ctx.insert(Edge(
+                datasetId: dsId,
+                fromId: lc.id,
+                fromType: "compound",
+                toId: to,
+                toType: "area",
+                label: "所属片区",
+                directed: true
+            ))
+        }
+        for ls in try ctx.fetch(FetchDescriptor<LegacySchool>()) {
+            guard let to = ls.zoneId else { continue }
+            ctx.insert(Edge(
+                datasetId: dsId,
+                fromId: ls.id,
+                fromType: "school",
+                toId: to,
+                toType: "area",
+                label: "所属片区",
+                directed: true
+            ))
+        }
     }
 
     private static func migrateCompoundSchoolMatches(dataset: Dataset, in ctx: ModelContext) throws {
@@ -446,7 +473,7 @@ enum LegacyMigrator {
             ("compound.deliveryTime", ["现房", "期房"]),
             ("poi.category", ["地铁站", "商场", "医院", "办事处", "学区办", "公交站", "景点"]),
             ("area.category", ["行政区", "片区", "商圈", "管辖区"]),
-            ("edge.label", ["对口小学", "片内中学", "周边", "集团成员", "集团领办", "管辖", "属于"]),
+            ("edge.label", ["对口小学", "片内中学", "周边", "集团成员", "集团领办", "管辖", "属于", "所属片区"]),
         ]
         for (scope, labels) in seeds {
             for (idx, label) in labels.enumerated() {
