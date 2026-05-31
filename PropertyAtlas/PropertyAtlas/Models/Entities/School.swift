@@ -12,7 +12,6 @@ final class School {
     var address: String?
     var latitude: Double = 0
     var longitude: Double = 0
-    var primaryAreaId: UUID?
     var notes: String?
     var privateNotes: String?
     var customFieldsJSON: String?
