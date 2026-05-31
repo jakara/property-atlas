@@ -81,4 +81,23 @@ enum EdgeStore {
         ))
         return .added
     }
+
+    static func removeEdge(_ edgeId: UUID, in context: ModelContext) {
+        var fd = FetchDescriptor<Edge>(predicate: #Predicate { $0.id == edgeId })
+        fd.fetchLimit = 1
+        if let e = try? context.fetch(fd).first { e.deleted = true
+            e.updatedAt = Date()
+        }
+    }
+
+    static func cascadeSoftDelete(entityId: UUID, datasetId: UUID, in context: ModelContext) {
+        let dsId = datasetId
+        let fd = FetchDescriptor<Edge>(predicate: #Predicate {
+            $0.datasetId == dsId && !$0.deleted && ($0.fromId == entityId || $0.toId == entityId)
+        })
+        for e in (try? context.fetch(fd)) ?? [] {
+            e.deleted = true
+            e.updatedAt = Date()
+        }
+    }
 }
