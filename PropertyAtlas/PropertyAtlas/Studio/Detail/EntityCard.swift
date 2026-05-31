@@ -85,17 +85,4 @@ struct EntityCard: View {
     }
 }
 
-// MARK: - Temporary stub for RelationTabsView (Task 14 replaces this)
-
-#if targetEnvironment(macCatalyst)
-struct RelationTabsView: View {
-    let ref: EntityRef
-    let datasetId: UUID
-    let onSelectRelated: (EntityRef) -> Void
-    var body: some View {
-        EmptyView()
-    }
-}
-#endif
-
 #endif
