@@ -75,7 +75,7 @@ struct StudioRootView: View {
         fromDistance: 12000, pitch: 0, heading: 0
     )
     @State private var visibleRegion: MKCoordinateRegion?
-    @State private var selectedEntityId: UUID?
+    @State private var appState = AppState()
 
     var body: some View {
         let activeTheme = themeContext?.activeTheme
@@ -83,34 +83,48 @@ struct StudioRootView: View {
         let activeRuleIds = Set(activeTheme?.styleRuleIds ?? [])
         let rulesForTheme = styleRules.filter { activeRuleIds.contains($0.id) }
         let visibility = visibilityFromTheme(activeTheme)
+        let dsId = themeContext?.datasetIdValue ?? UUID()
 
-        let pins: [MKAnnotation] = buildPins(
+        // spotlight：选中 entity 的关联对端 id
+        let relatedIds: [UUID] = appState.selectedRef.map {
+            EdgeStore.relations(of: $0, datasetId: dsId, in: modelContext)
+                .flatMap { $0.items.map(\.other.id) }
+        } ?? []
+        let highlight = SpotlightResolver.highlightedIds(
+            selected: appState.selectedRef?.id, relatedIds: relatedIds,
+            enabled: activeTheme?.spotlightOnSelect ?? false
+        )
+
+        let pins = buildPins(
             compounds: visibility["compound"] == true ? compounds : [],
             schools: visibility["school"] == true ? schools : [],
             pois: visibility["poi"] == true ? pois : [],
-            theme: activeTheme,
-            rules: rulesForTheme,
-            palettes: palettesById
+            theme: activeTheme, rules: rulesForTheme, palettes: palettesById,
+            highlight: highlight
         )
-        let (overlays, styleMap) = visibility["area"] == true
+        let (areaOverlays, styleMap) = visibility["area"] == true
             ? buildAreaOverlays(areas: areas, theme: activeTheme, rules: rulesForTheme, palettes: palettesById)
             : ([], [:])
+        let edgeLines = buildEdgeLines(theme: activeTheme, datasetId: dsId)
+        let overlays = areaOverlays + edgeLines
 
         ZStack {
             MapContainerView(
-                camera: $camera,
-                overlays: overlays,
-                annotations: pins,
+                camera: $camera, overlays: overlays, annotations: pins,
                 rendererFor: { overlay in
-                    guard let polygon = overlay as? MKPolygon,
-                          let style = styleMap[ObjectIdentifier(overlay)]
-                    else { return nil }
-                    return AreaOverlayRenderer(polygon: polygon, style: style)
+                    if let polygon = overlay as? MKPolygon, let style = styleMap[ObjectIdentifier(overlay)] {
+                        return AreaOverlayRenderer(polygon: polygon, style: style)
+                    }
+                    return nil
                 },
                 onRegionChange: { visibleRegion = $0 },
-                onSchoolSelect: { id in selectedEntityId = id }
+                onSchoolSelect: { id in
+                    if let id, let kind = idKind(for: id, in: pins) { appState.select(EntityRef(id: id, kind: kind)) }
+                    else { appState.clearSelection() }
+                }
             )
             .ignoresSafeArea()
+
             if let ctx = themeContext {
                 StudioOverlay(
                     title: $title,
@@ -120,9 +134,39 @@ struct StudioRootView: View {
                     themeContext: ctx
                 )
             }
+
+            HStack {
+                Spacer()
+                RightDrawer(appState: appState, datasetId: dsId)
+                    .padding(.top, 80).padding(.trailing, 16).padding(.bottom, 16)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
+            .animation(.easeInOut(duration: 0.2), value: appState.selectedRef)
         }
         .onAppear { ensureThemeContext() }
         .onChange(of: datasets.first?.id) { _, _ in ensureThemeContext() }
+    }
+
+    private func idKind(for id: UUID, in pins: [MKAnnotation]) -> EntityKind? {
+        for case let p as PinAnnotation in pins where p.entityId == id {
+            return EntityKind(rawValue: p.entityType)
+        }
+        return nil
+    }
+
+    private func buildEdgeLines(theme: Theme?, datasetId: UUID) -> [MKOverlay] {
+        guard let labels = theme?.drawEdgeLines, !labels.isEmpty else { return [] }
+        let labelSet = Set(labels)
+        let fd = FetchDescriptor<Edge>(predicate: #Predicate { $0.datasetId == datasetId && !$0.deleted })
+        let edges = ((try? modelContext.fetch(fd)) ?? []).filter { labelSet.contains($0.label) }
+        var segs: [(CLLocationCoordinate2D, CLLocationCoordinate2D)] = []
+        for e in edges {
+            guard let a = EntityReader.coordinate(EntityRef(id: e.fromId, kind: EntityKind(rawValue: e.fromType) ?? .poi), in: modelContext),
+                  let b = EntityReader.coordinate(EntityRef(id: e.toId, kind: EntityKind(rawValue: e.toType) ?? .poi), in: modelContext)
+            else { continue }
+            segs.append((a, b))
+        }
+        return EdgeLineFactory.polylines(from: segs)
     }
 
     private func ensureThemeContext() {
@@ -148,29 +192,45 @@ struct StudioRootView: View {
         pois: [POI],
         theme: Theme?,
         rules: [StyleRule],
-        palettes: [UUID: Palette]
+        palettes: [UUID: Palette],
+        highlight: Set<UUID>?
     ) -> [MKAnnotation] {
         var result: [MKAnnotation] = []
         for c in compounds where !c.deleted && (c.latitude != 0 || c.longitude != 0) {
             let style = StyleResolver.resolvePin(entity: c.styleEntity, theme: theme, rules: rules, palettes: palettes)
-            result.append(PinAnnotation(
+            let pin = PinAnnotation(
                 entityId: c.id, entityType: "compound", name: c.name,
                 coordinate: c.coordinate, style: style
-            ))
+            )
+            if let highlight {
+                pin.highlighted = highlight.contains(c.id)
+                pin.dimmed = !highlight.contains(c.id)
+            }
+            result.append(pin)
         }
         for s in schools where !s.deleted && (s.latitude != 0 || s.longitude != 0) {
             let style = StyleResolver.resolvePin(entity: s.styleEntity, theme: theme, rules: rules, palettes: palettes)
-            result.append(PinAnnotation(
+            let pin = PinAnnotation(
                 entityId: s.id, entityType: "school", name: s.name,
                 coordinate: s.coordinate, style: style
-            ))
+            )
+            if let highlight {
+                pin.highlighted = highlight.contains(s.id)
+                pin.dimmed = !highlight.contains(s.id)
+            }
+            result.append(pin)
         }
         for p in pois where !p.deleted && (p.latitude != 0 || p.longitude != 0) {
             let style = StyleResolver.resolvePin(entity: p.styleEntity, theme: theme, rules: rules, palettes: palettes)
-            result.append(PinAnnotation(
+            let pin = PinAnnotation(
                 entityId: p.id, entityType: "poi", name: p.name,
                 coordinate: p.coordinate, style: style
-            ))
+            )
+            if let highlight {
+                pin.highlighted = highlight.contains(p.id)
+                pin.dimmed = !highlight.contains(p.id)
+            }
+            result.append(pin)
         }
         return result
     }

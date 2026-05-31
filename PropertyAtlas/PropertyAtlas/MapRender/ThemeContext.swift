@@ -13,6 +13,10 @@ final class ThemeContext {
         self.modelContext = modelContext
     }
 
+    var datasetIdValue: UUID {
+        dataset.id
+    }
+
     var activeTheme: Theme? {
         guard let id = dataset.activeThemeId else { return nil }
         let descriptor = FetchDescriptor<Theme>(
