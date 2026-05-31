@@ -2,6 +2,8 @@
 import Foundation
 import SwiftData
 
+enum EdgeDirection { case downstream, upstream, either }
+
 @MainActor
 enum EdgeStore {
     struct RelationItem: Identifiable {
@@ -87,6 +89,56 @@ enum EdgeStore {
         fd.fetchLimit = 1
         if let e = try? context.fetch(fd).first { e.deleted = true
             e.updatedAt = Date()
+        }
+    }
+
+    /// 投影:ref 经 edgeLabel(按方向)连到的对端实体,取 targetField 字段值(nil=对端名)。去空,保序。
+    static func relatedFieldValues(
+        of ref: EntityRef,
+        edgeLabel: String,
+        direction: EdgeDirection,
+        targetField: String?,
+        datasetId: UUID,
+        in context: ModelContext
+    ) -> [String] {
+        let id = ref.id, dsId = datasetId
+        let fd = FetchDescriptor<Edge>(
+            predicate: #Predicate {
+                $0.datasetId == dsId && !$0.deleted && $0.label == edgeLabel &&
+                    ($0.fromId == id || $0.toId == id)
+            },
+            sortBy: [SortDescriptor(\.sortOrder), SortDescriptor(\.createdAt)]
+        )
+        let edges = (try? context.fetch(fd)) ?? []
+        var out: [String] = []
+        for e in edges {
+            let other: EntityRef
+            if e.fromId == id {
+                if direction == .upstream { continue }
+                guard let k = EntityKind(rawValue: e.toType) else { continue }
+                other = EntityRef(id: e.toId, kind: k)
+            } else {
+                if direction == .downstream { continue }
+                guard let k = EntityKind(rawValue: e.fromType) else { continue }
+                other = EntityRef(id: e.fromId, kind: k)
+            }
+            let value: String? = if let f = targetField {
+                EntityReader.value(other, key: f, in: context).flatMap { Self.stringifyJSON($0) }
+            } else {
+                EntityReader.name(other, in: context)
+            }
+            if let v = value, !v.isEmpty { out.append(v) }
+        }
+        return out
+    }
+
+    private static func stringifyJSON(_ v: AnyJSON) -> String? {
+        switch v {
+        case let .string(s): s.isEmpty ? nil : s
+        case let .int(n): String(n)
+        case let .double(d): String(d)
+        case let .bool(b): String(b)
+        default: nil
         }
     }
 
