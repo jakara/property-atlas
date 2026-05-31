@@ -15,6 +15,31 @@ enum LegacyMigrator {
         SeedImporter.uuid(from: "dataset:" + name)
     }
 
+    /// 删除 datasetId 不指向任何现存 Dataset 的残留实体(开发期多版迁移遗留)。
+    /// 每次启动调用,独立于 run() 的 "Dataset 已存在则跳过" 守卫。硬删(无 CloudKit 顾虑)。
+    static func cleanupOrphans(in ctx: ModelContext) {
+        let validIds = Set((try? ctx.fetch(FetchDescriptor<Dataset>()))?.map(\.id) ?? [])
+        func purge<T: PersistentModel>(_ type: T.Type, _ dsId: (T) -> UUID) {
+            let all = (try? ctx.fetch(FetchDescriptor<T>())) ?? []
+            for e in all where !validIds.contains(dsId(e)) {
+                ctx.delete(e)
+            }
+        }
+        purge(School.self) { $0.datasetId }
+        purge(Compound.self) { $0.datasetId }
+        purge(POI.self) { $0.datasetId }
+        purge(Area.self) { $0.datasetId }
+        purge(Theme.self) { $0.datasetId }
+        purge(StyleRule.self) { $0.datasetId }
+        purge(Layer.self) { $0.datasetId }
+        purge(FilterFieldConfig.self) { $0.datasetId }
+        purge(EnumOption.self) { $0.datasetId }
+        purge(CameraPreset.self) { $0.datasetId }
+        purge(Edge.self) { $0.datasetId }
+        purge(Tag.self) { $0.datasetId }
+        purge(CustomFieldDef.self) { $0.datasetId }
+    }
+
     static func run(in ctx: ModelContext) throws {
         if try !ctx.fetch(FetchDescriptor<Dataset>()).isEmpty { return }
         let hasLegacy: Bool = try (

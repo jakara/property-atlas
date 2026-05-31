@@ -36,11 +36,14 @@ enum SeedImporter {
         into context: ModelContext,
         progress: @escaping (Double, String) -> Void = { _, _ in }
     ) throws -> Bool {
+        // P5: 每次启动清理无主实体(独立于迁移守卫)
+        LegacyMigrator.cleanupOrphans(in: context)
         // P1: Try legacy migration first (idempotent)
         try LegacyMigrator.run(in: context)
         // If migration produced a Dataset, skip the rest (already migrated)
         let datasets = try context.fetch(FetchDescriptor<Dataset>())
         if !datasets.isEmpty {
+            try context.save()
             progress(1.0, "已迁移")
             return false
         }
