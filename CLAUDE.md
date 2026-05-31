@@ -17,7 +17,8 @@ iPad-first iOS 17+ app for property research in Tianjin. Stack: SwiftUI · MapKi
 - 实施计划 P2 (已完成): `docs/superpowers/plans/2026-05-29-p2-style-engine-map-render.md`
 - 实施计划 P3 (已完成): `docs/superpowers/plans/2026-05-31-p3-interaction-editing-core.md`
 - 实施计划 P4 (已完成): `docs/superpowers/plans/2026-06-01-p4-legend-filter-layer.md`
-- P5 计划: 待写
+- 实施计划 P5 (已完成): `docs/superpowers/plans/2026-05-31-p5-data-integrity-school-display.md`
+- P6 计划: 待写 (Settings 编辑页 + CloudKit + 删 Legacy*)
 
 ## 拆分文档 (`docs/claude/`) — 按需读
 
@@ -87,6 +88,15 @@ Never sync `pub_*` or `loc_*` to CloudKit.
 > 天津专用 `PinFilter`/`StudioLegend`/`SchoolDetailCard` + `LegacyStudioAccessors` 删除。
 > 延后: Settings 编辑页(Layer/FilterFieldConfig 编辑、新建) + CloudKit `.private`
 > + 删 Legacy* @Model → P5。
+
+> **P5 (2026-05-31) 完成后**: 数据正确性 + 学校显示修复。datasetId 改确定性
+> (`LegacyMigrator.stableDatasetId` 从 name 派生 MD5,重跑复用同 id);
+> `cleanupOrphans` 每次启动删 datasetId 无对应 Dataset 行的残留实体(13 类),
+> `SeedImporter` 在迁移守卫前调用 + 早返回路径 `save()`；`StudioRootView` 所有实体
+> 消费点(buildPins/buildAreaOverlays/layerCands/legendItems)按活跃 datasetId 过滤
+> (修跨 dataset bleed)。学校 StyleRules seed(名称 labelVisible + grade→重/普 glyph +
+> tier 配色)挂进"字段总览"/"学区视图" theme — 修学校无名字/无等级标识。
+> 延后 P6: Settings 全编辑页 + CloudKit `.private` + 删 Legacy* @Model。
 
 ### School district logic
 
