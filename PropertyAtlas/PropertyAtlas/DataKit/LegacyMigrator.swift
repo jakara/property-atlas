@@ -10,6 +10,11 @@ import SwiftData
 enum LegacyMigrator {
     static let datasetName = "天津 demo"
 
+    /// 稳定 datasetId:同 datasetName 永远派生同一 UUID,避免重跑孤立旧实体。
+    static func stableDatasetId(name: String) -> UUID {
+        SeedImporter.uuid(from: "dataset:" + name)
+    }
+
     static func run(in ctx: ModelContext) throws {
         if try !ctx.fetch(FetchDescriptor<Dataset>()).isEmpty { return }
         let hasLegacy: Bool = try (
@@ -20,6 +25,7 @@ enum LegacyMigrator {
         if !hasLegacy { return }
 
         let dataset = Dataset(name: datasetName)
+        dataset.id = stableDatasetId(name: datasetName)
         ctx.insert(dataset)
         try migrateAreas(dataset: dataset, in: ctx)
         try migrateSchools(dataset: dataset, in: ctx)

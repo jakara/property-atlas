@@ -326,4 +326,28 @@ struct LegacyMigratorTests {
         #expect(tags.first?.label == "通风良好")
         #expect(tags.first?.polarity == "positive")
     }
+
+    @Test func datasetIdIsStableAcrossRuns() throws {
+        // Run 1
+        let container1 = try TestContainer.makeInMemory(for: ModelSchema.allTypes)
+        let ctx1 = ModelContext(container1)
+        let ls1 = LegacySchool(name: "鞍山道小学", type: "小学", district: "和平区", tier: "重点")
+        ctx1.insert(ls1)
+        try ctx1.save()
+        try LegacyMigrator.run(in: ctx1)
+        let datasets1 = try ctx1.fetch(FetchDescriptor<Dataset>())
+        let id1 = try #require(datasets1.first).id
+
+        // Run 2 — separate in-memory container
+        let container2 = try TestContainer.makeInMemory(for: ModelSchema.allTypes)
+        let ctx2 = ModelContext(container2)
+        let ls2 = LegacySchool(name: "鞍山道小学", type: "小学", district: "和平区", tier: "重点")
+        ctx2.insert(ls2)
+        try ctx2.save()
+        try LegacyMigrator.run(in: ctx2)
+        let datasets2 = try ctx2.fetch(FetchDescriptor<Dataset>())
+        let id2 = try #require(datasets2.first).id
+
+        #expect(id1 == id2)
+    }
 }
