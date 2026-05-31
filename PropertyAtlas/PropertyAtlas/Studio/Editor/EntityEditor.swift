@@ -79,11 +79,3 @@ struct EntityEditor: View {
     }
 }
 #endif
-
-#if targetEnvironment(macCatalyst)
-struct EditorMediaTab: View { let ref: EntityRef
-    var body: some View {
-        EmptyView()
-    }
-}
-#endif
