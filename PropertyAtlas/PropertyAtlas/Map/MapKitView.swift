@@ -56,8 +56,13 @@ struct MapKitView: UIViewRepresentable {
         let existingIds = Set(v.overlays.map { ObjectIdentifier($0) })
         let toAdd = overlays.filter { !existingIds.contains(ObjectIdentifier($0)) }
         v.addOverlays(toAdd)
+        // Annotations rebuilt each render (style/dim/highlight may change). Removing the
+        // selected annotation triggers a programmatic didDeselect — flag it so the delegate
+        // does NOT clear app selection (which would close the drawer right after selecting).
+        context.coordinator.isRefreshingAnnotations = true
         v.removeAnnotations(v.annotations)
         v.addAnnotations(annotations)
+        context.coordinator.isRefreshingAnnotations = false
     }
 
     final class Coordinator: NSObject, MKMapViewDelegate {
@@ -68,6 +73,7 @@ struct MapKitView: UIViewRepresentable {
         var lastAppliedCamera: MKMapCamera?
         weak var mapViewRef: MKMapView?
         var onLongPressCoordinate: ((CLLocationCoordinate2D) -> Void)?
+        var isRefreshingAnnotations = false
 
         @objc func handleLongPress(_ g: UILongPressGestureRecognizer) {
             guard g.state == .began, let mv = mapViewRef else { return }
@@ -84,6 +90,9 @@ struct MapKitView: UIViewRepresentable {
         }
 
         func mapView(_ mv: MKMapView, didDeselect view: MKAnnotationView) {
+            // Ignore deselect caused by our own annotation refresh (remove/re-add);
+            // only a genuine user deselect should clear app selection.
+            guard !isRefreshingAnnotations else { return }
             if view.annotation is PinAnnotation {
                 onSchoolSelect?(nil)
             }
