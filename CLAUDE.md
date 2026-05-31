@@ -15,7 +15,8 @@ iPad-first iOS 17+ app for property research in Tianjin. Stack: SwiftUI · MapKi
 - 新方向 spec (2026-05-28 重定位): `docs/superpowers/specs/2026-05-28-generic-map-tool-design.md`
 - 实施计划 P1 (已完成): `docs/superpowers/plans/2026-05-28-p1-data-model-migration.md`
 - 实施计划 P2 (已完成): `docs/superpowers/plans/2026-05-29-p2-style-engine-map-render.md`
-- P3-P5 计划: 待写
+- 实施计划 P3 (已完成): `docs/superpowers/plans/2026-05-31-p3-interaction-editing-core.md`
+- P4-P5 计划: 待写
 
 ## 拆分文档 (`docs/claude/`) — 按需读
 
@@ -66,6 +67,15 @@ Never sync `pub_*` or `loc_*` to CloudKit.
 > `LegacyShim` 删除. Theme 切换由 `ThemeContext` 驱动. §5.7 Filter
 > 视图内计数 + §5.8 Layer 留待 P4. `PinFilter` / `StudioLegend` /
 > `SchoolDetailCard` + 极小 `LegacyStudioAccessors` shim 暂留, P4 重做后删.
+
+> **P3 (2026-05-31) 完成后**: `AppState` 驱动 selection/editingMode/editTab。
+> 点 pin → `EntityCard`(读) → `EntityEditor`(5 tab: 基本/关联/媒体/自定义/私密)。
+> Edge 经 `EdgeStore` 双向查询 + 校验(自连/重复) + 级联软删；关联 tab 增删。
+> 实体读写经 `EntityReader`/`EntityWriter`(按 `EntityRef`)，可编辑 baseField 由
+> `EntityFieldSchema` 单一声明；override 样式经 `OverrideStyleCodec`。spotlight
+> (`SpotlightResolver`) + drawEdgeLines(`EdgeLineFactory`) 已接。长按/右键建 Pin。
+> 延后: POI 外部搜索 / Area 绘制+raster / PhotosPicker → P3.5；
+> Settings / §5.7 Filter / §5.8 Layer → P4。
 
 ### School district logic
 
