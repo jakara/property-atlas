@@ -103,7 +103,7 @@ struct StudioRootView: View {
 
         let zoom = visibleRegion.map { ZoomLevel.from(region: $0) } ?? 12
         let _: Void = layerState.initializeIfNeeded(enabledIds: activeTheme?.defaultEnabledLayerIds ?? [])
-        let items = legendItems()
+        let items = legendItems(dsId)
         let activeLayers = layersForDataset(dsId).map {
             LayerEvaluator.ActiveLayer(
                 query: LayerQuery(staticRefsJSON: $0.staticRefsJSON, dynamicQueryJSON: $0.dynamicQueryJSON),
@@ -113,7 +113,7 @@ struct StudioRootView: View {
         // Layer candidates include areas (which legendItems() omits — areas have no point
         // coordinate). Without this, an active match-all layer would drop every area.
         let layerCands = items.map { LayerEvaluator.Candidate(id: $0.id, type: $0.type, entity: $0.entity) }
-            + areas.filter { !$0.deleted }.map {
+            + areas.filter { !$0.deleted && $0.datasetId == dsId }.map {
                 LayerEvaluator.Candidate(id: $0.id, type: "area", entity: $0.styleEntity)
             }
         let layerVisible = LayerEvaluator.visibleIds(layers: activeLayers, zoom: zoom, candidates: layerCands)
@@ -134,16 +134,16 @@ struct StudioRootView: View {
         )
 
         let pins = buildPins(
-            compounds: visibility["compound"] == true ? compounds : [],
-            schools: visibility["school"] == true ? schools : [],
-            pois: visibility["poi"] == true ? pois : [],
+            compounds: visibility["compound"] == true ? compounds.filter { $0.datasetId == dsId } : [],
+            schools: visibility["school"] == true ? schools.filter { $0.datasetId == dsId } : [],
+            pois: visibility["poi"] == true ? pois.filter { $0.datasetId == dsId } : [],
             theme: activeTheme, rules: rulesForTheme, palettes: palettesById,
             highlight: highlight,
             layerVisible: layerVisible, filterPredicate: predicate, datasetId: dsId
         )
         let (areaOverlays, styleMap) = visibility["area"] == true
             ? buildAreaOverlays(
-                areas: areas,
+                areas: areas.filter { $0.datasetId == dsId },
                 theme: activeTheme,
                 rules: rulesForTheme,
                 palettes: palettesById,
@@ -276,15 +276,15 @@ struct StudioRootView: View {
         layersQuery.filter { $0.datasetId == dsId && !$0.deleted }.sorted { $0.sortOrder < $1.sortOrder }
     }
 
-    private func legendItems() -> [LegendCounter.Item] {
+    private func legendItems(_ dsId: UUID) -> [LegendCounter.Item] {
         var out: [LegendCounter.Item] = []
-        for c in compounds where !c.deleted {
+        for c in compounds where !c.deleted && c.datasetId == dsId {
             out.append(.init(id: c.id, type: "compound", entity: c.styleEntity, coordinate: c.coordinate))
         }
-        for s in schools where !s.deleted {
+        for s in schools where !s.deleted && s.datasetId == dsId {
             out.append(.init(id: s.id, type: "school", entity: s.styleEntity, coordinate: s.coordinate))
         }
-        for p in pois where !p.deleted {
+        for p in pois where !p.deleted && p.datasetId == dsId {
             out.append(.init(id: p.id, type: "poi", entity: p.styleEntity, coordinate: p.coordinate))
         }
         return out
