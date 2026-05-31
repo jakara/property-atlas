@@ -95,6 +95,11 @@ struct MapKitView: UIViewRepresentable {
                 return renderer
             }
             #if targetEnvironment(macCatalyst)
+            if let line = overlay as? MKPolyline {
+                return EdgeLineRenderer(polyline: line)
+            }
+            #endif
+            #if targetEnvironment(macCatalyst)
             if let raster = overlay as? CalibratedImageOverlay {
                 return CalibratedImageOverlayRenderer(overlay: raster)
             }
