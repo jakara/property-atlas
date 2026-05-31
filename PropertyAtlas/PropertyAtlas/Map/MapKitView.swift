@@ -9,6 +9,7 @@ struct MapKitView: UIViewRepresentable {
     var rendererFor: ((MKOverlay) -> MKOverlayRenderer?)?
     var onRegionChange: ((MKCoordinateRegion) -> Void)?
     var onSchoolSelect: ((UUID?) -> Void)?
+    var onLongPressCoordinate: ((CLLocationCoordinate2D) -> Void)?
 
     func makeCoordinator() -> Coordinator {
         Coordinator()
@@ -24,8 +25,14 @@ struct MapKitView: UIViewRepresentable {
         v.showsScale = false
         v.setCamera(camera, animated: false)
         configure(v)
+        let longPress = UILongPressGestureRecognizer(
+            target: context.coordinator, action: #selector(Coordinator.handleLongPress(_:))
+        )
+        v.addGestureRecognizer(longPress)
+        context.coordinator.mapViewRef = v
         context.coordinator.onRegionChange = onRegionChange
         context.coordinator.onSchoolSelect = onSchoolSelect
+        context.coordinator.onLongPressCoordinate = onLongPressCoordinate
         context.coordinator.rendererFor = rendererFor
         context.coordinator.cameraBinding = $camera
         context.coordinator.lastAppliedCamera = camera.copy() as? MKMapCamera
@@ -35,6 +42,7 @@ struct MapKitView: UIViewRepresentable {
     func updateUIView(_ v: MKMapView, context: Context) {
         context.coordinator.onRegionChange = onRegionChange
         context.coordinator.onSchoolSelect = onSchoolSelect
+        context.coordinator.onLongPressCoordinate = onLongPressCoordinate
         context.coordinator.rendererFor = rendererFor
         context.coordinator.cameraBinding = $camera
         // Only push camera if it actually changed (preset 跳转); 否则用户拖动/缩放会被覆盖
@@ -58,6 +66,15 @@ struct MapKitView: UIViewRepresentable {
         var rendererFor: ((MKOverlay) -> MKOverlayRenderer?)?
         var cameraBinding: Binding<MKMapCamera>?
         var lastAppliedCamera: MKMapCamera?
+        weak var mapViewRef: MKMapView?
+        var onLongPressCoordinate: ((CLLocationCoordinate2D) -> Void)?
+
+        @objc func handleLongPress(_ g: UILongPressGestureRecognizer) {
+            guard g.state == .began, let mv = mapViewRef else { return }
+            let pt = g.location(in: mv)
+            let coord = mv.convert(pt, toCoordinateFrom: mv)
+            onLongPressCoordinate?(coord)
+        }
 
         #if targetEnvironment(macCatalyst)
         func mapView(_ mv: MKMapView, didSelect view: MKAnnotationView) {

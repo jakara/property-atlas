@@ -76,6 +76,8 @@ struct StudioRootView: View {
     )
     @State private var visibleRegion: MKCoordinateRegion?
     @State private var appState = AppState()
+    @State private var pendingCoordinate: CLLocationCoordinate2D?
+    @State private var showCreateMenu = false
 
     var body: some View {
         let activeTheme = themeContext?.activeTheme
@@ -121,6 +123,10 @@ struct StudioRootView: View {
                 onSchoolSelect: { id in
                     if let id, let kind = idKind(for: id, in: pins) { appState.select(EntityRef(id: id, kind: kind)) }
                     else { appState.clearSelection() }
+                },
+                onLongPressCoordinate: { coord in
+                    pendingCoordinate = coord
+                    showCreateMenu = true
                 }
             )
             .ignoresSafeArea()
@@ -143,8 +149,28 @@ struct StudioRootView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
             .animation(.easeInOut(duration: 0.2), value: appState.selectedRef)
         }
+        .confirmationDialog("新建实体", isPresented: $showCreateMenu, titleVisibility: .visible) {
+            Button("+ 小区") { createPin(.compound) }
+            Button("+ 学校") { createPin(.school) }
+            Button("+ POI") { createPin(.poi) }
+            Button("取消", role: .cancel) {}
+        }
         .onAppear { ensureThemeContext() }
         .onChange(of: datasets.first?.id) { _, _ in ensureThemeContext() }
+    }
+
+    private func createPin(_ kind: EntityKind) {
+        guard let coord = pendingCoordinate, let dsId = themeContext?.datasetIdValue else { return }
+        let ref = EntityWriter.createPin(
+            kind: kind,
+            datasetId: dsId,
+            name: "未命名",
+            latitude: coord.latitude,
+            longitude: coord.longitude,
+            in: modelContext
+        )
+        appState.select(ref)
+        appState.beginEditing()
     }
 
     private func idKind(for id: UUID, in pins: [MKAnnotation]) -> EntityKind? {

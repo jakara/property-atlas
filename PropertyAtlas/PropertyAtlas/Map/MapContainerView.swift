@@ -8,6 +8,7 @@ struct MapContainerView: View {
     var rendererFor: ((MKOverlay) -> MKOverlayRenderer?)?
     var onRegionChange: ((MKCoordinateRegion) -> Void)?
     var onSchoolSelect: ((UUID?) -> Void)?
+    var onLongPressCoordinate: ((CLLocationCoordinate2D) -> Void)?
 
     init(
         camera: Binding<MKMapCamera>? = nil,
@@ -15,7 +16,8 @@ struct MapContainerView: View {
         annotations: [MKAnnotation] = [],
         rendererFor: ((MKOverlay) -> MKOverlayRenderer?)? = nil,
         onRegionChange: ((MKCoordinateRegion) -> Void)? = nil,
-        onSchoolSelect: ((UUID?) -> Void)? = nil
+        onSchoolSelect: ((UUID?) -> Void)? = nil,
+        onLongPressCoordinate: ((CLLocationCoordinate2D) -> Void)? = nil
     ) {
         if let camera {
             self._camera = camera
@@ -34,6 +36,7 @@ struct MapContainerView: View {
         self.rendererFor = rendererFor
         self.onRegionChange = onRegionChange
         self.onSchoolSelect = onSchoolSelect
+        self.onLongPressCoordinate = onLongPressCoordinate
     }
 
     var body: some View {
@@ -43,7 +46,8 @@ struct MapContainerView: View {
             annotations: annotations,
             rendererFor: rendererFor,
             onRegionChange: onRegionChange,
-            onSchoolSelect: onSchoolSelect
+            onSchoolSelect: onSchoolSelect,
+            onLongPressCoordinate: onLongPressCoordinate
         )
     }
 }
