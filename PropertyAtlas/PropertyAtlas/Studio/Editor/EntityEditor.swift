@@ -86,12 +86,4 @@ struct EditorMediaTab: View { let ref: EntityRef
         EmptyView()
     }
 }
-
-struct EditorCustomTab: View { let ref: EntityRef
-    let datasetId: UUID
-    let showPrivate: Bool
-    var body: some View {
-        EmptyView()
-    }
-}
 #endif
