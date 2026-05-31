@@ -350,4 +350,26 @@ struct LegacyMigratorTests {
 
         #expect(id1 == id2)
     }
+
+    @Test func seedsSchoolStyleRulesAndAttachesToThemes() throws {
+        let container = try TestContainer.makeInMemory(for: ModelSchema.allTypes)
+        let ctx = ModelContext(container)
+        let ls = LegacySchool(name: "鞍山道小学", type: "小学", district: "和平区", tier: "重点")
+        ctx.insert(ls)
+        try ctx.save()
+        try LegacyMigrator.run(in: ctx)
+
+        let schoolRules = try ctx.fetch(FetchDescriptor<StyleRule>())
+            .filter { $0.entityType == "school" }
+        #expect(!schoolRules.isEmpty)
+        #expect(schoolRules.contains { $0.appliesLabelVisible == true })
+        #expect(schoolRules.contains { $0.appliesGlyph == "重" })
+        #expect(schoolRules.contains { $0.appliesGlyph == "普" })
+
+        let themes = try ctx.fetch(FetchDescriptor<Theme>())
+        let overview = try #require(themes.first { $0.name == "字段总览" })
+        #expect(!overview.styleRuleIds.isEmpty)
+        let ruleIds = Set(schoolRules.map(\.id))
+        #expect(overview.styleRuleIds.contains { ruleIds.contains($0) })
+    }
 }

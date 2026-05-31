@@ -549,7 +549,47 @@ enum LegacyMigrator {
         t4.sortOrder = 3
         ctx.insert(t4)
 
+        // P5: 学校样式规则 — 名称标签 + 等级(grade)→ 重/普 glyph + tier 配色
+        let schoolRuleIds = seedSchoolStyleRules(dataset: dataset, in: ctx)
+        t1.styleRuleIds = schoolRuleIds // 挂进"字段总览"
+        t2.styleRuleIds = schoolRuleIds // 挂进"学区视图"
+
         dataset.activeThemeId = t1.id
+    }
+
+    /// 学校样式:名称标签(低优先级) + grade → 重/普 glyph + tier 配色(高优先级)。
+    private static func seedSchoolStyleRules(dataset: Dataset, in ctx: ModelContext) -> [UUID] {
+        func schoolCond(_ value: String) -> String {
+            let conds = [StyleCondition(field: "grade", op: .equals, value: .string(value))]
+            return (try? JSONHelpers.encode(conds)) ?? "[]"
+        }
+        var ids: [UUID] = []
+
+        let label = StyleRule(datasetId: dataset.id, name: "学校-显示名称", entityType: "school")
+        label.priority = 0
+        label.appliesShape = "square"
+        label.appliesLabelVisible = true
+        ctx.insert(label)
+        ids.append(label.id)
+
+        let tiers: [(grade: String, glyph: String)] = [
+            ("重点", "重"),
+            ("区重点", "重"),
+            ("普通", "普"),
+        ]
+        let fills = ["#FF3B30", "#FF9500", "#8E8E93"]
+        for (idx, tier) in tiers.enumerated() {
+            let rule = StyleRule(datasetId: dataset.id, name: "学校-\(tier.grade)", entityType: "school")
+            rule.priority = 10 + idx
+            rule.conditionsJSON = schoolCond(tier.grade)
+            rule.appliesGlyph = tier.glyph
+            rule.appliesGlyphHex = "#FFFFFF"
+            rule.appliesFillHex = fills[idx]
+            rule.appliesLabelVisible = true
+            ctx.insert(rule)
+            ids.append(rule.id)
+        }
+        return ids
     }
 
     // MARK: stage 9 — CameraPreset seeds
