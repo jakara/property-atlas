@@ -38,4 +38,27 @@ struct EntityReaderTests {
         let ref = EntityRef(id: UUID(), kind: .poi)
         #expect(EntityReader.name(ref, in: context) == nil)
     }
+
+    @Test func schoolReaderReturnsNameGradeCategory() throws {
+        let container = try TestContainer.makeInMemory(for: [Compound.self, School.self, POI.self, Area.self])
+        let ctx = ModelContext(container)
+        let s = School(datasetId: UUID(), name: "实验中学", latitude: 39.1, longitude: 117.2)
+        s.grade = "重点"
+        s.category = "初中"
+        ctx.insert(s)
+        try ctx.save()
+        let ref = EntityRef(id: s.id, kind: .school)
+
+        #expect(EntityReader.name(ref, in: ctx) == "实验中学")
+        if case let .string(g)? = EntityReader.value(ref, key: "grade", in: ctx) {
+            #expect(g == "重点")
+        } else {
+            Issue.record("grade 读取失败")
+        }
+        if case let .string(c)? = EntityReader.value(ref, key: "category", in: ctx) {
+            #expect(c == "初中")
+        } else {
+            Issue.record("category 读取失败")
+        }
+    }
 }
