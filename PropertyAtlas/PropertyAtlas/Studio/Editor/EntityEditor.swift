@@ -81,13 +81,6 @@ struct EntityEditor: View {
 #endif
 
 #if targetEnvironment(macCatalyst)
-struct EditorBasicTab: View { let ref: EntityRef
-    let datasetId: UUID
-    var body: some View {
-        EmptyView()
-    }
-}
-
 struct EditorRelationsTab: View { let ref: EntityRef
     let datasetId: UUID
     let onSelectRelated: (EntityRef) -> Void
