@@ -110,7 +110,12 @@ struct StudioRootView: View {
                 enabled: layerState.isEnabled($0.id), minZoom: $0.minZoom, maxZoom: $0.maxZoom
             )
         }
+        // Layer candidates include areas (which legendItems() omits — areas have no point
+        // coordinate). Without this, an active match-all layer would drop every area.
         let layerCands = items.map { LayerEvaluator.Candidate(id: $0.id, type: $0.type, entity: $0.entity) }
+            + areas.filter { !$0.deleted }.map {
+                LayerEvaluator.Candidate(id: $0.id, type: "area", entity: $0.styleEntity)
+            }
         let layerVisible = LayerEvaluator.visibleIds(layers: activeLayers, zoom: zoom, candidates: layerCands)
         let predicate = filterState.predicate
         let legendRows = LegendCounter.rows(
