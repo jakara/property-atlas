@@ -552,31 +552,30 @@ enum LegacyMigrator {
         let onlyCompound = #"{"compound":true,"school":false,"poi":false,"area":false}"#
 
         let t1 = Theme(datasetId: dataset.id, name: "字段总览")
-        t1.visibilityJSON = baseVisibility
-        t1.defaultEnabledLayerIds = [defaultLayer.id]
         t1.sortOrder = 0
         t1.isActive = true
         ctx.insert(t1)
 
         let t2 = Theme(datasetId: dataset.id, name: "学区视图")
-        t2.visibilityJSON = baseVisibility
-        t2.defaultEnabledLayerIds = [defaultLayer.id]
         t2.sortOrder = 1
-        t2.copyTitle = "学区分布图"
-        t2.copySubtitle = "2026 招生季"
         ctx.insert(t2)
 
         let t3 = Theme(datasetId: dataset.id, name: "商圈视图")
-        t3.visibilityJSON = onlyPOIAndArea
-        t3.defaultEnabledLayerIds = [defaultLayer.id]
         t3.sortOrder = 2
         ctx.insert(t3)
 
         let t4 = Theme(datasetId: dataset.id, name: "新房地图")
-        t4.visibilityJSON = onlyCompound
-        t4.defaultEnabledLayerIds = [defaultLayer.id]
         t4.sortOrder = 3
         ctx.insert(t4)
+
+        // P8b: per-view literals (formerly stored on Theme, now written
+        // directly onto each MapView). Same order as themes [t1, t2, t3, t4].
+        let viewSeeds: [ViewSeed] = [
+            ViewSeed(visibilityJSON: baseVisibility),
+            ViewSeed(visibilityJSON: baseVisibility, copyTitle: "学区分布图", copySubtitle: "2026 招生季"),
+            ViewSeed(visibilityJSON: onlyPOIAndArea),
+            ViewSeed(visibilityJSON: onlyCompound),
+        ]
 
         // P5: 学校样式规则 — 名称标签 + 等级(grade)→ 重/普 glyph + tier 配色
         let schoolRuleIds = seedSchoolStyleRules(dataset: dataset, in: ctx)
@@ -594,9 +593,24 @@ enum LegacyMigrator {
             dataset: dataset,
             defaultLayerId: defaultLayer.id,
             themes: [t1, t2, t3, t4],
+            viewSeeds: viewSeeds,
             palette: defaultPalette,
             in: ctx
         )
+    }
+
+    /// P8b: per-view literal values that used to live on Theme. Carries the
+    /// 9 former-global fields (minus defaultEnabledLayerIds, which is dropped
+    /// because views already set enabledLayerIds = [defaultLayerId]).
+    private struct ViewSeed {
+        var cameraPresetId: UUID? = nil
+        var visibilityJSON: String
+        var spotlightOnSelect: Bool = true
+        var drawEdgeLines: [String] = []
+        var bgMapStyle: String = "standard"
+        var copyTitle: String? = nil
+        var copySubtitle: String? = nil
+        var copyWatermark: String? = nil
     }
 
     /// P8a: seed one MapView per theme. normalFilters derived from the
@@ -606,6 +620,7 @@ enum LegacyMigrator {
         dataset: Dataset,
         defaultLayerId: UUID,
         themes: [Theme],
+        viewSeeds: [ViewSeed],
         palette: Palette?,
         in ctx: ModelContext
     ) throws {
@@ -624,19 +639,20 @@ enum LegacyMigrator {
         let primaryJSON = (try? JSONHelpers.encode(emptyPrimary)) ?? #"{"conditions":[],"groupBy":null}"#
 
         for (idx, t) in themes.enumerated() {
+            let seed = viewSeeds[idx]
             let v = MapView(datasetId: dsId, name: t.name)
             v.enabledLayerIds = [defaultLayerId]
             v.primaryFilterJSON = primaryJSON
             v.normalFiltersJSON = normalsJSON
             v.paletteId = palette?.id
-            v.cameraPresetId = t.cameraPresetId
-            v.bgMapStyle = t.bgMapStyle
-            v.drawEdgeLines = t.drawEdgeLines
-            v.copyTitle = t.copyTitle
-            v.copySubtitle = t.copySubtitle
-            v.copyWatermark = t.copyWatermark
-            v.spotlightOnSelect = t.spotlightOnSelect
-            v.visibilityJSON = t.visibilityJSON
+            v.cameraPresetId = seed.cameraPresetId
+            v.bgMapStyle = seed.bgMapStyle
+            v.drawEdgeLines = seed.drawEdgeLines
+            v.copyTitle = seed.copyTitle
+            v.copySubtitle = seed.copySubtitle
+            v.copyWatermark = seed.copyWatermark
+            v.spotlightOnSelect = seed.spotlightOnSelect
+            v.visibilityJSON = seed.visibilityJSON
             v.sortOrder = idx
             v.isActive = (idx == 0)
             ctx.insert(v)
