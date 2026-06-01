@@ -532,10 +532,12 @@ enum LegacyMigrator {
             ("category-warm", ["#FF3B30", "#FF9500", "#FFCC00", "#FF2D55", "#FF6482", "#D02D7E"]),
             ("mono-blue", ["#E1F0FF", "#9CCBFB", "#4DA3F0", "#1B69D6"]),
         ]
+        var defaultPalette: Palette?
         for (idx, p) in palettes.enumerated() {
             let palette = Palette(name: p.name, colorsHex: p.colors, builtIn: true)
             palette.sortOrder = idx
             ctx.insert(palette)
+            if idx == 0 { defaultPalette = palette } // default-rainbow
         }
 
         let defaultLayer = Layer(datasetId: dataset.id, name: "全部")
@@ -582,6 +584,62 @@ enum LegacyMigrator {
         t2.styleRuleIds = schoolRuleIds // 挂进"学区视图"
 
         dataset.activeThemeId = t1.id
+
+        // P8a: default layer zIndex + themeId (default layer → active theme)
+        defaultLayer.zIndex = 0
+        defaultLayer.themeId = t1.id
+
+        // P8a: seed one MapView per theme (additive)
+        try seedMapViews(
+            dataset: dataset,
+            defaultLayerId: defaultLayer.id,
+            themes: [t1, t2, t3, t4],
+            palette: defaultPalette,
+            in: ctx
+        )
+    }
+
+    /// P8a: seed one MapView per theme. normalFilters derived from the
+    /// dataset's already-seeded FilterFieldConfig rows; primaryFilter empty
+    /// (no groupBy); paletteId = default palette; copy/camera/bg from theme.
+    private static func seedMapViews(
+        dataset: Dataset,
+        defaultLayerId: UUID,
+        themes: [Theme],
+        palette: Palette?,
+        in ctx: ModelContext
+    ) throws {
+        let dsId = dataset.id
+        let cfgs = try ctx.fetch(FetchDescriptor<FilterFieldConfig>())
+            .filter { $0.datasetId == dsId && !$0.deleted }
+            .sorted { $0.slot < $1.slot }
+        let normals: [NormalFilter] = cfgs.map {
+            NormalFilter(
+                name: $0.label,
+                dimension: MapDimension(kind: .field, fieldKey: $0.fieldKey, fieldSource: $0.fieldSource)
+            )
+        }
+        let normalsJSON = (try? JSONHelpers.encode(normals)) ?? "[]"
+        let emptyPrimary = PrimaryFilter(conditions: [], groupBy: nil)
+        let primaryJSON = (try? JSONHelpers.encode(emptyPrimary)) ?? #"{"conditions":[],"groupBy":null}"#
+
+        for (idx, t) in themes.enumerated() {
+            let v = MapView(datasetId: dsId, name: t.name)
+            v.enabledLayerIds = [defaultLayerId]
+            v.primaryFilterJSON = primaryJSON
+            v.normalFiltersJSON = normalsJSON
+            v.paletteId = palette?.id
+            v.cameraPresetId = t.cameraPresetId
+            v.bgMapStyle = t.bgMapStyle
+            v.drawEdgeLines = t.drawEdgeLines
+            v.copyTitle = t.copyTitle
+            v.copySubtitle = t.copySubtitle
+            v.copyWatermark = t.copyWatermark
+            v.spotlightOnSelect = t.spotlightOnSelect
+            v.sortOrder = idx
+            v.isActive = (idx == 0)
+            ctx.insert(v)
+        }
     }
 
     /// 学校样式:名称标签(低优先级) + grade → 重/普 glyph + tier 配色(高优先级)。

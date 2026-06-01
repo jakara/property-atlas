@@ -373,6 +373,37 @@ struct LegacyMigratorTests {
         #expect(overview.styleRuleIds.contains { ruleIds.contains($0) })
     }
 
+    @Test func seedsMapViewsWithDefaults() throws {
+        let container = try TestContainer.makeInMemory(for: ModelSchema.allTypes)
+        let ctx = ModelContext(container)
+        let ls = LegacySchool(name: "鞍山道小学", type: "小学", district: "和平区", tier: "重点")
+        ctx.insert(ls)
+        try ctx.save()
+        try LegacyMigrator.run(in: ctx)
+
+        let views = try ctx.fetch(FetchDescriptor<MapView>())
+        #expect(!views.isEmpty)
+        #expect(views.contains { $0.isActive })
+        let v = try #require(views.first { $0.isActive })
+        #expect(!v.enabledLayerIds.isEmpty)
+        #expect(v.paletteId != nil)
+        // primaryFilter JSON decodes to PrimaryFilter
+        let pfData = Data(v.primaryFilterJSON.utf8)
+        #expect((try? JSONDecoder().decode(PrimaryFilter.self, from: pfData)) != nil)
+        let layers = try ctx.fetch(FetchDescriptor<Layer>())
+        #expect(layers.contains { $0.themeId != nil })
+
+        // one MapView per theme (t1..t4)
+        #expect(views.count == 4)
+
+        // normalFilters count == FilterFieldConfig count for the dataset
+        let cfgCount = try ctx.fetch(FetchDescriptor<FilterFieldConfig>())
+            .filter { $0.datasetId == v.datasetId && !$0.deleted }.count
+        let nfData = Data(v.normalFiltersJSON.utf8)
+        let nfs = (try? JSONDecoder().decode([NormalFilter].self, from: nfData)) ?? []
+        #expect(nfs.count == cfgCount)
+    }
+
     @Test func migratesPrimaryAreaToEdge() throws {
         let container = try TestContainer.makeInMemory(for: ModelSchema.allTypes)
         let ctx = ModelContext(container)
