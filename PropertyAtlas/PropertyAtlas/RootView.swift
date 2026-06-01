@@ -81,6 +81,7 @@ struct StudioRootView: View {
     @State private var appState = AppState()
     @State private var pendingCoordinate: CLLocationCoordinate2D?
     @State private var showCreateMenu = false
+    @State private var showSettings = false
 
     var body: some View {
         let palettesById: [UUID: Palette] = Dictionary(uniqueKeysWithValues: palettes.map { ($0.id, $0) })
@@ -187,7 +188,7 @@ struct StudioRootView: View {
             if let ctx = viewContext {
                 StudioOverlay(
                     title: $title, subtitle: $subtitle, watermark: $watermark,
-                    aspect: $aspect, viewContext: ctx
+                    aspect: $aspect, viewContext: ctx, showSettings: $showSettings
                 )
             }
 
@@ -221,6 +222,11 @@ struct StudioRootView: View {
             Button("+ 学校") { createPin(.school) }
             Button("+ POI") { createPin(.poi) }
             Button("取消", role: .cancel) {}
+        }
+        .sheet(isPresented: $showSettings) {
+            if let ctx = viewContext {
+                SettingsSheet(viewContext: ctx, onClose: { showSettings = false })
+            }
         }
         .onAppear { ensureViewContext() }
         .onChange(of: datasets.first?.id) { _, _ in ensureViewContext() }

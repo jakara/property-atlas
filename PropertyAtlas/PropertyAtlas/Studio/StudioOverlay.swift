@@ -7,12 +7,13 @@ struct StudioOverlay: View {
     @Binding var watermark: String
     @Binding var aspect: CanvasAspect
     @Bindable var viewContext: MapViewContext
+    @Binding var showSettings: Bool
 
     var body: some View {
         ZStack {
             VStack {
                 Spacer()
-                StudioToolbar(viewContext: viewContext, aspect: $aspect, onSnapshot: {})
+                StudioToolbar(viewContext: viewContext, aspect: $aspect, onSnapshot: {}, showSettings: $showSettings)
                     .padding(.bottom, 24)
             }
             VStack {

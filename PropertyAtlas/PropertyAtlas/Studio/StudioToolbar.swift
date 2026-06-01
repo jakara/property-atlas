@@ -6,6 +6,7 @@ struct StudioToolbar: View {
     @Bindable var viewContext: MapViewContext
     @Binding var aspect: CanvasAspect
     let onSnapshot: () -> Void
+    var showSettings: Binding<Bool>
 
     var body: some View {
         HStack(spacing: 12) {
@@ -19,6 +20,7 @@ struct StudioToolbar: View {
                     Button(a.rawValue) { aspect = a }
                 }
             }
+            Button { showSettings.wrappedValue = true } label: { Text("⚙️ 设置") }
             Divider().frame(height: 20)
             Button(action: onSnapshot) { Text("📸 截屏") }
                 .keyboardShortcut("e", modifiers: .command)
