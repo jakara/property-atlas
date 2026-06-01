@@ -231,24 +231,6 @@ struct LegacyMigratorTests {
         #expect(cat.contains("初中"))
     }
 
-    @Test func migrateSeedsDefaultFilterFieldConfigs() throws {
-        let container = try TestContainer.makeInMemory(for: ModelSchema.allTypes)
-        let ctx = ModelContext(container)
-        let lc = LegacyCompound(name: "x", district: "和平区", latitude: 39.1, longitude: 117.2)
-        ctx.insert(lc)
-        try ctx.save()
-        try LegacyMigrator.run(in: ctx)
-        let configs = try ctx.fetch(FetchDescriptor<FilterFieldConfig>())
-        let schoolSlots = configs.filter { $0.entityType == "school" }
-            .sorted { $0.slot < $1.slot }
-            .map(\.fieldKey)
-        #expect(schoolSlots == ["category", "grade", "form"])
-        let compoundSlots = configs.filter { $0.entityType == "compound" }
-            .sorted { $0.slot < $1.slot }
-            .map(\.fieldKey)
-        #expect(compoundSlots == ["finishType", "isNewHouse"])
-    }
-
     @Test func migrateSeedsPalettesThemesAndDefaultLayer() throws {
         let container = try TestContainer.makeInMemory(for: ModelSchema.allTypes)
         let ctx = ModelContext(container)
@@ -396,19 +378,20 @@ struct LegacyMigratorTests {
         // one MapView per theme (t1..t4)
         #expect(views.count == 4)
 
-        // normalFilters count == FilterFieldConfig count for the dataset
-        let cfgCount = try ctx.fetch(FetchDescriptor<FilterFieldConfig>())
-            .filter { $0.datasetId == v.datasetId && !$0.deleted }.count
+        // normalFilters hardcoded list (was derived from per-field config)
         let nfData = Data(v.normalFiltersJSON.utf8)
         let nfs = (try? JSONDecoder().decode([NormalFilter].self, from: nfData)) ?? []
-        #expect(nfs.count == cfgCount)
+        #expect(nfs.count == 7)
+        #expect(nfs.contains { $0.name == "精装类型" })
+        #expect(nfs.contains { $0.name == "等级" })
     }
 
     @Test func seededMapViewHasVisibilityJSON() throws {
         let container = try TestContainer.makeInMemory(for: ModelSchema.allTypes)
         let ctx = ModelContext(container)
         let ls = LegacySchool(name: "鞍山道小学", type: "小学", district: "和平区", tier: "重点")
-        ctx.insert(ls); try ctx.save()
+        ctx.insert(ls)
+        try ctx.save()
         try LegacyMigrator.run(in: ctx)
         let v = try #require(try ctx.fetch(FetchDescriptor<MapView>()).first { $0.isActive })
         let data = Data(v.visibilityJSON.utf8)

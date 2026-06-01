@@ -32,7 +32,6 @@ enum LegacyMigrator {
         purge(Theme.self) { $0.datasetId }
         purge(StyleRule.self) { $0.datasetId }
         purge(Layer.self) { $0.datasetId }
-        purge(FilterFieldConfig.self) { $0.datasetId }
         purge(EnumOption.self) { $0.datasetId }
         purge(CameraPreset.self) { $0.datasetId }
         purge(Edge.self) { $0.datasetId }
@@ -57,7 +56,6 @@ enum LegacyMigrator {
         try migrateCompounds(dataset: dataset, in: ctx)
         try migrateEdges(dataset: dataset, in: ctx)
         try seedEnumOptions(dataset: dataset, in: ctx)
-        try seedFilterFields(dataset: dataset, in: ctx)
         try seedPalettesThemesLayers(dataset: dataset, in: ctx)
         try seedCameraPresets(dataset: dataset, in: ctx)
         try migrateAdmissionDocs(dataset: dataset, in: ctx)
@@ -488,41 +486,6 @@ enum LegacyMigrator {
         }
     }
 
-    // MARK: stage 7 — FilterFieldConfig seeds
-
-    private static func seedFilterFields(dataset: Dataset, in ctx: ModelContext) throws {
-        let seeds: [(entity: String, fields: [(key: String, label: String, source: String)])] = [
-            ("compound", [
-                ("finishType", "精装类型", "base"),
-                ("isNewHouse", "新房/二手", "base"),
-            ]),
-            ("school", [
-                ("category", "阶段", "base"),
-                ("grade", "等级", "base"),
-                ("form", "学制", "base"),
-            ]),
-            ("poi", [
-                ("category", "POI 类型", "base"),
-            ]),
-            ("area", [
-                ("category", "区域类型", "base"),
-            ]),
-        ]
-        for (entity, fields) in seeds {
-            for (idx, f) in fields.enumerated() {
-                let c = FilterFieldConfig(
-                    datasetId: dataset.id,
-                    entityType: entity,
-                    fieldKey: f.key,
-                    fieldSource: f.source,
-                    label: f.label,
-                    slot: idx + 1
-                )
-                ctx.insert(c)
-            }
-        }
-    }
-
     // MARK: stage 8 — Palette + Theme + Layer seeds
 
     private static func seedPalettesThemesLayers(dataset: Dataset, in ctx: ModelContext) throws {
@@ -603,18 +566,18 @@ enum LegacyMigrator {
     /// 9 former-global fields (minus defaultEnabledLayerIds, which is dropped
     /// because views already set enabledLayerIds = [defaultLayerId]).
     private struct ViewSeed {
-        var cameraPresetId: UUID? = nil
+        var cameraPresetId: UUID?
         var visibilityJSON: String
         var spotlightOnSelect: Bool = true
         var drawEdgeLines: [String] = []
         var bgMapStyle: String = "standard"
-        var copyTitle: String? = nil
-        var copySubtitle: String? = nil
-        var copyWatermark: String? = nil
+        var copyTitle: String?
+        var copySubtitle: String?
+        var copyWatermark: String?
     }
 
-    /// P8a: seed one MapView per theme. normalFilters derived from the
-    /// dataset's already-seeded FilterFieldConfig rows; primaryFilter empty
+    /// P8a: seed one MapView per theme. normalFilters is a hardcoded list
+    /// (P9b: formerly derived from per-field config rows); primaryFilter empty
     /// (no groupBy); paletteId = default palette; copy/camera/bg from theme.
     private static func seedMapViews(
         dataset: Dataset,
@@ -625,15 +588,24 @@ enum LegacyMigrator {
         in ctx: ModelContext
     ) throws {
         let dsId = dataset.id
-        let cfgs = try ctx.fetch(FetchDescriptor<FilterFieldConfig>())
-            .filter { $0.datasetId == dsId && !$0.deleted }
-            .sorted { $0.slot < $1.slot }
-        let normals: [NormalFilter] = cfgs.map {
+        // P9b: hardcoded NormalFilter list (formerly derived from per-field config
+        // rows sorted by slot). Order is behavior-equivalent to the prior
+        // slot-ascending derivation captured empirically before deletion.
+        func fieldFilter(_ name: String, _ key: String) -> NormalFilter {
             NormalFilter(
-                name: $0.label,
-                dimension: MapDimension(kind: .field, fieldKey: $0.fieldKey, fieldSource: $0.fieldSource)
+                name: name,
+                dimension: MapDimension(kind: .field, fieldKey: key, fieldSource: "base")
             )
         }
+        let normals: [NormalFilter] = [
+            fieldFilter("精装类型", "finishType"),
+            fieldFilter("阶段", "category"),
+            fieldFilter("POI 类型", "category"),
+            fieldFilter("区域类型", "category"),
+            fieldFilter("等级", "grade"),
+            fieldFilter("新房/二手", "isNewHouse"),
+            fieldFilter("学制", "form"),
+        ]
         let normalsJSON = (try? JSONHelpers.encode(normals)) ?? "[]"
         let emptyPrimary = PrimaryFilter(conditions: [], groupBy: nil)
         let primaryJSON = (try? JSONHelpers.encode(emptyPrimary)) ?? #"{"conditions":[],"groupBy":null}"#
