@@ -12,7 +12,7 @@ enum ModelSchema {
         // New style
         StyleRule.self, Palette.self, Theme.self,
         // New display
-        Layer.self, FilterFieldConfig.self,
+        Layer.self, FilterFieldConfig.self, MapView.self,
         // New schema registry
         CustomFieldDef.self, EnumOption.self,
         // New media
