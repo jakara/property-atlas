@@ -1,6 +1,6 @@
 import Foundation
 
-enum StyleConditionOp: String, Codable {
+enum StyleConditionOp: String, Codable, Hashable {
     case equals
     case notEquals
     case inOp = "in"
