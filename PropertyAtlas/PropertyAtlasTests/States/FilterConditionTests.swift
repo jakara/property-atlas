@@ -9,24 +9,24 @@ struct FilterConditionTests {
         StyleEntity(entityType: type, id: UUID(), baseFields: fields, customFields: [:])
     }
 
-    private func input(_ e: StyleEntity, layers: [String] = []) -> PropertyAtlas.Dimension.Input {
+    private func input(_ e: StyleEntity, layers: [String] = []) -> PropertyAtlas.MapDimension.Input {
         .init(entity: e, layerNames: layers, context: nil, datasetId: nil)
     }
 
     @Test func equalsOnField() {
-        let c = FilterCondition(dimension: Dimension(kind: .field, fieldKey: "grade"), op: .equals, value: .string("重点"))
+        let c = FilterCondition(dimension: MapDimension(kind: .field, fieldKey: "grade"), op: .equals, value: .string("重点"))
         #expect(c.evaluate(input(entity(type: "school", fields: ["grade": .string("重点")]))))
         #expect(!c.evaluate(input(entity(type: "school", fields: ["grade": .string("普通")]))))
     }
 
     @Test func inOnEntityType() {
-        let c = FilterCondition(dimension: Dimension(kind: .entityType), op: .inOp, value: .array([.string("school"), .string("poi")]))
+        let c = FilterCondition(dimension: MapDimension(kind: .entityType), op: .inOp, value: .array([.string("school"), .string("poi")]))
         #expect(c.evaluate(input(entity(type: "poi"))))
         #expect(!c.evaluate(input(entity(type: "compound"))))
     }
 
     @Test func inOnLayerMultiValue() {
-        let c = FilterCondition(dimension: Dimension(kind: .layer), op: .inOp, value: .array([.string("教育")]))
+        let c = FilterCondition(dimension: MapDimension(kind: .layer), op: .inOp, value: .array([.string("教育")]))
         #expect(c.evaluate(input(entity(type: "school"), layers: ["商业", "教育"])))
         #expect(!c.evaluate(input(entity(type: "school"), layers: ["商业"])))
     }

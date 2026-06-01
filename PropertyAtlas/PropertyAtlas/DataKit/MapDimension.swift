@@ -5,7 +5,7 @@ enum DimensionKind: String, Codable, CaseIterable {
     case layer, entityType, field, edgeField
 }
 
-struct Dimension: Codable, Hashable {
+struct MapDimension: Codable, Hashable {
     var kind: DimensionKind
     var fieldKey: String?
     var fieldSource: String?

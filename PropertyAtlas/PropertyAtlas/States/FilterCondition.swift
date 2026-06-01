@@ -1,12 +1,12 @@
 import Foundation
 
 struct FilterCondition: Codable, Equatable {
-    var dimension: Dimension
+    var dimension: MapDimension
     var op: StyleConditionOp
     var value: AnyJSON
 
     @MainActor
-    func evaluate(_ input: Dimension.Input) -> Bool {
+    func evaluate(_ input: MapDimension.Input) -> Bool {
         let values = dimension.resolve(input)
         switch op {
         case .equals:
