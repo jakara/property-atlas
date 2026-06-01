@@ -20,7 +20,8 @@ iPad-first iOS 17+ app for property research in Tianjin. Stack: SwiftUI · MapKi
 - 实施计划 P5 (已完成): `docs/superpowers/plans/2026-05-31-p5-data-integrity-school-display.md`
 - 通用过滤/图例/染色 重设计 spec: `docs/superpowers/specs/2026-05-31-generic-filter-legend-color-redesign.md`
 - 实施计划 P6 (已完成): `docs/superpowers/plans/2026-05-31-p6-relation-unification.md`
-- P7/P8/P9 计划: 待写 (见 spec §9 — Dimension+Filter 引擎 / View+Theme下沉+染色 / Settings+CloudKit+删Legacy*)
+- 实施计划 P7 (已完成): `docs/superpowers/plans/2026-05-31-p7-dimension-filter-engine.md`
+- P8/P9 计划: 待写 (见 spec §9 — View+Theme下沉+PaletteAssigner+接RootView+删旧 / Settings+CloudKit+删Legacy*)
 
 ## 拆分文档 (`docs/claude/`) — 按需读
 
@@ -106,6 +107,15 @@ Never sync `pub_*` or `loc_*` to CloudKit.
 > targetField:)` + `EdgeDirection` —— 关系投影原语,给 Dimension.edgeField 用
 > (按 edge 上/下游实体字段过滤/分组/染色)。见重设计 spec。
 > 后续 P7(Dimension+Filter 引擎)/ P8(View+Theme下沉+染色)/ P9(Settings+CloudKit+删Legacy*)。
+
+> **P7 (2026-06-01) 完成后**: 通用维度过滤引擎(纯逻辑,与旧路径并存,未接 RootView)。
+> `MapDimension`(layer/entityType/field/edgeField 四源 resolve;**注意命名** MapDimension
+> 非 Dimension —— 避 Foundation.Dimension 撞名)+ `FilterCondition`(维度多值 op,
+> Codable/Equatable 非 Hashable 因含 AnyJSON)+ `PrimaryFilter`(conditions AND +
+> 可选 groupBy)+ `NormalFilter` + `DimensionFilterState`(按 MapDimension.key 隐藏值)
+> + `VisibilityResolver`(layer ∩ primary ∩ ¬隐藏)+ `DimensionLegendCounter`(按任意
+> 维度计数 viewport/total)。旧 `FilterFieldConfig`/`FilterPredicate`/`LegendCounter`
+> 未动 → P8 接 RootView 时删。后续 P8(View 模型 + Theme 下沉 + PaletteAssigner + 接入 + 删旧)。
 
 ### School district logic
 
