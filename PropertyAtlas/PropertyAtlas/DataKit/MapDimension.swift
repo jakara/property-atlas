@@ -54,7 +54,7 @@ struct MapDimension: Codable, Hashable {
             return [input.entity.entityType]
         case .field:
             guard let fk = fieldKey else { return [] }
-            let s = FilterPredicate.display(input.entity.field(fk))
+            let s = ValueFormat.display(input.entity.field(fk))
             return s.isEmpty ? [] : [s]
         case .edgeField:
             guard let label = edgeLabel, let ctx = input.context, let dsId = input.datasetId,
