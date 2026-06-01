@@ -24,7 +24,9 @@ iPad-first iOS 17+ app for property research in Tianjin. Stack: SwiftUI · MapKi
 - 实施计划 P8a (已完成): `docs/superpowers/plans/2026-06-01-p8a-view-model-palette-engine.md`
 - 实施计划 P8b (已完成): `docs/superpowers/plans/2026-06-01-p8b-view-driven-integration.md`
 - 实施计划 P9a (已完成): `docs/superpowers/plans/2026-06-01-p9a-settings-editing-ui.md`
-- P9b 计划: 待写 (CloudKit `.private` + 删 Legacy* @Model + 删 FilterFieldConfig/LegendSwatch)
+- 实施计划 P9b (已完成): `docs/superpowers/plans/2026-06-01-p9b-delete-filterfieldconfig-legendswatch.md`
+- P9c 计划: 待写 (删 Legacy* @Model + seed 管线重写 JSON→新实体直写)
+- CloudKit: 延后 (iOS 上手后;Catalyst 现 `.none`)
 - P9 余项: 待写 (Theme/StyleRule/CameraPreset/CustomFieldDef 编辑器、逐实体-逐图层 theme 解析)
 
 ## 拆分文档 (`docs/claude/`) — 按需读
@@ -153,6 +155,13 @@ Never sync `pub_*` or `loc_*` to CloudKit.
 > `StyleConditionOp` 加 `Hashable`。配置改动直接 mutate + `updatedAt`,SwiftData 自动保存,软删 `deleted=true`。
 > **延后 P9b/余项**:Theme/StyleRule/CameraPreset/CustomFieldDef 编辑器、CloudKit `.private`、删 Legacy*、
 > 删 FilterFieldConfig/LegendSwatch、逐实体-逐图层 theme 解析。
+
+> **P9b (2026-06-01) 完成后**: 删 `FilterFieldConfig` @Model(schema 移表)+ `LegendSwatch`(P8b 后零生产引用)。
+> migrator `seedMapViews` 的 NormalFilter 改**硬编码 7 项**(原由 FilterFieldConfig 按 slot 派生,实测顺序对齐:
+> 精装类型/阶段/POI 类型/区域类型/等级/新房二手/学制 —— 行为等价且现确定);删 `seedFilterFields` stage +
+> `cleanupOrphans` purge + ModelSchema 条目 + FilterFieldConfig/LegendSwatch 测试。清库重迁 smoke 验丢表不崩 +
+> normalFilters 仍 7 + 实体数不变。**CloudKit 延后**(iOS 未上手,Catalyst 保持 `.none`)、**Legacy* @Model 删除 +
+> seed 管线重写(JSON→新实体直写)→ P9c**。Theme/StyleRule/Camera/Custom 编辑器、逐实体-逐图层 theme 仍延后。
 
 ### School district logic
 
