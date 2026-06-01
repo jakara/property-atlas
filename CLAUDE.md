@@ -22,7 +22,8 @@ iPad-first iOS 17+ app for property research in Tianjin. Stack: SwiftUI · MapKi
 - 实施计划 P6 (已完成): `docs/superpowers/plans/2026-05-31-p6-relation-unification.md`
 - 实施计划 P7 (已完成): `docs/superpowers/plans/2026-05-31-p7-dimension-filter-engine.md`
 - 实施计划 P8a (已完成): `docs/superpowers/plans/2026-06-01-p8a-view-model-palette-engine.md`
-- P8b/P9 计划: 待写 (见 spec §9 — P8b: 接 RootView + Theme 字段剥离 + 删旧; P9: Settings+CloudKit+删Legacy*)
+- 实施计划 P8b (已完成): `docs/superpowers/plans/2026-06-01-p8b-view-driven-integration.md`
+- P9 计划: 待写 (Settings 编辑 UI + CloudKit `.private` + 删 Legacy* @Model + 逐图层 theme + 删 FilterFieldConfig/LegendSwatch)
 
 ## 拆分文档 (`docs/claude/`) — 按需读
 
@@ -126,6 +127,19 @@ Never sync `pub_*` or `loc_*` to CloudKit.
 > 优先级 builtin<theme<rules<groupFill<entity-override)。migrator seed 每 theme 一个 MapView
 > (normalFilters 由 FilterFieldConfig 派生,primaryFilter 空 groupBy)+ defaultLayer zIndex/themeId。
 > Theme 旧字段/FilterFieldConfig/RootView **未动** → P8b 切 View-driven + 删旧。
+
+> **P8b (2026-06-01) 完成后**: 视图驱动集成 + 删旧。RootView/抽屉/工具栏切到
+> `MapViewContext`(active MapView + 派生 active theme = 启用图层 zIndex 最高且有 themeId 者,回退
+> dataset.activeThemeId)。可见集走 `VisibilityResolver`;图例走 `DimensionLegendCounter`(primary
+> groupBy 彩色 chip[PaletteAssigner] + 每 NormalFilter 灰 chip #8E8E93 + 视口/总数);染色走
+> `GroupColorResolver`→`resolvePin(groupFillHex:)`。`DimensionFilterState` 替 FilterState。新增
+> `ValueFormat`(原 FilterPredicate.display/key)、`GroupColorResolver`、`MapViewContext`、
+> `LayerEvaluator.membership`、`MapView.visibilityJSON`。**删** FilterState/FilterPredicate/旧 LegendCounter + 测试。
+> **Theme 删 9 字段**(visibilityJSON/defaultEnabledLayerIds/drawEdgeLines/copy*/bgMapStyle/cameraPresetId/
+> spotlightOnSelect)→ 移到 MapView;migrator 用 `ViewSeed` 直接写视图字面量。Theme 仅剩
+> styleRuleIds/defaultStylesJSON/showLegend/name/sortOrder/isActive。schema 破坏 → 已清库重迁 smoke 验证。
+> **务实单 active theme**(逐图层 theme 延后)。保留待 P9:FilterFieldConfig @Model、LegendSwatch。
+> 后续 P9:Settings 编辑 UI + CloudKit .private + 删 Legacy*。
 
 ### School district logic
 
