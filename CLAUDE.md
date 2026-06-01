@@ -21,7 +21,8 @@ iPad-first iOS 17+ app for property research in Tianjin. Stack: SwiftUI · MapKi
 - 通用过滤/图例/染色 重设计 spec: `docs/superpowers/specs/2026-05-31-generic-filter-legend-color-redesign.md`
 - 实施计划 P6 (已完成): `docs/superpowers/plans/2026-05-31-p6-relation-unification.md`
 - 实施计划 P7 (已完成): `docs/superpowers/plans/2026-05-31-p7-dimension-filter-engine.md`
-- P8/P9 计划: 待写 (见 spec §9 — View+Theme下沉+PaletteAssigner+接RootView+删旧 / Settings+CloudKit+删Legacy*)
+- 实施计划 P8a (已完成): `docs/superpowers/plans/2026-06-01-p8a-view-model-palette-engine.md`
+- P8b/P9 计划: 待写 (见 spec §9 — P8b: 接 RootView + Theme 字段剥离 + 删旧; P9: Settings+CloudKit+删Legacy*)
 
 ## 拆分文档 (`docs/claude/`) — 按需读
 
@@ -116,6 +117,15 @@ Never sync `pub_*` or `loc_*` to CloudKit.
 > + `VisibilityResolver`(layer ∩ primary ∩ ¬隐藏)+ `DimensionLegendCounter`(按任意
 > 维度计数 viewport/total)。旧 `FilterFieldConfig`/`FilterPredicate`/`LegendCounter`
 > 未动 → P8 接 RootView 时删。后续 P8(View 模型 + Theme 下沉 + PaletteAssigner + 接入 + 删旧)。
+
+> **P8a (2026-06-01) 完成后**: 视图容器 + 调色引擎(additive,未接 RootView)。
+> `MapView` @Model(spec 的 "View";命名避撞 SwiftUI.View;enabledLayerIds + primaryFilterJSON
+> + normalFiltersJSON + paletteId + copy/camera)。`Layer` + zIndex(渲染叠放)+ themeId(layer→theme)。
+> `PaletteAssigner.assign`(FNV-1a + 同屏线性探测去重 + 8 色高对比内置板 `highContrast`)。
+> `StyleResolver.resolvePin` 加 `groupFillHex:String?=nil`(分类色覆盖 fill,在 rules 后/override 前;
+> 优先级 builtin<theme<rules<groupFill<entity-override)。migrator seed 每 theme 一个 MapView
+> (normalFilters 由 FilterFieldConfig 派生,primaryFilter 空 groupBy)+ defaultLayer zIndex/themeId。
+> Theme 旧字段/FilterFieldConfig/RootView **未动** → P8b 切 View-driven + 删旧。
 
 ### School district logic
 
