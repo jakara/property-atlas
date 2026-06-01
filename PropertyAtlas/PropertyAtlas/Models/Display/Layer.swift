@@ -15,6 +15,8 @@ final class Layer {
     var isDefault: Bool = false
     var enabled: Bool = true
     var sortOrder: Int = 0
+    var zIndex: Int = 0
+    var themeId: UUID?
     var version: Int = 1
     var createdAt: Date = Date()
     var updatedAt: Date = Date()

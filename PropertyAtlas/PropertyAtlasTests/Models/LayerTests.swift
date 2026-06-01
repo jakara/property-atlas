@@ -26,3 +26,18 @@ struct LayerTests {
         #expect(all.first?.enabled == true)
     }
 }
+
+@MainActor
+struct LayerZIndexThemeTests {
+    @Test func zIndexAndThemeIdPersist() throws {
+        let container = try TestContainer.makeInMemory(for: ModelSchema.allTypes)
+        let ctx = ModelContext(container)
+        let l = Layer(datasetId: UUID(), name: "教育")
+        l.zIndex = 5
+        let tid = UUID(); l.themeId = tid
+        ctx.insert(l); try ctx.save()
+        let f = try ctx.fetch(FetchDescriptor<Layer>()).first
+        #expect(f?.zIndex == 5)
+        #expect(f?.themeId == tid)
+    }
+}
