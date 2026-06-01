@@ -404,6 +404,18 @@ struct LegacyMigratorTests {
         #expect(nfs.count == cfgCount)
     }
 
+    @Test func seededMapViewHasVisibilityJSON() throws {
+        let container = try TestContainer.makeInMemory(for: ModelSchema.allTypes)
+        let ctx = ModelContext(container)
+        let ls = LegacySchool(name: "鞍山道小学", type: "小学", district: "和平区", tier: "重点")
+        ctx.insert(ls); try ctx.save()
+        try LegacyMigrator.run(in: ctx)
+        let v = try #require(try ctx.fetch(FetchDescriptor<MapView>()).first { $0.isActive })
+        let data = Data(v.visibilityJSON.utf8)
+        let obj = try #require(try? JSONSerialization.jsonObject(with: data) as? [String: Bool])
+        #expect(obj["school"] != nil)
+    }
+
     @Test func migratesPrimaryAreaToEdge() throws {
         let container = try TestContainer.makeInMemory(for: ModelSchema.allTypes)
         let ctx = ModelContext(container)

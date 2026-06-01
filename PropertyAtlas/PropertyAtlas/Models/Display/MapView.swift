@@ -11,6 +11,7 @@ final class MapView {
     var enabledLayerIds: [UUID] = []
     var primaryFilterJSON: String = #"{"conditions":[],"groupBy":null}"#
     var normalFiltersJSON: String = "[]"
+    var visibilityJSON: String = #"{"compound":true,"school":true,"poi":true,"area":true}"#
     var paletteId: UUID?
     var cameraPresetId: UUID?
     var bgMapStyle: String = "standard"

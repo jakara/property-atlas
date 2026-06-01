@@ -636,6 +636,7 @@ enum LegacyMigrator {
             v.copySubtitle = t.copySubtitle
             v.copyWatermark = t.copyWatermark
             v.spotlightOnSelect = t.spotlightOnSelect
+            v.visibilityJSON = t.visibilityJSON
             v.sortOrder = idx
             v.isActive = (idx == 0)
             ctx.insert(v)
