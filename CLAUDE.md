@@ -23,7 +23,9 @@ iPad-first iOS 17+ app for property research in Tianjin. Stack: SwiftUI · MapKi
 - 实施计划 P7 (已完成): `docs/superpowers/plans/2026-05-31-p7-dimension-filter-engine.md`
 - 实施计划 P8a (已完成): `docs/superpowers/plans/2026-06-01-p8a-view-model-palette-engine.md`
 - 实施计划 P8b (已完成): `docs/superpowers/plans/2026-06-01-p8b-view-driven-integration.md`
-- P9 计划: 待写 (Settings 编辑 UI + CloudKit `.private` + 删 Legacy* @Model + 逐图层 theme + 删 FilterFieldConfig/LegendSwatch)
+- 实施计划 P9a (已完成): `docs/superpowers/plans/2026-06-01-p9a-settings-editing-ui.md`
+- P9b 计划: 待写 (CloudKit `.private` + 删 Legacy* @Model + 删 FilterFieldConfig/LegendSwatch)
+- P9 余项: 待写 (Theme/StyleRule/CameraPreset/CustomFieldDef 编辑器、逐实体-逐图层 theme 解析)
 
 ## 拆分文档 (`docs/claude/`) — 按需读
 
@@ -140,6 +142,17 @@ Never sync `pub_*` or `loc_*` to CloudKit.
 > styleRuleIds/defaultStylesJSON/showLegend/name/sortOrder/isActive。schema 破坏 → 已清库重迁 smoke 验证。
 > **务实单 active theme**(逐图层 theme 延后)。保留待 P9:FilterFieldConfig @Model、LegendSwatch。
 > 后续 P9:Settings 编辑 UI + CloudKit .private + 删 Legacy*。
+
+> **P9a (2026-06-01) 完成后**: Studio 内 Settings 编辑 UI(纯 additive,无 schema 变更)。
+> 工具栏 ⚙️ → `SettingsSheet`(四 tab 分段:视图/图层/调色板/枚举)。`ViewSettingsTab` 编辑 active
+> MapView 全字段 + `PrimaryFilterEditor`(groupBy + AND 条件,经 `DimensionPicker`)+ NormalFilters,
+> 新建/切换/删视图;`LayerSettingsTab`(zIndex/themeId/色/zoom/启用 CRUD);`PaletteSettingsTab`
+> (色数组 CRUD);`EnumOptionSettingsTab`(按 scope 增删值,含 edge.label)。新增纯逻辑(有单测):
+> `ViewConfigCodec`(MapView filter JSON ⇄ 值)、`FieldKeyCatalog`(字段 base+custom / 枚举 / edge 标签源)、
+> `ColorHexField.normalize`;组件 `DimensionPicker`/`FilterConditionRow`/`AnyJSONValueField`。
+> `StyleConditionOp` 加 `Hashable`。配置改动直接 mutate + `updatedAt`,SwiftData 自动保存,软删 `deleted=true`。
+> **延后 P9b/余项**:Theme/StyleRule/CameraPreset/CustomFieldDef 编辑器、CloudKit `.private`、删 Legacy*、
+> 删 FilterFieldConfig/LegendSwatch、逐实体-逐图层 theme 解析。
 
 ### School district logic
 
