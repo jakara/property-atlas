@@ -3,10 +3,10 @@
 import SwiftUI
 
 struct LeftDrawerView: View {
-    let legendRows: [LegendCounter.Row]
+    let legendSections: [LegendSection]
     let layers: [Layer]
     let currentZoom: Double
-    @Bindable var filterState: FilterState
+    @Bindable var filterState: DimensionFilterState
     @Bindable var layerState: LayerState
 
     var body: some View {
@@ -14,7 +14,7 @@ struct LeftDrawerView: View {
             VStack(alignment: .leading, spacing: 16) {
                 LayersView(layers: layers, currentZoom: currentZoom, layerState: layerState)
                 Divider().opacity(0.5)
-                LegendView(rows: legendRows, filterState: filterState)
+                LegendView(sections: legendSections, filterState: filterState)
             }
             .padding(12)
         }

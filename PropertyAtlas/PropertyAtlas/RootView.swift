@@ -65,11 +65,10 @@ struct StudioRootView: View {
     @Query private var styleRules: [StyleRule]
     @Query private var palettes: [Palette]
     @Query private var layersQuery: [Layer]
-    @Query private var filterConfigs: [FilterFieldConfig]
 
-    @State private var filterState = FilterState()
+    @State private var filterState = DimensionFilterState()
     @State private var layerState = LayerState()
-    @State private var themeContext: ThemeContext?
+    @State private var viewContext: MapViewContext?
     @State private var title: String = ""
     @State private var subtitle: String = ""
     @State private var watermark: String = "@公众号名 · PropertyAtlas"
@@ -84,73 +83,84 @@ struct StudioRootView: View {
     @State private var showCreateMenu = false
 
     var body: some View {
-        let activeTheme = themeContext?.activeTheme
         let palettesById: [UUID: Palette] = Dictionary(uniqueKeysWithValues: palettes.map { ($0.id, $0) })
+        let dsId = viewContext?.datasetIdValue ?? UUID()
+        let activeMapView = viewContext?.activeMapView
+        let activeTheme = viewContext?.activeTheme
         let activeRuleIds = Set(activeTheme?.styleRuleIds ?? [])
         let rulesForTheme = styleRules.filter { activeRuleIds.contains($0.id) }
-        let visibility = visibilityFromTheme(activeTheme)
-        let dsId = themeContext?.datasetIdValue ?? UUID()
+        let visibility = viewContext?.visibility ?? ["compound": true, "school": true, "poi": true, "area": true]
+        let primary = viewContext?.primaryFilter ?? PrimaryFilter(conditions: [], groupBy: nil)
+        let normals = viewContext?.normalFilters ?? []
 
-        // spotlight：选中 entity 的关联对端 id
+        // spotlight
         let relatedIds: [UUID] = appState.selectedRef.map {
             EdgeStore.relations(of: $0, datasetId: dsId, in: modelContext)
                 .flatMap { $0.items.map(\.other.id) }
         } ?? []
         let highlight = SpotlightResolver.highlightedIds(
             selected: appState.selectedRef?.id, relatedIds: relatedIds,
-            enabled: activeTheme?.spotlightOnSelect ?? false
+            enabled: activeMapView?.spotlightOnSelect ?? false
         )
 
         let zoom = visibleRegion.map { ZoomLevel.from(region: $0) } ?? 12
-        let _: Void = layerState.initializeIfNeeded(enabledIds: activeTheme?.defaultEnabledLayerIds ?? [])
-        let items = legendItems(dsId)
-        let activeLayers = layersForDataset(dsId).map {
-            LayerEvaluator.ActiveLayer(
-                query: LayerQuery(staticRefsJSON: $0.staticRefsJSON, dynamicQueryJSON: $0.dynamicQueryJSON),
-                enabled: layerState.isEnabled($0.id), minZoom: $0.minZoom, maxZoom: $0.maxZoom
+        let _: Void = layerState.initializeIfNeeded(enabledIds: activeMapView?.enabledLayerIds ?? [])
+
+        // ── 候选集(含坐标 + 图层归属)──
+        let cands = buildCandidates(dsId: dsId, visibility: visibility)
+        let namedLayers = layersForDataset(dsId).map {
+            LayerEvaluator.NamedLayer(
+                name: $0.name,
+                layer: LayerEvaluator.ActiveLayer(
+                    query: LayerQuery(staticRefsJSON: $0.staticRefsJSON, dynamicQueryJSON: $0.dynamicQueryJSON),
+                    enabled: layerState.isEnabled($0.id), minZoom: $0.minZoom, maxZoom: $0.maxZoom
+                )
             )
         }
-        // Layer candidates include areas (which legendItems() omits — areas have no point
-        // coordinate). Without this, an active match-all layer would drop every area.
-        let layerCands = items.map { LayerEvaluator.Candidate(id: $0.id, type: $0.type, entity: $0.entity) }
-            + areas.filter { !$0.deleted && $0.datasetId == dsId }.map {
-                LayerEvaluator.Candidate(id: $0.id, type: "area", entity: $0.styleEntity)
-            }
-        let layerVisible = LayerEvaluator.visibleIds(layers: activeLayers, zoom: zoom, candidates: layerCands)
-        let predicate = filterState.predicate
-        let legendRows = LegendCounter.rows(
-            items: items, configs: filterConfigs.filter { $0.datasetId == dsId },
-            region: visibleRegion, filter: predicate, layerVisible: layerVisible,
-            swatch: { type, field, value in
-                LegendSwatch.fillHex(
-                    entityType: type,
-                    fieldKey: field,
-                    value: value,
-                    theme: activeTheme,
-                    rules: rulesForTheme,
-                    palettes: palettesById
-                )
-            }
+        let evalCands = cands.map { LayerEvaluator.Candidate(id: $0.id, type: $0.type, entity: $0.entity) }
+        let layerVisible = LayerEvaluator.visibleIds(
+            layers: namedLayers.map(\.layer), zoom: zoom, candidates: evalCands
+        )
+        let membership = LayerEvaluator.membership(layers: namedLayers, zoom: zoom, candidates: evalCands)
+
+        // ── 可见集(layer ∩ primary ∩ ¬chip 隐藏)──
+        let visCands = cands.map {
+            VisibilityResolver.Candidate(id: $0.id, entity: $0.entity, layerNames: membership[$0.id] ?? [])
+        }
+        let visibleIds = VisibilityResolver.visibleIds(
+            candidates: visCands, layerVisible: layerVisible,
+            primary: primary, normals: normals, filterState: filterState,
+            context: modelContext, datasetId: dsId
         )
 
-        let pins = buildPins(
-            compounds: visibility["compound"] == true ? compounds.filter { $0.datasetId == dsId } : [],
-            schools: visibility["school"] == true ? schools.filter { $0.datasetId == dsId } : [],
-            pois: visibility["poi"] == true ? pois.filter { $0.datasetId == dsId } : [],
-            theme: activeTheme, rules: rulesForTheme, palettes: palettesById,
-            highlight: highlight,
-            layerVisible: layerVisible, filterPredicate: predicate, datasetId: dsId
+        // ── 分组染色 ──
+        let palette = activeMapView?.paletteId.flatMap { palettesById[$0]?.colorsHex }
+            ?? PaletteAssigner.highContrast
+        let groupItems = cands
+            .filter { visibleIds.contains($0.id) && $0.type != "area" }
+            .map { GroupColorResolver.Item(id: $0.id, entity: $0.entity, layerNames: membership[$0.id] ?? []) }
+        let groupColors = GroupColorResolver.colors(
+            items: groupItems, groupBy: primary.groupBy, palette: palette,
+            context: modelContext, datasetId: dsId
         )
-        let (areaOverlays, styleMap) = visibility["area"] == true
-            ? buildAreaOverlays(
-                areas: areas.filter { $0.datasetId == dsId },
-                theme: activeTheme,
-                rules: rulesForTheme,
-                palettes: palettesById,
-                layerVisible: layerVisible
-            )
-            : ([], [:])
-        let edgeLines = buildEdgeLines(theme: activeTheme, datasetId: dsId)
+
+        // ── 图例 sections(primary groupBy 彩色 + 每个 normal 灰)──
+        let legendSections = buildLegendSections(
+            cands: cands, visibleIds: visibleIds, membership: membership,
+            primary: primary, normals: normals, palette: palette,
+            groupColors: groupColors, dsId: dsId
+        )
+
+        // ── pins / overlays ──
+        let pins = buildPins(
+            cands: cands, visibleIds: visibleIds, groupColors: groupColors,
+            theme: activeTheme, rules: rulesForTheme, palettes: palettesById, highlight: highlight
+        )
+        let (areaOverlays, styleMap) = buildAreaOverlays(
+            areas: visibility["area"] == true ? areas.filter { $0.datasetId == dsId } : [],
+            visibleIds: visibleIds, theme: activeTheme, rules: rulesForTheme, palettes: palettesById
+        )
+        let edgeLines = buildEdgeLines(labels: activeMapView?.drawEdgeLines ?? [], datasetId: dsId)
         let overlays = areaOverlays + edgeLines
 
         ZStack {
@@ -174,13 +184,10 @@ struct StudioRootView: View {
             )
             .ignoresSafeArea()
 
-            if let ctx = themeContext {
+            if let ctx = viewContext {
                 StudioOverlay(
-                    title: $title,
-                    subtitle: $subtitle,
-                    watermark: $watermark,
-                    aspect: $aspect,
-                    themeContext: ctx
+                    title: $title, subtitle: $subtitle, watermark: $watermark,
+                    aspect: $aspect, viewContext: ctx
                 )
             }
 
@@ -194,7 +201,7 @@ struct StudioRootView: View {
 
             HStack {
                 LeftDrawerView(
-                    legendRows: legendRows,
+                    legendSections: legendSections,
                     layers: layersForDataset(dsId),
                     currentZoom: zoom,
                     filterState: filterState,
@@ -205,8 +212,8 @@ struct StudioRootView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         }
-        .onChange(of: themeContext?.activeTheme?.id) { _, _ in
-            layerState.resetForTheme(enabledIds: themeContext?.activeTheme?.defaultEnabledLayerIds ?? [])
+        .onChange(of: viewContext?.activeMapView?.id) { _, _ in
+            layerState.resetForTheme(enabledIds: viewContext?.activeMapView?.enabledLayerIds ?? [])
             filterState.reset()
         }
         .confirmationDialog("新建实体", isPresented: $showCreateMenu, titleVisibility: .visible) {
@@ -215,19 +222,143 @@ struct StudioRootView: View {
             Button("+ POI") { createPin(.poi) }
             Button("取消", role: .cancel) {}
         }
-        .onAppear { ensureThemeContext() }
-        .onChange(of: datasets.first?.id) { _, _ in ensureThemeContext() }
+        .onAppear { ensureViewContext() }
+        .onChange(of: datasets.first?.id) { _, _ in ensureViewContext() }
+    }
+
+    // MARK: - 候选
+
+    private struct Cand {
+        let id: UUID
+        let type: String
+        let name: String
+        let entity: StyleEntity
+        let coordinate: CLLocationCoordinate2D
+        let hasCoordinate: Bool
+    }
+
+    private func buildCandidates(dsId: UUID, visibility: [String: Bool]) -> [Cand] {
+        var out: [Cand] = []
+        if visibility["compound"] == true {
+            for c in compounds where !c.deleted && c.datasetId == dsId {
+                out.append(.init(id: c.id, type: "compound", name: c.name, entity: c.styleEntity,
+                                 coordinate: c.coordinate, hasCoordinate: c.latitude != 0 || c.longitude != 0))
+            }
+        }
+        if visibility["school"] == true {
+            for s in schools where !s.deleted && s.datasetId == dsId {
+                out.append(.init(id: s.id, type: "school", name: s.name, entity: s.styleEntity,
+                                 coordinate: s.coordinate, hasCoordinate: s.latitude != 0 || s.longitude != 0))
+            }
+        }
+        if visibility["poi"] == true {
+            for p in pois where !p.deleted && p.datasetId == dsId {
+                out.append(.init(id: p.id, type: "poi", name: p.name, entity: p.styleEntity,
+                                 coordinate: p.coordinate, hasCoordinate: p.latitude != 0 || p.longitude != 0))
+            }
+        }
+        // areas 加入候选(供 layer 归属/可见集);无点坐标,buildPins 跳过
+        if visibility["area"] == true {
+            for a in areas where !a.deleted && a.datasetId == dsId {
+                out.append(.init(id: a.id, type: "area", name: a.name, entity: a.styleEntity,
+                                 coordinate: CLLocationCoordinate2D(), hasCoordinate: false))
+            }
+        }
+        return out
+    }
+
+    // MARK: - 图例
+
+    private func buildLegendSections(
+        cands: [Cand], visibleIds: Set<UUID>, membership: [UUID: [String]],
+        primary: PrimaryFilter, normals: [NormalFilter], palette: [String],
+        groupColors: [UUID: String], dsId: UUID
+    ) -> [LegendSection] {
+        // 仅统计可见实体(含 area)
+        let items = cands.filter { visibleIds.contains($0.id) }.map {
+            DimensionLegendCounter.Item(id: $0.id, entity: $0.entity, coordinate: $0.coordinate,
+                                        layerNames: membership[$0.id] ?? [])
+        }
+        var sections: [LegendSection] = []
+
+        if let gb = primary.groupBy {
+            // groupBy 维度的值 → palette 色(与 pin 一致):由全屏 distinct 值分配
+            let distinct = items.flatMap { it -> [String] in
+                gb.resolve(MapDimension.Input(entity: it.entity, layerNames: it.layerNames,
+                                              context: modelContext, datasetId: dsId)).sorted().prefix(1).map { $0 }
+            }
+            let assign = PaletteAssigner.assign(values: Array(Set(distinct)), palette: palette)
+            let rows = DimensionLegendCounter.rows(
+                dimension: gb, items: items, region: visibleRegion,
+                context: modelContext, datasetId: dsId,
+                swatch: { assign[$0] ?? "#8E8E93" }
+            )
+            sections.append(LegendSection(title: legendTitle(for: gb, fallback: "分组"), dimensionKey: gb.key, rows: rows))
+        }
+
+        for nf in normals {
+            let rows = DimensionLegendCounter.rows(
+                dimension: nf.dimension, items: items, region: visibleRegion,
+                context: modelContext, datasetId: dsId,
+                swatch: { _ in "#8E8E93" }   // normal filter 不参与染色 → 中性灰
+            )
+            sections.append(LegendSection(title: nf.name, dimensionKey: nf.dimension.key, rows: rows))
+        }
+        return sections
+    }
+
+    private func legendTitle(for dim: MapDimension, fallback: String) -> String {
+        switch dim.kind {
+        case .field: return dim.fieldKey ?? fallback
+        case .layer: return "图层"
+        case .entityType: return "类型"
+        case .edgeField: return dim.edgeLabel ?? fallback
+        }
+    }
+
+    // MARK: - pins / overlays
+
+    private func buildPins(
+        cands: [Cand], visibleIds: Set<UUID>, groupColors: [UUID: String],
+        theme: Theme?, rules: [StyleRule], palettes: [UUID: Palette], highlight: Set<UUID>?
+    ) -> [MKAnnotation] {
+        var result: [MKAnnotation] = []
+        for c in cands where c.type != "area" && c.hasCoordinate && visibleIds.contains(c.id) {
+            let style = StyleResolver.resolvePin(
+                entity: c.entity, theme: theme, rules: rules, palettes: palettes,
+                groupFillHex: groupColors[c.id]
+            )
+            let pin = PinAnnotation(entityId: c.id, entityType: c.type, name: c.name,
+                                    coordinate: c.coordinate, style: style)
+            if let highlight {
+                pin.highlighted = highlight.contains(c.id)
+                pin.dimmed = !highlight.contains(c.id)
+            }
+            result.append(pin)
+        }
+        return result
+    }
+
+    private func buildAreaOverlays(
+        areas: [Area], visibleIds: Set<UUID>, theme: Theme?, rules: [StyleRule], palettes: [UUID: Palette]
+    ) -> ([MKOverlay], [ObjectIdentifier: AreaStyle]) {
+        var overlays: [MKOverlay] = []
+        var map: [ObjectIdentifier: AreaStyle] = [:]
+        for a in areas where !a.deleted && visibleIds.contains(a.id) {
+            let style = StyleResolver.resolveArea(entity: a.styleEntity, theme: theme, rules: rules, palettes: palettes)
+            if let r = AreaOverlayFactory.makeOverlay(for: a, style: style) {
+                overlays.append(r.overlay)
+                map[ObjectIdentifier(r.overlay)] = r.style
+            }
+        }
+        return (overlays, map)
     }
 
     private func createPin(_ kind: EntityKind) {
-        guard let coord = pendingCoordinate, let dsId = themeContext?.datasetIdValue else { return }
+        guard let coord = pendingCoordinate, let dsId = viewContext?.datasetIdValue else { return }
         let ref = EntityWriter.createPin(
-            kind: kind,
-            datasetId: dsId,
-            name: "未命名",
-            latitude: coord.latitude,
-            longitude: coord.longitude,
-            in: modelContext
+            kind: kind, datasetId: dsId, name: "未命名",
+            latitude: coord.latitude, longitude: coord.longitude, in: modelContext
         )
         appState.select(ref)
         appState.beginEditing()
@@ -240,8 +371,8 @@ struct StudioRootView: View {
         return nil
     }
 
-    private func buildEdgeLines(theme: Theme?, datasetId: UUID) -> [MKOverlay] {
-        guard let labels = theme?.drawEdgeLines, !labels.isEmpty else { return [] }
+    private func buildEdgeLines(labels: [String], datasetId: UUID) -> [MKOverlay] {
+        guard !labels.isEmpty else { return [] }
         let labelSet = Set(labels)
         let fd = FetchDescriptor<Edge>(predicate: #Predicate { $0.datasetId == datasetId && !$0.deleted })
         let edges = ((try? modelContext.fetch(fd)) ?? []).filter { labelSet.contains($0.label) }
@@ -255,121 +386,15 @@ struct StudioRootView: View {
         return EdgeLineFactory.polylines(from: segs)
     }
 
-    private func ensureThemeContext() {
-        guard themeContext == nil, let ds = datasets.first(where: { !$0.deleted }) else { return }
-        themeContext = ThemeContext(dataset: ds, modelContext: modelContext)
-        title = themeContext?.activeTheme?.copyTitle ?? ""
-        subtitle = themeContext?.activeTheme?.copySubtitle ?? ""
-    }
-
-    private func visibilityFromTheme(_ theme: Theme?) -> [String: Bool] {
-        guard let theme,
-              let data = theme.visibilityJSON.data(using: .utf8),
-              let obj = try? JSONSerialization.jsonObject(with: data) as? [String: Bool]
-        else {
-            return ["compound": true, "school": true, "poi": true, "area": true]
-        }
-        return obj
+    private func ensureViewContext() {
+        guard viewContext == nil, let ds = datasets.first(where: { !$0.deleted }) else { return }
+        viewContext = MapViewContext(dataset: ds, modelContext: modelContext)
+        title = viewContext?.activeMapView?.copyTitle ?? ""
+        subtitle = viewContext?.activeMapView?.copySubtitle ?? ""
     }
 
     private func layersForDataset(_ dsId: UUID) -> [Layer] {
-        layersQuery.filter { $0.datasetId == dsId && !$0.deleted }.sorted { $0.sortOrder < $1.sortOrder }
-    }
-
-    private func legendItems(_ dsId: UUID) -> [LegendCounter.Item] {
-        var out: [LegendCounter.Item] = []
-        for c in compounds where !c.deleted && c.datasetId == dsId {
-            out.append(.init(id: c.id, type: "compound", entity: c.styleEntity, coordinate: c.coordinate))
-        }
-        for s in schools where !s.deleted && s.datasetId == dsId {
-            out.append(.init(id: s.id, type: "school", entity: s.styleEntity, coordinate: s.coordinate))
-        }
-        for p in pois where !p.deleted && p.datasetId == dsId {
-            out.append(.init(id: p.id, type: "poi", entity: p.styleEntity, coordinate: p.coordinate))
-        }
-        return out
-    }
-
-    private func fieldKeys(_ dsId: UUID, _ entityType: String) -> [String] {
-        filterConfigs.filter { $0.datasetId == dsId && $0.entityType == entityType && !$0.deleted }.map(\.fieldKey)
-    }
-
-    private func buildPins(
-        compounds: [Compound],
-        schools: [School],
-        pois: [POI],
-        theme: Theme?,
-        rules: [StyleRule],
-        palettes: [UUID: Palette],
-        highlight: Set<UUID>?,
-        layerVisible: Set<UUID>,
-        filterPredicate: FilterPredicate,
-        datasetId: UUID
-    ) -> [MKAnnotation] {
-        var result: [MKAnnotation] = []
-        for c in compounds where !c.deleted && (c.latitude != 0 || c.longitude != 0) {
-            guard layerVisible.contains(c.id) else { continue }
-            guard filterPredicate.passes(c.styleEntity, fieldKeys: fieldKeys(datasetId, "compound")) else { continue }
-            let style = StyleResolver.resolvePin(entity: c.styleEntity, theme: theme, rules: rules, palettes: palettes)
-            let pin = PinAnnotation(
-                entityId: c.id, entityType: "compound", name: c.name,
-                coordinate: c.coordinate, style: style
-            )
-            if let highlight {
-                pin.highlighted = highlight.contains(c.id)
-                pin.dimmed = !highlight.contains(c.id)
-            }
-            result.append(pin)
-        }
-        for s in schools where !s.deleted && (s.latitude != 0 || s.longitude != 0) {
-            guard layerVisible.contains(s.id) else { continue }
-            guard filterPredicate.passes(s.styleEntity, fieldKeys: fieldKeys(datasetId, "school")) else { continue }
-            let style = StyleResolver.resolvePin(entity: s.styleEntity, theme: theme, rules: rules, palettes: palettes)
-            let pin = PinAnnotation(
-                entityId: s.id, entityType: "school", name: s.name,
-                coordinate: s.coordinate, style: style
-            )
-            if let highlight {
-                pin.highlighted = highlight.contains(s.id)
-                pin.dimmed = !highlight.contains(s.id)
-            }
-            result.append(pin)
-        }
-        for p in pois where !p.deleted && (p.latitude != 0 || p.longitude != 0) {
-            guard layerVisible.contains(p.id) else { continue }
-            guard filterPredicate.passes(p.styleEntity, fieldKeys: fieldKeys(datasetId, "poi")) else { continue }
-            let style = StyleResolver.resolvePin(entity: p.styleEntity, theme: theme, rules: rules, palettes: palettes)
-            let pin = PinAnnotation(
-                entityId: p.id, entityType: "poi", name: p.name,
-                coordinate: p.coordinate, style: style
-            )
-            if let highlight {
-                pin.highlighted = highlight.contains(p.id)
-                pin.dimmed = !highlight.contains(p.id)
-            }
-            result.append(pin)
-        }
-        return result
-    }
-
-    private func buildAreaOverlays(
-        areas: [Area],
-        theme: Theme?,
-        rules: [StyleRule],
-        palettes: [UUID: Palette],
-        layerVisible: Set<UUID>
-    ) -> ([MKOverlay], [ObjectIdentifier: AreaStyle]) {
-        var overlays: [MKOverlay] = []
-        var map: [ObjectIdentifier: AreaStyle] = [:]
-        for a in areas where !a.deleted {
-            guard layerVisible.contains(a.id) else { continue }
-            let style = StyleResolver.resolveArea(entity: a.styleEntity, theme: theme, rules: rules, palettes: palettes)
-            if let r = AreaOverlayFactory.makeOverlay(for: a, style: style) {
-                overlays.append(r.overlay)
-                map[ObjectIdentifier(r.overlay)] = r.style
-            }
-        }
-        return (overlays, map)
+        layersQuery.filter { $0.datasetId == dsId && !$0.deleted }.sorted { $0.zIndex < $1.zIndex }
     }
 }
 #else

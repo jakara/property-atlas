@@ -3,15 +3,15 @@ import MapKit
 import SwiftUI
 
 struct StudioToolbar: View {
-    @Bindable var themeContext: ThemeContext
+    @Bindable var viewContext: MapViewContext
     @Binding var aspect: CanvasAspect
     let onSnapshot: () -> Void
 
     var body: some View {
         HStack(spacing: 12) {
-            Menu(themeContext.activeTheme?.name ?? "无主题") {
-                ForEach(themeContext.allThemes, id: \.id) { theme in
-                    Button(theme.name) { themeContext.switchTheme(to: theme) }
+            Menu(viewContext.activeMapView?.name ?? "无视图") {
+                ForEach(viewContext.allMapViews, id: \.id) { mv in
+                    Button(mv.name) { viewContext.switchView(to: mv) }
                 }
             }
             Menu("📐 \(aspect.rawValue)") {
