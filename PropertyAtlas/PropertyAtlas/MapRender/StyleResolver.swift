@@ -7,7 +7,8 @@ enum StyleResolver {
         entity: StyleEntity,
         theme: Theme?,
         rules: [StyleRule],
-        palettes: [UUID: Palette]
+        palettes: [UUID: Palette],
+        groupFillHex: String? = nil
     ) -> PinStyle {
         let base = StyleDefaults.builtinPin(for: entity.entityType)
         var partial = PartialPinStyle()
@@ -24,6 +25,10 @@ enum StyleResolver {
         let ascending = matching.sorted { $0.priority < $1.priority }
         for rule in ascending {
             partial.merge(pinPartialFromRule(rule, entity: entity, palettes: palettes))
+        }
+
+        if let groupFillHex {
+            partial.fillHex = groupFillHex
         }
 
         if let overrideJSON = entity.overrideJSON {
