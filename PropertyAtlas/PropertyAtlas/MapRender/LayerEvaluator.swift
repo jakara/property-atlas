@@ -57,6 +57,38 @@ enum LayerEvaluator {
         return visible
     }
 
+    struct NamedLayer {
+        let name: String
+        let layer: ActiveLayer
+    }
+
+    /// 每个 candidate → 命中的启用图层名集合。match-all 层使全员归属;受约束层仅列真实成员
+    /// (static ref 命中 或 dynamicType 命中且条件全过)。语义供 MapDimension.layer 投影 + 可见集 layerNames。
+    static func membership(layers: [NamedLayer], zoom: Double, candidates: [Candidate]) -> [UUID: [String]] {
+        let active = layers.filter { $0.layer.isActive(at: zoom) }
+        var out: [UUID: [String]] = [:]
+        for nl in active {
+            let q = nl.layer.query
+            if q.isMatchAll {
+                for c in candidates { out[c.id, default: []].append(nl.name) }
+                continue
+            }
+            let staticIds = Set(q.staticRefs.map(\.id))
+            for c in candidates {
+                let isMember: Bool
+                if staticIds.contains(c.id) {
+                    isMember = true
+                } else if let dType = q.dynamicType, c.type == dType {
+                    isMember = matchesAll(c.entity, q.dynamicConditions)
+                } else {
+                    isMember = false
+                }
+                if isMember { out[c.id, default: []].append(nl.name) }
+            }
+        }
+        return out
+    }
+
     private static func matchesAll(_ entity: StyleEntity, _ conditions: [StyleCondition]) -> Bool {
         for c in conditions where !ConditionEvaluator.matches(entity: entity, condition: c) {
             return false

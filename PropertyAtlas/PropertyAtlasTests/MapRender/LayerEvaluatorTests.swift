@@ -55,6 +55,19 @@ struct LayerEvaluatorTests {
         #expect(visible == Set([keptSchool, compound]))
     }
 
+    @Test func membershipMapsEntityToMatchingLayerNames() {
+        let q = LayerQuery(staticRefsJSON: nil, dynamicQueryJSON: ##"{"entityType":"school","conditions":[]}"##)
+        let named = LayerEvaluator.NamedLayer(
+            name: "教育",
+            layer: LayerEvaluator.ActiveLayer(query: q, enabled: true, minZoom: nil, maxZoom: nil)
+        )
+        let sId = UUID()
+        let cand = LayerEvaluator.Candidate(id: sId, type: "school",
+            entity: StyleEntity(entityType: "school", id: sId, baseFields: [:], customFields: [:]))
+        let m = LayerEvaluator.membership(layers: [named], zoom: 12, candidates: [cand])
+        #expect(m[sId] == ["教育"])
+    }
+
     @Test func zoomOutOfRangeDeactivatesLayer() {
         let a = UUID()
         let json = ##"{"entityType":"school","conditions":[]}"##
