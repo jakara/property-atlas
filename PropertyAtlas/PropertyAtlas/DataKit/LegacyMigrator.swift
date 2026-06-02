@@ -1,11 +1,10 @@
 import Foundation
 import SwiftData
 
-/// One-shot migration from legacy @Model (LegacyCompound / LegacySchool /
-/// LegacySchoolZone / LegacyAdmissionDoc + still-named-old: BuiltinTag /
-/// CompoundSchoolMatch / SchoolGroup / Policy / AdmissionRate / SchoolScore)
-/// to new @Models (Models/Entities/*, Core/*, Style/*, Display/*, Schema/*, Media/*).
-/// Idempotent — safe to call multiple times.
+/// Seed importer: writes new @Models (Models/Entities/*, Core/*, Style/*,
+/// Display/*, Schema/*, Media/*) from an in-memory `SeedBundle` of `*Seed`
+/// DTOs (decoded from bundled JSON by SeedImporter). One-shot per dataset —
+/// idempotent (skips when a Dataset already exists).
 @MainActor
 enum LegacyMigrator {
     static let datasetName = "天津 demo"
@@ -39,34 +38,27 @@ enum LegacyMigrator {
         purge(CustomFieldDef.self) { $0.datasetId }
     }
 
-    static func run(in ctx: ModelContext) throws {
+    static func run(seeds: SeedBundle, in ctx: ModelContext) throws {
         if try !ctx.fetch(FetchDescriptor<Dataset>()).isEmpty { return }
-        let hasLegacy: Bool = try (
-            !ctx.fetch(FetchDescriptor<LegacyCompound>()).isEmpty
-                || !ctx.fetch(FetchDescriptor<LegacySchool>()).isEmpty
-                || !ctx.fetch(FetchDescriptor<LegacySchoolZone>()).isEmpty
-        )
-        if !hasLegacy { return }
+        let hasData = !seeds.zones.isEmpty || !seeds.schools.isEmpty || !seeds.compounds.isEmpty
+        if !hasData { return }
 
         let dataset = Dataset(name: datasetName)
         dataset.id = stableDatasetId(name: datasetName)
         ctx.insert(dataset)
-        try migrateAreas(dataset: dataset, in: ctx)
-        try migrateSchools(dataset: dataset, in: ctx)
-        try migrateCompounds(dataset: dataset, in: ctx)
-        try migrateEdges(dataset: dataset, in: ctx)
+        try migrateAreas(seeds.zones, dataset: dataset, in: ctx)
+        try migrateSchools(seeds.schools, dataset: dataset, in: ctx)
+        try migrateCompounds(seeds.compounds, dataset: dataset, in: ctx)
+        try migrateEdges(seeds, dataset: dataset, in: ctx)
         try seedEnumOptions(dataset: dataset, in: ctx)
         try seedPalettesThemesLayers(dataset: dataset, in: ctx)
         try seedCameraPresets(dataset: dataset, in: ctx)
-        try migrateAdmissionDocs(dataset: dataset, in: ctx)
-        try migrateTags(dataset: dataset, in: ctx)
         try ctx.save()
     }
 
     // MARK: stage 2 — SchoolZone → Area
 
-    private static func migrateAreas(dataset: Dataset, in ctx: ModelContext) throws {
-        let zones = try ctx.fetch(FetchDescriptor<LegacySchoolZone>())
+    private static func migrateAreas(_ zones: [ZoneSeed], dataset: Dataset, in ctx: ModelContext) throws {
         for z in zones {
             let area = Area(
                 datasetId: dataset.id,
@@ -120,8 +112,7 @@ enum LegacyMigrator {
 
     // MARK: stage 3 — LegacySchool → School
 
-    private static func migrateSchools(dataset: Dataset, in ctx: ModelContext) throws {
-        let legacySchools = try ctx.fetch(FetchDescriptor<LegacySchool>())
+    private static func migrateSchools(_ legacySchools: [SchoolSeed], dataset: Dataset, in ctx: ModelContext) throws {
         for ls in legacySchools {
             let s = School(
                 datasetId: dataset.id,
@@ -222,8 +213,7 @@ enum LegacyMigrator {
 
     // MARK: stage 4 — LegacyCompound → Compound
 
-    private static func migrateCompounds(dataset: Dataset, in ctx: ModelContext) throws {
-        let legacy = try ctx.fetch(FetchDescriptor<LegacyCompound>())
+    private static func migrateCompounds(_ legacy: [CompoundSeed], dataset: Dataset, in ctx: ModelContext) throws {
         for lc in legacy {
             let c = Compound(
                 datasetId: dataset.id,
@@ -320,17 +310,17 @@ enum LegacyMigrator {
         let school_id: String?
     }
 
-    private static func migrateEdges(dataset: Dataset, in ctx: ModelContext) throws {
-        try migrateCompoundSchoolMatches(dataset: dataset, in: ctx)
-        try migratePrimarySchoolId(dataset: dataset, in: ctx)
-        try migrateZoneMiddleSchoolPool(dataset: dataset, in: ctx)
-        try migrateSchoolGroups(dataset: dataset, in: ctx)
-        try migratePrimaryArea(dataset: dataset, in: ctx)
+    private static func migrateEdges(_ seeds: SeedBundle, dataset: Dataset, in ctx: ModelContext) throws {
+        try migrateCompoundSchoolMatches(seeds.matches, dataset: dataset, in: ctx)
+        try migratePrimarySchoolId(seeds.compounds, dataset: dataset, in: ctx)
+        try migrateZoneMiddleSchoolPool(seeds.zones, seeds.schools, dataset: dataset, in: ctx)
+        try migrateSchoolGroups(seeds.groups, dataset: dataset, in: ctx)
+        try migratePrimaryArea(seeds.compounds, seeds.schools, dataset: dataset, in: ctx)
     }
 
-    private static func migratePrimaryArea(dataset: Dataset, in ctx: ModelContext) throws {
+    private static func migratePrimaryArea(_ compounds: [CompoundSeed], _ schools: [SchoolSeed], dataset: Dataset, in ctx: ModelContext) throws {
         let dsId = dataset.id
-        for lc in try ctx.fetch(FetchDescriptor<LegacyCompound>()) {
+        for lc in compounds {
             guard let to = lc.zoneId else { continue }
             ctx.insert(Edge(
                 datasetId: dsId,
@@ -342,7 +332,7 @@ enum LegacyMigrator {
                 directed: true
             ))
         }
-        for ls in try ctx.fetch(FetchDescriptor<LegacySchool>()) {
+        for ls in schools {
             guard let to = ls.zoneId else { continue }
             ctx.insert(Edge(
                 datasetId: dsId,
@@ -356,8 +346,7 @@ enum LegacyMigrator {
         }
     }
 
-    private static func migrateCompoundSchoolMatches(dataset: Dataset, in ctx: ModelContext) throws {
-        let matches = try ctx.fetch(FetchDescriptor<CompoundSchoolMatch>())
+    private static func migrateCompoundSchoolMatches(_ matches: [MatchSeed], dataset: Dataset, in ctx: ModelContext) throws {
         for m in matches {
             let primary: [MatchEntry] = (try? JSONHelpers.decode(m.primaryMatchesJSON)) ?? []
             for entry in primary {
@@ -386,8 +375,7 @@ enum LegacyMigrator {
         }
     }
 
-    private static func migratePrimarySchoolId(dataset: Dataset, in ctx: ModelContext) throws {
-        let compounds = try ctx.fetch(FetchDescriptor<LegacyCompound>())
+    private static func migratePrimarySchoolId(_ compounds: [CompoundSeed], dataset: Dataset, in ctx: ModelContext) throws {
         for lc in compounds {
             guard let to = lc.primarySchoolId else { continue }
             // Skip if already emitted by CompoundSchoolMatch (avoid dup)
@@ -409,10 +397,8 @@ enum LegacyMigrator {
         }
     }
 
-    private static func migrateZoneMiddleSchoolPool(dataset: Dataset, in ctx: ModelContext) throws {
-        let zones = try ctx.fetch(FetchDescriptor<LegacySchoolZone>())
-        let allSchools = try ctx.fetch(FetchDescriptor<LegacySchool>())
-        var schoolByName: [String: LegacySchool] = [:]
+    private static func migrateZoneMiddleSchoolPool(_ zones: [ZoneSeed], _ allSchools: [SchoolSeed], dataset: Dataset, in ctx: ModelContext) throws {
+        var schoolByName: [String: SchoolSeed] = [:]
         for s in allSchools {
             schoolByName[s.name] = s
         }
@@ -433,8 +419,7 @@ enum LegacyMigrator {
         }
     }
 
-    private static func migrateSchoolGroups(dataset: Dataset, in ctx: ModelContext) throws {
-        let groups = try ctx.fetch(FetchDescriptor<SchoolGroup>())
+    private static func migrateSchoolGroups(_ groups: [GroupSeed], dataset: Dataset, in ctx: ModelContext) throws {
         for g in groups {
             let leads: [GroupEntry] = (try? JSONHelpers.decode(g.leadsJSON)) ?? []
             let members: [GroupEntry] = (try? JSONHelpers.decode(g.membersJSON)) ?? []
@@ -687,49 +672,6 @@ enum LegacyMigrator {
             )
             p.sortOrder = idx
             ctx.insert(p)
-        }
-    }
-
-    // MARK: stage 10 — LegacyAdmissionDoc → Document
-
-    private static func migrateAdmissionDocs(dataset: Dataset, in ctx: ModelContext) throws {
-        let docs = try ctx.fetch(FetchDescriptor<LegacyAdmissionDoc>())
-        let areas = try ctx.fetch(FetchDescriptor<Area>())
-        let fallback = UUID(uuidString: "00000000-0000-0000-0000-000000000000")!
-        for ld in docs {
-            let owner = areas.first { $0.name.contains(ld.district) }?.id ?? fallback
-            let d = Document(
-                ownerEntityId: owner,
-                ownerEntityType: "area",
-                kind: "pdf",
-                title: ld.title,
-                url: ld.sourceUrl ?? ""
-            )
-            d.id = ld.id
-            d.ocrText = ld.ocrText
-            ctx.insert(d)
-        }
-    }
-
-    // MARK: stage 11 — BuiltinTag → Tag
-
-    private static func migrateTags(dataset: Dataset, in ctx: ModelContext) throws {
-        let builtin = try ctx.fetch(FetchDescriptor<BuiltinTag>())
-        for bt in builtin {
-            let polarity = switch bt.polarity {
-            case "正": "positive"
-            case "负": "negative"
-            default: "neutral"
-            }
-            let t = Tag(
-                datasetId: dataset.id,
-                category: bt.category,
-                label: bt.label,
-                polarity: polarity
-            )
-            t.id = bt.id
-            t.sortOrder = bt.sortOrder
-            ctx.insert(t)
         }
     }
 

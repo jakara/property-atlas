@@ -24,78 +24,37 @@ enum SeedImporter {
         ))
     }
 
-    static func needsImport(_ context: ModelContext) -> Bool {
-        var fd = FetchDescriptor<LegacySchoolZone>()
-        fd.fetchLimit = 1
-        return ((try? context.fetchCount(fd)) ?? 0) == 0
-    }
-
     /// Returns true if import ran, false if skipped (already imported).
     @discardableResult
     static func runIfNeeded(
         into context: ModelContext,
         progress: @escaping (Double, String) -> Void = { _, _ in }
     ) throws -> Bool {
-        // P5: 每次启动清理无主实体(独立于迁移守卫)
+        // 每次启动清理无主实体(独立于 seed 守卫)
         LegacyMigrator.cleanupOrphans(in: context)
-        // P1: Try legacy migration first (idempotent)
-        try LegacyMigrator.run(in: context)
-        // If migration produced a Dataset, skip the rest (already migrated)
-        let datasets = try context.fetch(FetchDescriptor<Dataset>())
-        if !datasets.isEmpty {
-            try context.save()
-            progress(1.0, "已迁移")
+        // 已有 Dataset → 已 seed,跳过
+        if try !context.fetch(FetchDescriptor<Dataset>()).isEmpty {
+            progress(1.0, "已就绪")
             return false
         }
 
-        guard needsImport(context) else {
-            progress(1.0, "已导入")
-            return false
-        }
-        progress(0.05, "读取 zones.json")
+        progress(0.05, "读取 JSON")
+        var bundle = SeedBundle()
         let zones = try loadJSON("zones")
-        progress(0.10, "读取 schools.json")
         let schools = try loadJSON("schools")
-        progress(0.15, "读取 compounds.json")
-        let compounds = try? loadJSON("compounds")
-        progress(0.18, "读取 groups.json")
-        let groups = try? loadJSON("groups")
-        progress(0.20, "读取 policies.json")
-        let policies = try? loadJSON("policies")
-        progress(0.22, "读取 admission_rates.json")
-        let admission = try? loadJSON("admission_rates")
-        progress(0.24, "读取 compound_school_match.json")
-        let matches = try? loadJSON("compound_school_match")
+        bundle.zones = parseZones(zones)
+        bundle.schools = parseSchools(schools)
+        if let compounds = try? loadJSON("compounds") { bundle.compounds = parseCompounds(compounds) }
+        if let groups = try? loadJSON("groups") { bundle.groups = parseGroups(groups) }
+        if let policies = try? loadJSON("policies") { bundle.policies = parsePolicies(policies) }
+        if let admission = try? loadJSON("admission_rates") { bundle.admissionRates = parseAdmissionRates(admission) }
+        if let matches = try? loadJSON("compound_school_match") { bundle.matches = parseMatches(matches) }
 
-        progress(0.30, "导入 zones")
-        importZones(zones, into: context)
+        progress(0.50, "聚合 zone tier")
+        aggregateZoneTier(&bundle)
 
-        progress(0.50, "导入 schools")
-        importSchools(schools, into: context)
-
-        if let compounds {
-            progress(0.70, "导入 compounds")
-            importCompounds(compounds, into: context)
-        }
-        if let groups {
-            progress(0.78, "导入 groups")
-            importGroups(groups, into: context)
-        }
-        if let policies {
-            progress(0.82, "导入 policies")
-            importPolicies(policies, into: context)
-        }
-        if let admission {
-            progress(0.85, "导入 admission_rates")
-            importAdmissionRates(admission, into: context)
-        }
-        if let matches {
-            progress(0.88, "导入 compound_school_match")
-            importCompoundSchoolMatches(matches, into: context)
-        }
-
-        progress(0.92, "聚合 zone tier")
-        aggregateZoneTier(context: context)
+        progress(0.70, "迁移写入实体")
+        try LegacyMigrator.run(seeds: bundle, in: context)
 
         progress(0.95, "保存")
         try context.save()
@@ -104,21 +63,18 @@ enum SeedImporter {
     }
 
     /// Zone tier = max coarse tier across schools whose zoneId == zone.id.
-    private static func aggregateZoneTier(context: ModelContext) {
+    private static func aggregateZoneTier(_ bundle: inout SeedBundle) {
         let priority = ["重点": 2, "区重点": 1, "普通": 0]
-        let zones = (try? context.fetch(FetchDescriptor<LegacySchoolZone>())) ?? []
-        let schools = (try? context.fetch(FetchDescriptor<LegacySchool>())) ?? []
-        var byZone: [UUID: [LegacySchool]] = [:]
-        for s in schools {
+        var byZone: [UUID: [SchoolSeed]] = [:]
+        for s in bundle.schools {
             guard let zid = s.zoneId else { continue }
             byZone[zid, default: []].append(s)
         }
-        for zone in zones {
-            let members = byZone[zone.id] ?? []
+        for i in bundle.zones.indices {
+            let members = byZone[bundle.zones[i].id] ?? []
             if members.isEmpty { continue }
-            let best = members.map(\.tier)
-                .max { (priority[$0] ?? 0) < (priority[$1] ?? 0) }
-            zone.tier = best ?? "普通"
+            let best = members.map(\.tier).max { (priority[$0] ?? 0) < (priority[$1] ?? 0) }
+            bundle.zones[i].tier = best ?? "普通"
         }
     }
 
@@ -146,8 +102,9 @@ enum SeedImporter {
 
     // MARK: - Zones
 
-    private static func importZones(_ root: [String: Any], into context: ModelContext) {
-        guard let items = root["items"] as? [[String: Any]] else { return }
+    private static func parseZones(_ root: [String: Any]) -> [ZoneSeed] {
+        guard let items = root["items"] as? [[String: Any]] else { return [] }
+        var out: [ZoneSeed] = []
         for item in items {
             guard let seedId = item["id"] as? String,
                   let district = item["district"] as? String,
@@ -161,10 +118,9 @@ enum SeedImporter {
             } else {
                 geometryString = ""
             }
-            let zone = LegacySchoolZone(
+            var zone = ZoneSeed(
                 id: uuid(from: seedId),
                 name: zoneName,
-                tier: "普通", // aggregateZoneTier 会覆盖
                 primaryDistrict: district,
                 geometry: geometryString,
                 geometryStage: stage
@@ -178,14 +134,16 @@ enum SeedImporter {
                 zone.sensitiveSource = sens["source"] as? String
                 zone.sensitiveNote = sens["note"] as? String
             }
-            context.insert(zone)
+            out.append(zone)
         }
+        return out
     }
 
     // MARK: - Schools
 
-    private static func importSchools(_ root: [String: Any], into context: ModelContext) {
-        guard let items = root["items"] as? [[String: Any]] else { return }
+    private static func parseSchools(_ root: [String: Any]) -> [SchoolSeed] {
+        guard let items = root["items"] as? [[String: Any]] else { return [] }
+        var out: [SchoolSeed] = []
         for item in items {
             guard let seedId = item["id"] as? String,
                   let name = item["name"] as? String,
@@ -196,14 +154,10 @@ enum SeedImporter {
             let isJiunian = (item["is_jiunian"] as? Bool) == true
             let tier = coarseTierFromSensitive(item["sensitive"]) ?? "普通"
             let zoneId: UUID? = (item["zone_id"] as? String).map(uuid(from:))
-            let school = LegacySchool(
-                id: uuid(from: seedId),
-                name: name,
-                type: type,
-                zoneId: zoneId,
-                district: district,
-                tier: tier
-            )
+            var school = SchoolSeed(id: uuid(from: seedId), name: name, district: district)
+            school.type = type
+            school.zoneId = zoneId
+            school.tier = tier
             school.zoneName = item["zone_name"] as? String
             school.address = item["address"] as? String
             school.phone = item["phone"] as? String
@@ -237,14 +191,16 @@ enum SeedImporter {
                 school.sensitiveSourceUrl = sens["source_url"] as? String
                 school.sensitiveNote = sens["note"] as? String
             }
-            context.insert(school)
+            out.append(school)
         }
+        return out
     }
 
     // MARK: - Compounds
 
-    private static func importCompounds(_ root: [String: Any], into context: ModelContext) {
-        guard let items = root["items"] as? [[String: Any]] else { return }
+    private static func parseCompounds(_ root: [String: Any]) -> [CompoundSeed] {
+        guard let items = root["items"] as? [[String: Any]] else { return [] }
+        var out: [CompoundSeed] = []
         for item in items {
             guard let seedId = item["id"] as? String,
                   let name = item["name"] as? String,
@@ -253,13 +209,9 @@ enum SeedImporter {
             // JSON 无 lat/lon, 默认值
             let lat = (item["latitude"] as? Double) ?? (item["lat"] as? Double) ?? 39.1
             let lon = (item["longitude"] as? Double) ?? (item["lon"] as? Double) ?? 117.2
-            let c = LegacyCompound(
-                id: uuid(from: seedId),
-                name: name,
-                district: district,
-                latitude: lat,
-                longitude: lon
-            )
+            var c = CompoundSeed(id: uuid(from: seedId), name: name, district: district)
+            c.latitude = lat
+            c.longitude = lon
             c.districtGroup = item["district_group"] as? String
             c.address = (item["address"] as? String) ?? ""
             c.availableUnits = encodeIfPresent(item["available_units"])
@@ -282,37 +234,41 @@ enum SeedImporter {
                 c.sensitiveSource = sens["source"] as? String
                 c.sensitiveNote = sens["note"] as? String
             }
-            context.insert(c)
+            out.append(c)
         }
+        return out
     }
 
     // MARK: - Groups
 
-    private static func importGroups(_ root: [String: Any], into context: ModelContext) {
-        guard let items = root["items"] as? [[String: Any]] else { return }
+    private static func parseGroups(_ root: [String: Any]) -> [GroupSeed] {
+        guard let items = root["items"] as? [[String: Any]] else { return [] }
+        var out: [GroupSeed] = []
         for item in items {
             guard let seedId = item["id"] as? String,
                   let name = item["name"] as? String,
                   let district = item["district"] as? String
             else { continue }
-            let g = SchoolGroup(id: uuid(from: seedId), name: name, district: district)
+            var g = GroupSeed(id: uuid(from: seedId), name: name, district: district)
             g.leadsJSON = encodeIfPresent(item["leads"]) ?? "[]"
             g.membersJSON = encodeIfPresent(item["members"]) ?? "[]"
             g.note = item["note"] as? String
-            context.insert(g)
+            out.append(g)
         }
+        return out
     }
 
     // MARK: - Policies
 
-    private static func importPolicies(_ root: [String: Any], into context: ModelContext) {
-        guard let items = root["items"] as? [[String: Any]] else { return }
+    private static func parsePolicies(_ root: [String: Any]) -> [PolicySeed] {
+        guard let items = root["items"] as? [[String: Any]] else { return [] }
+        var out: [PolicySeed] = []
         for item in items {
             guard let seedId = item["id"] as? String,
                   let category = item["category"] as? String,
                   let name = item["name"] as? String
             else { continue }
-            let p = Policy(id: uuid(from: seedId), category: category, name: name)
+            var p = PolicySeed(id: uuid(from: seedId), category: category, name: name)
             p.subcategory = item["subcategory"] as? String
             p.sourceCode = item["source"] as? String
             p.note = item["note"] as? String
@@ -329,37 +285,41 @@ enum SeedImporter {
             p.specificSchools3yrJSON = encodeIfPresent(item["specific_schools_3yr"])
             p.stepsJSON = encodeIfPresent(item["steps"])
             p.processJSON = encodeIfPresent(item["process"])
-            context.insert(p)
+            out.append(p)
         }
+        return out
     }
 
     // MARK: - Admission rates
 
-    private static func importAdmissionRates(_ root: [String: Any], into context: ModelContext) {
-        guard let items = root["items"] as? [[String: Any]] else { return }
+    private static func parseAdmissionRates(_ root: [String: Any]) -> [AdmissionRateSeed] {
+        guard let items = root["items"] as? [[String: Any]] else { return [] }
+        var out: [AdmissionRateSeed] = []
         for item in items {
             guard let district = item["district"] as? String,
                   let year = item["year"] as? Int
             else { continue }
             let seedKey = "adm_\(district)_\(year)"
-            let r = AdmissionRate(id: uuid(from: seedKey), district: district, year: year)
+            var r = AdmissionRateSeed(id: uuid(from: seedKey), district: district, year: year)
             r.gaokaoAdmitPct = (item["gaokao_admit_pct"] as? Int) ?? 0
             r.vocationalAdmitPct = (item["vocational_admit_pct"] as? Int) ?? 0
             r.sourceCode = item["source"] as? String
-            context.insert(r)
+            out.append(r)
         }
+        return out
     }
 
     // MARK: - Compound-school matches
 
-    private static func importCompoundSchoolMatches(_ root: [String: Any], into context: ModelContext) {
-        guard let items = root["items"] as? [[String: Any]] else { return }
+    private static func parseMatches(_ root: [String: Any]) -> [MatchSeed] {
+        guard let items = root["items"] as? [[String: Any]] else { return [] }
+        var out: [MatchSeed] = []
         for item in items {
             guard let cid = item["compound_id"] as? String,
                   let cname = item["compound_name"] as? String,
                   let district = item["district"] as? String
             else { continue }
-            let m = CompoundSchoolMatch(
+            var m = MatchSeed(
                 id: uuid(from: "match_" + cid),
                 compoundId: uuid(from: cid),
                 compoundName: cname,
@@ -369,8 +329,9 @@ enum SeedImporter {
             m.primaryMatchesJSON = encodeIfPresent(item["primary_matches"]) ?? "[]"
             m.middleMatchesJSON = encodeIfPresent(item["middle_matches"]) ?? "[]"
             m.needsManualReview = (item["needs_manual_review"] as? Bool) ?? false
-            context.insert(m)
+            out.append(m)
         }
+        return out
     }
 
     // MARK: - Helpers
