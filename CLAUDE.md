@@ -26,8 +26,9 @@ iPad-first iOS 17+ app for property research in Tianjin. Stack: SwiftUI · MapKi
 - 实施计划 P9a (已完成): `docs/superpowers/plans/2026-06-01-p9a-settings-editing-ui.md`
 - 实施计划 P9b (已完成): `docs/superpowers/plans/2026-06-01-p9b-delete-filterfieldconfig-legendswatch.md`
 - 实施计划 P9c (已完成): `docs/superpowers/plans/2026-06-02-p9c-seed-pipeline-direct-write.md`
+- 实施计划 P9d (已完成): `docs/superpowers/plans/2026-06-02-p9d-remaining-settings-editors.md`
 - CloudKit: 延后 (iOS 上手后;Catalyst 现 `.none`)
-- P9 余项: 待写 (Theme/StyleRule/CameraPreset/CustomFieldDef 编辑器、逐实体-逐图层 theme 解析)
+- P9 余项: 逐实体-逐图层 theme 解析 (明确延后;单 active theme + StyleRule 已覆盖,等具体取景需求再做)
 
 ## 拆分文档 (`docs/claude/`) — 按需读
 
@@ -172,6 +173,14 @@ Never sync `pub_*` or `loc_*` to CloudKit.
 > **一次启动**即完成 seed+migrate(原两次)。清库重迁 smoke(单启动)验:Legacy 表全无、实体数不变
 > (174/823/101)、ZMAPVIEW=4 各 7 normals、无 crash。CloudKit 仍延后(Catalyst `.none`)。后续 P9 余项:
 > Theme/StyleRule/CameraPreset/CustomFieldDef 编辑器、逐实体-逐图层 theme 解析。
+
+> **P9d (2026-06-02) 完成后**: Studio Settings 补齐四编辑器(纯 additive,无 schema 变更)。`SettingsSheet`
+> 扩 8 段(+主题/样式/相机/字段)。`CameraSettingsTab`(机位 CRUD,pitch/heading 经 `CameraFieldClamp`)、
+> `CustomFieldSettingsTab`(按 entityType 分组,key 持久后只读)、`ThemeSettingsTab`(styleRuleIds 多选 +
+> defaultStylesJSON 原文校验)、`StyleRuleSettingsTab`(entityType + applies* 全字段 + 条件经 `StyleConditionRow`)。
+> 新纯逻辑(有单测):`StyleConditionCodec`(conditionsJSON ⇄ [StyleCondition])、`CameraFieldClamp`
+> (pitch 0–85 / heading 0–360)。组件 `StyleConditionRow`。改动直接 mutate + `updatedAt`,软删 `deleted=true`。
+> **逐实体-逐图层 theme 明确延后**(单 active theme + StyleRule 已覆盖)。CloudKit 仍延后(Catalyst `.none`)。
 
 ### School district logic
 

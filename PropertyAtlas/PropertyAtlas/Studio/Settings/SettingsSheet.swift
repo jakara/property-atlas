@@ -1,10 +1,13 @@
 #if targetEnvironment(macCatalyst)
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 enum SettingsTab: String, CaseIterable, Identifiable {
     case view = "视图", layer = "图层", palette = "调色板", enumOption = "枚举"
-    var id: String { rawValue }
+    case theme = "主题", styleRule = "样式", camera = "相机", customField = "字段"
+    var id: String {
+        rawValue
+    }
 }
 
 struct SettingsSheet: View {
@@ -33,6 +36,10 @@ struct SettingsSheet: View {
                     case .layer: LayerSettingsTab(datasetId: viewContext.datasetIdValue)
                     case .palette: PaletteSettingsTab()
                     case .enumOption: EnumOptionSettingsTab(datasetId: viewContext.datasetIdValue)
+                    case .theme: ThemeSettingsTab(datasetId: viewContext.datasetIdValue)
+                    case .styleRule: StyleRuleSettingsTab(datasetId: viewContext.datasetIdValue)
+                    case .camera: CameraSettingsTab(datasetId: viewContext.datasetIdValue)
+                    case .customField: CustomFieldSettingsTab(datasetId: viewContext.datasetIdValue)
                     }
                 }
                 .padding(12)
