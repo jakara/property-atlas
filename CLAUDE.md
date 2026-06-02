@@ -25,7 +25,7 @@ iPad-first iOS 17+ app for property research in Tianjin. Stack: SwiftUI · MapKi
 - 实施计划 P8b (已完成): `docs/superpowers/plans/2026-06-01-p8b-view-driven-integration.md`
 - 实施计划 P9a (已完成): `docs/superpowers/plans/2026-06-01-p9a-settings-editing-ui.md`
 - 实施计划 P9b (已完成): `docs/superpowers/plans/2026-06-01-p9b-delete-filterfieldconfig-legendswatch.md`
-- P9c 计划: 待写 (删 Legacy* @Model + seed 管线重写 JSON→新实体直写)
+- 实施计划 P9c (已完成): `docs/superpowers/plans/2026-06-02-p9c-seed-pipeline-direct-write.md`
 - CloudKit: 延后 (iOS 上手后;Catalyst 现 `.none`)
 - P9 余项: 待写 (Theme/StyleRule/CameraPreset/CustomFieldDef 编辑器、逐实体-逐图层 theme 解析)
 
@@ -162,6 +162,16 @@ Never sync `pub_*` or `loc_*` to CloudKit.
 > `cleanupOrphans` purge + ModelSchema 条目 + FilterFieldConfig/LegendSwatch 测试。清库重迁 smoke 验丢表不崩 +
 > normalFilters 仍 7 + 实体数不变。**CloudKit 延后**(iOS 未上手,Catalyst 保持 `.none`)、**Legacy* @Model 删除 +
 > seed 管线重写(JSON→新实体直写)→ P9c**。Theme/StyleRule/Camera/Custom 编辑器、逐实体-逐图层 theme 仍延后。
+
+> **P9c (2026-06-02) 完成后**: seed 管线直写 + 删 Legacy* @Model。Legacy* 及供给类(10 类)从
+> @Model 降级为 `*Seed` Codable struct(`ZoneSeed`/`SchoolSeed`/`CompoundSeed`/`GroupSeed`/`MatchSeed`/
+> `PolicySeed`/`AdmissionRateSeed`,在 `Models/Seeds/`,移出 ModelSchema)；死代码 `LegacyAdmissionDoc`/
+> `BuiltinTag`/`SchoolScore` + `migrateAdmissionDocs`/`migrateTags` 两 stage 直接删。`GeoJSONHelper` 抽到
+> `Models/Entities/GeoJSONHelper.swift`(Area/UserArea 依赖)。`SeedImporter` 用现有 dict 解析装 `SeedBundle`,
+> `LegacyMigrator.run(in:)` → `run(seeds:in:)` 改读内存数组,转换逻辑不变;删 `needsImport` guard。
+> **一次启动**即完成 seed+migrate(原两次)。清库重迁 smoke(单启动)验:Legacy 表全无、实体数不变
+> (174/823/101)、ZMAPVIEW=4 各 7 normals、无 crash。CloudKit 仍延后(Catalyst `.none`)。后续 P9 余项:
+> Theme/StyleRule/CameraPreset/CustomFieldDef 编辑器、逐实体-逐图层 theme 解析。
 
 ### School district logic
 
