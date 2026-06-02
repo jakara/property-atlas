@@ -1,50 +1,24 @@
 import CoreLocation
 import Foundation
-import SwiftData
 
-@available(*, deprecated, message: "P1 migrated to Models/Entities/Area.swift. Will be removed in P5.")
-@Model
-final class LegacySchoolZone {
-    var id: UUID = UUID()
-    var name: String = "" // zone_name
-    var tier: String = "普通" // 聚合 (max coarse tier of members)
-    var primaryDistrict: String = ""
-    var geometry: String = "" // GeoJSON polygon or raster JSON, 编码 string
+/// JSON 输入 DTO(对应 zones.json,原 LegacySchoolZone)。不进 SwiftData。
+struct ZoneSeed: Codable {
+    var id: UUID
+    var name: String
+    var tier: String = "普通" // aggregateZoneTier 会覆盖
+    var primaryDistrict: String
+    var geometry: String
     var geometryStage: String = "hull"
-    var geometrySimplified: String?
     var residencyYears: Int?
     var strokeColorHex: String?
     var fillOpacity: Double = 0.2
-    var textDescription: String? // areas_text
+    var textDescription: String?
     var note: String?
-    var structureJSON: String? // 完整 structure (JSON-encoded)
-    var middleSchoolPoolJSON: String? // 原始 name list (JSON-encoded for verbatim)
-
-    // sensitive subobject
+    var structureJSON: String?
+    var middleSchoolPoolJSON: String?
     var sensitiveHighlight: String?
     var sensitiveSource: String?
     var sensitiveNote: String?
-
-    var version: Int = 1
-    var createdAt: Date = Date()
-    var updatedAt: Date = Date()
-    var deleted: Bool = false
-
-    init(
-        id: UUID = UUID(),
-        name: String,
-        tier: String = "普通",
-        primaryDistrict: String,
-        geometry: String,
-        geometryStage: String = "hull"
-    ) {
-        self.id = id
-        self.name = name
-        self.tier = tier
-        self.primaryDistrict = primaryDistrict
-        self.geometry = geometry
-        self.geometryStage = geometryStage
-    }
 
     var decodedCoordinates: [CLLocationCoordinate2D] {
         (try? GeoJSONHelper.decodePolygon(geometry)) ?? []
