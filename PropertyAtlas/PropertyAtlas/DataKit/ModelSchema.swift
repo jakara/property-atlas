@@ -2,7 +2,7 @@ import Foundation
 import SwiftData
 
 enum ModelSchema {
-    /// Full SwiftData schema: new @Models + Legacy* (for LegacyMigrator) + existing User/* (orthogonal).
+    /// Full SwiftData schema: new @Models + existing User/* (orthogonal).
     /// Single source of truth; both PropertyAtlasApp.swift and tests should reference this.
     static let allTypes: [any PersistentModel.Type] = [
         // New core
@@ -17,11 +17,6 @@ enum ModelSchema {
         CustomFieldDef.self, EnumOption.self,
         // New media
         Photo.self, Document.self,
-        // Legacy (read-only during migration; removed in P5)
-        LegacyCompound.self, LegacySchool.self, LegacySchoolZone.self,
-        LegacyAdmissionDoc.self,
-        AdmissionRate.self, BuiltinTag.self, CompoundSchoolMatch.self,
-        Policy.self, SchoolGroup.self, SchoolScore.self,
         // User/* (orthogonal; untouched in P1)
         VisitPhoto.self, PropertyMark.self, Visit.self, TagExtension.self,
         VisitTag.self, UserArea.self, ShareSubmission.self,
