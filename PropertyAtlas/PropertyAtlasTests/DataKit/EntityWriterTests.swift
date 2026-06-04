@@ -20,6 +20,7 @@ struct EntityWriterTests {
             name: "新盘",
             latitude: 39.1,
             longitude: 117.2,
+            layerId: nil,
             in: context
         )
         #expect(ref.kind == .compound)
@@ -34,6 +35,7 @@ struct EntityWriterTests {
             name: "S",
             latitude: 1,
             longitude: 2,
+            layerId: nil,
             in: context
         )
         EntityWriter.setValue(ref, key: "category", value: .string("小学"), in: context)
@@ -48,6 +50,7 @@ struct EntityWriterTests {
             name: "A",
             latitude: 1,
             longitude: 2,
+            layerId: nil,
             in: context
         )
         EntityWriter.setName(ref, "B", in: context)
@@ -64,6 +67,7 @@ struct EntityWriterTests {
             name: "A",
             latitude: 1,
             longitude: 2,
+            layerId: nil,
             in: context
         )
         EntityWriter.softDelete(ref, in: context)

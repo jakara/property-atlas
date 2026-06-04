@@ -243,7 +243,13 @@ struct LegacyMigratorTests {
         #expect(themes.contains { $0.name == "商圈视图" })
         #expect(themes.contains { $0.name == "新房地图" })
         let layers = try ctx.fetch(FetchDescriptor<Layer>())
-        #expect(layers.contains { $0.isDefault && $0.name == "全部" })
+        #expect(layers.contains { $0.isDefault && $0.name == "默认" })
+        // 单归属:backfill 后全部实体 layerId 指向默认层
+        let defaultLayerId = layers.first { $0.isDefault }?.id
+        LegacyMigrator.backfillLayerIds(in: ctx)
+        let compounds = try ctx.fetch(FetchDescriptor<Compound>())
+        #expect(!compounds.isEmpty)
+        #expect(compounds.allSatisfy { $0.layerId == defaultLayerId })
         #expect(try ctx.fetch(FetchDescriptor<Dataset>()).first?.activeThemeId != nil)
     }
 
