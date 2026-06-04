@@ -79,10 +79,12 @@ struct LayerSettingsTab: View {
             TextField("名称", text: Binding(get: { l.name }, set: { l.name = $0
                 l.updatedAt = Date()
             })).glassField()
-            Button(role: .destructive) { deleteLayer(l)
-            } label: {
-                Image(systemName: "trash").font(.system(size: 12)).foregroundStyle(Studio.bad)
-            }.buttonStyle(.plain)
+            if !l.isDefault {
+                Button(role: .destructive) { deleteLayer(l)
+                } label: {
+                    Image(systemName: "trash").font(.system(size: 12)).foregroundStyle(Studio.bad)
+                }.buttonStyle(.plain)
+            }
         }
     }
 
@@ -109,9 +111,25 @@ struct LayerSettingsTab: View {
     }
 
     private func deleteLayer(_ l: Layer) {
-        // 硬删除:新图层是本地配置且常未持久化,软删 + autosave 会被下个合并周期丢弃而"复活"
+        guard !l.isDefault else { return }
+        if let home = dsLayers.first(where: { $0.isDefault })?.id {
+            reassignMembers(from: l.id, to: home)
+        }
         modelContext.delete(l)
         try? modelContext.save()
+    }
+
+    private func reassignMembers(from old: UUID, to home: UUID) {
+        func move<T: PersistentModel & LayerAssignable>(_ type: T.Type) {
+            let all = (try? modelContext.fetch(FetchDescriptor<T>())) ?? []
+            for e in all where e.layerId == old {
+                e.layerId = home
+            }
+        }
+        move(Compound.self)
+        move(School.self)
+        move(POI.self)
+        move(Area.self)
     }
 }
 #endif
