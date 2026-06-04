@@ -5,12 +5,11 @@ import Foundation
 enum LayerEvaluator {
     struct Candidate {
         let id: UUID
-        let type: String
-        let entity: StyleEntity
+        let layerId: UUID?
     }
 
     struct ActiveLayer {
-        let query: LayerQuery
+        let id: UUID
         let enabled: Bool
         let minZoom: Double?
         let maxZoom: Double?
@@ -23,79 +22,40 @@ enum LayerEvaluator {
         }
     }
 
-    static func visibleIds(layers: [ActiveLayer], zoom: Double, candidates: [Candidate]) -> Set<UUID> {
-        // 未定义任何图层 → 无约束(显示全部);定义了但当前无启用 → 隐藏全部
-        guard !layers.isEmpty else { return Set(candidates.map(\.id)) }
-        let active = layers.filter { $0.isActive(at: zoom) }
-        guard !active.isEmpty else { return [] }
-
-        if active.contains(where: \.query.isMatchAll) {
-            return Set(candidates.map(\.id))
-        }
-
-        var constrainedTypes = Set<String>()
-        for l in active {
-            constrainedTypes.formUnion(l.query.coveredTypes)
-        }
-
-        var memberIds = Set<UUID>()
-        for l in active {
-            for ref in l.query.staticRefs {
-                memberIds.insert(ref.id)
-            }
-            if let dType = l.query.dynamicType {
-                for c in candidates where c.type == dType {
-                    if matchesAll(c.entity, l.query.dynamicConditions) { memberIds.insert(c.id) }
-                }
-            }
-        }
-
-        var visible = Set<UUID>()
-        for c in candidates {
-            if !constrainedTypes.contains(c.type) || memberIds.contains(c.id) {
-                visible.insert(c.id)
-            }
-        }
-        return visible
-    }
-
     struct NamedLayer {
         let name: String
         let layer: ActiveLayer
     }
 
-    /// 每个 candidate → 命中的启用图层名集合。match-all 层使全员归属;受约束层仅列真实成员
-    /// (static ref 命中 或 dynamicType 命中且条件全过)。语义供 MapDimension.layer 投影 + 可见集 layerNames。
-    static func membership(layers: [NamedLayer], zoom: Double, candidates: [Candidate]) -> [UUID: [String]] {
-        let active = layers.filter { $0.layer.isActive(at: zoom) }
-        var out: [UUID: [String]] = [:]
-        for nl in active {
-            let q = nl.layer.query
-            if q.isMatchAll {
-                for c in candidates {
-                    out[c.id, default: []].append(nl.name)
-                }
-                continue
-            }
-            let staticIds = Set(q.staticRefs.map(\.id))
-            for c in candidates {
-                let isMember: Bool = if staticIds.contains(c.id) {
-                    true
-                } else if let dType = q.dynamicType, c.type == dType {
-                    matchesAll(c.entity, q.dynamicConditions)
-                } else {
-                    false
-                }
-                if isMember { out[c.id, default: []].append(nl.name) }
-            }
+    /// 单归属:实体可见 ⟺ 其所属图层(layerId,nil 兜底到 defaultLayerId)启用且在 zoom 范围内。
+    /// 未定义任何图层 → 无约束显示全部;定义了但无启用 → 全隐藏。
+    static func visibleIds(
+        layers: [ActiveLayer], zoom: Double, candidates: [Candidate], defaultLayerId: UUID
+    ) -> Set<UUID> {
+        guard !layers.isEmpty else { return Set(candidates.map(\.id)) }
+        let activeIds = Set(layers.filter { $0.isActive(at: zoom) }.map(\.id))
+        guard !activeIds.isEmpty else { return [] }
+        var visible = Set<UUID>()
+        for c in candidates {
+            let home = c.layerId ?? defaultLayerId
+            if activeIds.contains(home) { visible.insert(c.id) }
         }
-        return out
+        return visible
     }
 
-    private static func matchesAll(_ entity: StyleEntity, _ conditions: [StyleCondition]) -> Bool {
-        for c in conditions where !ConditionEvaluator.matches(entity: entity, condition: c) {
-            return false
+    /// 每个实体 → 其所属启用图层名(单元素)。供 MapDimension.layer 投影 + 可见集 layerNames。
+    static func membership(
+        layers: [NamedLayer], zoom: Double, candidates: [Candidate], defaultLayerId: UUID
+    ) -> [UUID: [String]] {
+        var nameById: [UUID: String] = [:]
+        for nl in layers where nl.layer.isActive(at: zoom) {
+            nameById[nl.layer.id] = nl.name
         }
-        return true
+        var out: [UUID: [String]] = [:]
+        for c in candidates {
+            let home = c.layerId ?? defaultLayerId
+            if let name = nameById[home] { out[c.id] = [name] }
+        }
+        return out
     }
 }

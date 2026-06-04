@@ -5,83 +5,78 @@ import Testing
 
 @MainActor
 struct LayerEvaluatorTests {
-    private func cand(_ id: UUID, _ type: String, _ fields: [String: AnyJSON] = [:]) -> LayerEvaluator.Candidate {
-        LayerEvaluator.Candidate(
-            id: id,
-            type: type,
-            entity: StyleEntity(entityType: type, id: id, baseFields: fields, customFields: [:])
-        )
+    private func cand(_ id: UUID, _ layerId: UUID?) -> LayerEvaluator.Candidate {
+        LayerEvaluator.Candidate(id: id, layerId: layerId)
     }
 
-    @Test func noActiveLayersShowsAll() {
+    private func layer(_ id: UUID, enabled: Bool = true, min: Double? = nil, max: Double? = nil) -> LayerEvaluator.ActiveLayer {
+        LayerEvaluator.ActiveLayer(id: id, enabled: enabled, minZoom: min, maxZoom: max)
+    }
+
+    @Test func noLayersDefinedShowsAll() {
+        let def = UUID()
         let a = UUID()
         let b = UUID()
-        let visible = LayerEvaluator.visibleIds(
+        let v = LayerEvaluator.visibleIds(
             layers: [],
             zoom: 10,
-            candidates: [cand(a, "school"), cand(b, "compound")]
+            candidates: [cand(a, nil), cand(b, def)],
+            defaultLayerId: def
         )
-        #expect(visible == Set([a, b]))
+        #expect(v == Set([a, b]))
     }
 
-    @Test func matchAllLayerShowsAll() {
+    @Test func allLayersDisabledHidesAll() {
+        let def = UUID()
         let a = UUID()
-        let l = LayerEvaluator.ActiveLayer(
-            query: LayerQuery(staticRefsJSON: nil, dynamicQueryJSON: nil),
-            enabled: true,
-            minZoom: nil,
-            maxZoom: nil
+        let v = LayerEvaluator.visibleIds(
+            layers: [layer(def, enabled: false)],
+            zoom: 10,
+            candidates: [cand(a, def)],
+            defaultLayerId: def
         )
-        let visible = LayerEvaluator.visibleIds(layers: [l], zoom: 10, candidates: [cand(a, "school")])
-        #expect(visible == Set([a]))
+        #expect(v.isEmpty)
     }
 
-    @Test func dynamicLayerConstrainsItsTypeOnly() {
-        let keptSchool = UUID()
-        let droppedSchool = UUID()
-        let compound = UUID()
-        let json = ##"{"entityType":"school","conditions":[{"field":"grade","op":"equals","value":"重点"}]}"##
-        let l = LayerEvaluator.ActiveLayer(
-            query: LayerQuery(staticRefsJSON: nil, dynamicQueryJSON: json),
-            enabled: true,
-            minZoom: nil,
-            maxZoom: nil
+    @Test func onlyMembersOfEnabledLayersVisible() {
+        let def = UUID()
+        let other = UUID()
+        let inDef = UUID()
+        let inOther = UUID()
+        let nilHome = UUID()
+        let v = LayerEvaluator.visibleIds(
+            layers: [layer(def, enabled: true), layer(other, enabled: false)],
+            zoom: 10,
+            candidates: [cand(inDef, def), cand(inOther, other), cand(nilHome, nil)],
+            defaultLayerId: def
         )
-        let visible = LayerEvaluator.visibleIds(layers: [l], zoom: 10, candidates: [
-            cand(keptSchool, "school", ["grade": .string("重点")]),
-            cand(droppedSchool, "school", ["grade": .string("普通")]),
-            cand(compound, "compound"),
-        ])
-        #expect(visible == Set([keptSchool, compound]))
-    }
-
-    @Test func membershipMapsEntityToMatchingLayerNames() {
-        let q = LayerQuery(staticRefsJSON: nil, dynamicQueryJSON: ##"{"entityType":"school","conditions":[]}"##)
-        let named = LayerEvaluator.NamedLayer(
-            name: "教育",
-            layer: LayerEvaluator.ActiveLayer(query: q, enabled: true, minZoom: nil, maxZoom: nil)
-        )
-        let sId = UUID()
-        let cand = LayerEvaluator.Candidate(id: sId, type: "school",
-            entity: StyleEntity(entityType: "school", id: sId, baseFields: [:], customFields: [:]))
-        let m = LayerEvaluator.membership(layers: [named], zoom: 12, candidates: [cand])
-        #expect(m[sId] == ["教育"])
+        #expect(v == Set([inDef, nilHome]))
     }
 
     @Test func zoomOutOfRangeDeactivatesLayer() {
+        let def = UUID()
         let a = UUID()
-        let json = ##"{"entityType":"school","conditions":[]}"##
-        let l = LayerEvaluator.ActiveLayer(
-            query: LayerQuery(staticRefsJSON: nil, dynamicQueryJSON: json),
-            enabled: true,
-            minZoom: 12,
-            maxZoom: 21
+        let v = LayerEvaluator.visibleIds(
+            layers: [layer(def, enabled: true, min: 12, max: 21)],
+            zoom: 8, candidates: [cand(a, def)], defaultLayerId: def
         )
-        let visible = LayerEvaluator.visibleIds(
-            layers: [l],
-            zoom: 8,
-            candidates: [cand(a, "school", ["grade": .string("普通")])]
+        #expect(v.isEmpty)
+    }
+
+    @Test func membershipMapsEntityToItsHomeLayerName() {
+        let def = UUID()
+        let other = UUID()
+        let s = UUID()
+        let named = [
+            LayerEvaluator.NamedLayer(name: "默认", layer: layer(def, enabled: true)),
+            LayerEvaluator.NamedLayer(name: "取景", layer: layer(other, enabled: true)),
+        ]
+        let m = LayerEvaluator.membership(
+            layers: named,
+            zoom: 12,
+            candidates: [cand(s, other)],
+            defaultLayerId: def
         )
-        #expect(visible == Set([a]))
+        #expect(m[s] == ["取景"])
     }
 }
