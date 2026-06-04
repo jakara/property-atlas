@@ -111,20 +111,25 @@ struct StudioRootView: View {
 
         // ── 候选集(含坐标 + 图层归属)──
         let cands = buildCandidates(dsId: dsId, visibility: visibility)
+        let defaultLayerId = layersForDataset(dsId).first(where: { $0.isDefault })?.id
+            ?? layersForDataset(dsId).first?.id ?? dsId
         let namedLayers = layersForDataset(dsId).map {
             LayerEvaluator.NamedLayer(
                 name: $0.name,
                 layer: LayerEvaluator.ActiveLayer(
-                    query: LayerQuery(staticRefsJSON: $0.staticRefsJSON, dynamicQueryJSON: $0.dynamicQueryJSON),
-                    enabled: layerState.isEnabled($0.id), minZoom: $0.minZoom, maxZoom: $0.maxZoom
+                    id: $0.id, enabled: layerState.isEnabled($0.id),
+                    minZoom: $0.minZoom, maxZoom: $0.maxZoom
                 )
             )
         }
-        let evalCands = cands.map { LayerEvaluator.Candidate(id: $0.id, type: $0.type, entity: $0.entity) }
+        let evalCands = cands.map { LayerEvaluator.Candidate(id: $0.id, layerId: $0.layerId) }
         let layerVisible = LayerEvaluator.visibleIds(
-            layers: namedLayers.map(\.layer), zoom: zoom, candidates: evalCands
+            layers: namedLayers.map(\.layer), zoom: zoom, candidates: evalCands,
+            defaultLayerId: defaultLayerId
         )
-        let membership = LayerEvaluator.membership(layers: namedLayers, zoom: zoom, candidates: evalCands)
+        let membership = LayerEvaluator.membership(
+            layers: namedLayers, zoom: zoom, candidates: evalCands, defaultLayerId: defaultLayerId
+        )
 
         // ── 可见集(layer ∩ primary ∩ ¬chip 隐藏)──
         let visCands = cands.map {
@@ -228,9 +233,9 @@ struct StudioRootView: View {
             filterState.reset()
         }
         .confirmationDialog("新建实体", isPresented: $showCreateMenu, titleVisibility: .visible) {
-            Button("+ 小区") { createPin(.compound) }
-            Button("+ 学校") { createPin(.school) }
-            Button("+ POI") { createPin(.poi) }
+            Button("+ 小区") { createPin(.compound, layerId: nil) }
+            Button("+ 学校") { createPin(.school, layerId: nil) }
+            Button("+ POI") { createPin(.poi, layerId: nil) }
             Button("取消", role: .cancel) {}
         }
         .sheet(isPresented: $showSettings) {
@@ -247,6 +252,7 @@ struct StudioRootView: View {
     private struct Cand {
         let id: UUID
         let type: String
+        let layerId: UUID?
         let name: String
         let entity: StyleEntity
         let coordinate: CLLocationCoordinate2D
@@ -260,6 +266,7 @@ struct StudioRootView: View {
                 out.append(.init(
                     id: c.id,
                     type: "compound",
+                    layerId: c.layerId,
                     name: c.name,
                     entity: c.styleEntity,
                     coordinate: c.coordinate,
@@ -272,6 +279,7 @@ struct StudioRootView: View {
                 out.append(.init(
                     id: s.id,
                     type: "school",
+                    layerId: s.layerId,
                     name: s.name,
                     entity: s.styleEntity,
                     coordinate: s.coordinate,
@@ -284,6 +292,7 @@ struct StudioRootView: View {
                 out.append(.init(
                     id: p.id,
                     type: "poi",
+                    layerId: p.layerId,
                     name: p.name,
                     entity: p.styleEntity,
                     coordinate: p.coordinate,
@@ -297,6 +306,7 @@ struct StudioRootView: View {
                 out.append(.init(
                     id: a.id,
                     type: "area",
+                    layerId: a.layerId,
                     name: a.name,
                     entity: a.styleEntity,
                     coordinate: CLLocationCoordinate2D(),
@@ -407,11 +417,11 @@ struct StudioRootView: View {
         return (overlays, map)
     }
 
-    private func createPin(_ kind: EntityKind) {
+    private func createPin(_ kind: EntityKind, layerId: UUID?) {
         guard let coord = pendingCoordinate, let dsId = viewContext?.datasetIdValue else { return }
         let ref = EntityWriter.createPin(
             kind: kind, datasetId: dsId, name: "未命名",
-            latitude: coord.latitude, longitude: coord.longitude, in: modelContext
+            latitude: coord.latitude, longitude: coord.longitude, layerId: layerId, in: modelContext
         )
         appState.select(ref)
         appState.beginEditing()
