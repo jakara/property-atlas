@@ -140,6 +140,12 @@ struct StudioRootView: View {
             primary: primary, normals: normals, filterState: filterState,
             context: modelContext, datasetId: dsId
         )
+        // layer ∩ primary 但不含 chip 隐藏 —— 供普通过滤图例列全部可切换值(隐藏态仍列出、可再点亮)
+        let normalLegendIds = VisibilityResolver.visibleIds(
+            candidates: visCands, layerVisible: layerVisible,
+            primary: primary, normals: [], filterState: DimensionFilterState(),
+            context: modelContext, datasetId: dsId
+        )
 
         // ── 分组染色 ──
         let palette = activeMapView?.paletteId.flatMap { palettesById[$0]?.colorsHex }
@@ -154,7 +160,7 @@ struct StudioRootView: View {
 
         // ── 图例 sections(primary groupBy 彩色 + 每个 normal 灰)──
         let legendSections = buildLegendSections(
-            cands: cands, visibleIds: visibleIds, membership: membership,
+            cands: cands, visibleIds: visibleIds, normalLegendIds: normalLegendIds, membership: membership,
             primary: primary, normals: normals, palette: palette,
             groupColors: groupColors, dsId: dsId
         )
@@ -331,24 +337,26 @@ struct StudioRootView: View {
     // MARK: - 图例
 
     private func buildLegendSections(
-        cands: [Cand], visibleIds: Set<UUID>, membership: [UUID: [String]],
+        cands: [Cand], visibleIds: Set<UUID>, normalLegendIds: Set<UUID>, membership: [UUID: [String]],
         primary: PrimaryFilter, normals: [NormalFilter], palette: [String],
         groupColors: [UUID: String], dsId: UUID
     ) -> [LegendSection] {
-        // 仅统计可见实体(含 area)
-        let items = cands.filter { visibleIds.contains($0.id) }.map {
-            DimensionLegendCounter.Item(
-                id: $0.id,
-                entity: $0.entity,
-                coordinate: $0.coordinate,
-                layerNames: membership[$0.id] ?? []
-            )
+        func items(_ ids: Set<UUID>) -> [DimensionLegendCounter.Item] {
+            cands.filter { ids.contains($0.id) }.map {
+                DimensionLegendCounter.Item(
+                    id: $0.id, entity: $0.entity, coordinate: $0.coordinate,
+                    layerNames: membership[$0.id] ?? []
+                )
+            }
         }
+        // groupBy 染色图例:仅完全可见实体;normal 图例:layer∩primary(不含 chip 隐藏,故全部值可切换)
+        let groupItems = items(visibleIds)
+        let normalItems = items(normalLegendIds)
         var sections: [LegendSection] = []
 
         if let gb = primary.groupBy {
             // groupBy 维度的值 → palette 色(与 pin 一致):由全屏 distinct 值分配
-            let distinct = items.flatMap { it -> [String] in
+            let distinct = groupItems.flatMap { it -> [String] in
                 gb.resolve(MapDimension.Input(
                     entity: it.entity,
                     layerNames: it.layerNames,
@@ -357,21 +365,28 @@ struct StudioRootView: View {
                 )).sorted().prefix(1).map { $0 }
             }
             let assign = PaletteAssigner.assign(values: Array(Set(distinct)), palette: palette)
+            // groupBy:只显示视口内有值的;chip 不可点(togglable=false)
             let rows = DimensionLegendCounter.rows(
-                dimension: gb, items: items, region: visibleRegion,
+                dimension: gb, items: groupItems, region: visibleRegion,
                 context: modelContext, datasetId: dsId,
                 swatch: { assign[$0] ?? "#8E8E93" }
             ).filter { visibleRegion == nil || $0.viewport > 0 }
-            sections.append(LegendSection(title: legendTitle(for: gb, fallback: "分组"), dimensionKey: gb.key, rows: rows))
+            sections.append(LegendSection(
+                title: legendTitle(for: gb, fallback: "分组"), dimensionKey: gb.key,
+                rows: rows, togglable: false
+            ))
         }
 
         for nf in normals {
+            // normal:列出全部值(允许 count=0),chip 可点切换隐藏
             let rows = DimensionLegendCounter.rows(
-                dimension: nf.dimension, items: items, region: visibleRegion,
+                dimension: nf.dimension, items: normalItems, region: visibleRegion,
                 context: modelContext, datasetId: dsId,
                 swatch: { _ in "#8E8E93" } // normal filter 不参与染色 → 中性灰
-            ).filter { visibleRegion == nil || $0.viewport > 0 }
-            sections.append(LegendSection(title: nf.name, dimensionKey: nf.dimension.key, rows: rows))
+            )
+            sections.append(LegendSection(
+                title: nf.name, dimensionKey: nf.dimension.key, rows: rows, togglable: true
+            ))
         }
         return sections
     }
