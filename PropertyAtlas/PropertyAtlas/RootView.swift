@@ -361,7 +361,7 @@ struct StudioRootView: View {
                 dimension: gb, items: items, region: visibleRegion,
                 context: modelContext, datasetId: dsId,
                 swatch: { assign[$0] ?? "#8E8E93" }
-            )
+            ).filter { visibleRegion == nil || $0.viewport > 0 }
             sections.append(LegendSection(title: legendTitle(for: gb, fallback: "分组"), dimensionKey: gb.key, rows: rows))
         }
 
@@ -370,7 +370,7 @@ struct StudioRootView: View {
                 dimension: nf.dimension, items: items, region: visibleRegion,
                 context: modelContext, datasetId: dsId,
                 swatch: { _ in "#8E8E93" } // normal filter 不参与染色 → 中性灰
-            )
+            ).filter { visibleRegion == nil || $0.viewport > 0 }
             sections.append(LegendSection(title: nf.name, dimensionKey: nf.dimension.key, rows: rows))
         }
         return sections
