@@ -24,8 +24,10 @@ enum LayerEvaluator {
     }
 
     static func visibleIds(layers: [ActiveLayer], zoom: Double, candidates: [Candidate]) -> Set<UUID> {
+        // 未定义任何图层 → 无约束(显示全部);定义了但当前无启用 → 隐藏全部
+        guard !layers.isEmpty else { return Set(candidates.map(\.id)) }
         let active = layers.filter { $0.isActive(at: zoom) }
-        guard !active.isEmpty else { return Set(candidates.map(\.id)) }
+        guard !active.isEmpty else { return [] }
 
         if active.contains(where: \.query.isMatchAll) {
             return Set(candidates.map(\.id))
@@ -70,18 +72,19 @@ enum LayerEvaluator {
         for nl in active {
             let q = nl.layer.query
             if q.isMatchAll {
-                for c in candidates { out[c.id, default: []].append(nl.name) }
+                for c in candidates {
+                    out[c.id, default: []].append(nl.name)
+                }
                 continue
             }
             let staticIds = Set(q.staticRefs.map(\.id))
             for c in candidates {
-                let isMember: Bool
-                if staticIds.contains(c.id) {
-                    isMember = true
+                let isMember: Bool = if staticIds.contains(c.id) {
+                    true
                 } else if let dType = q.dynamicType, c.type == dType {
-                    isMember = matchesAll(c.entity, q.dynamicConditions)
+                    matchesAll(c.entity, q.dynamicConditions)
                 } else {
-                    isMember = false
+                    false
                 }
                 if isMember { out[c.id, default: []].append(nl.name) }
             }

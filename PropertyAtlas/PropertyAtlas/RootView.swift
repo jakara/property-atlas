@@ -82,6 +82,8 @@ struct StudioRootView: View {
     @State private var pendingCoordinate: CLLocationCoordinate2D?
     @State private var showCreateMenu = false
     @State private var showSettings = false
+    @State private var exportMode = false
+    @State private var showSafeFrame = false
 
     var body: some View {
         let palettesById: [UUID: Palette] = Dictionary(uniqueKeysWithValues: palettes.map { ($0.id, $0) })
@@ -188,31 +190,39 @@ struct StudioRootView: View {
             if let ctx = viewContext {
                 StudioOverlay(
                     title: $title, subtitle: $subtitle, watermark: $watermark,
-                    aspect: $aspect, viewContext: ctx, showSettings: $showSettings
+                    aspect: $aspect, viewContext: ctx, showSettings: $showSettings,
+                    exportMode: $exportMode, showSafeFrame: $showSafeFrame
                 )
             }
 
-            HStack {
-                Spacer()
-                RightDrawer(appState: appState, datasetId: dsId)
-                    .padding(.top, 80).padding(.trailing, 16).padding(.bottom, 16)
+            if !exportMode {
+                HStack {
+                    Spacer()
+                    RightDrawer(appState: appState, datasetId: dsId)
+                        .padding(.top, 80).padding(.trailing, 16).padding(.bottom, 16)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
+                .animation(.easeInOut(duration: 0.2), value: appState.selectedRef)
+                .transition(.move(edge: .trailing).combined(with: .opacity))
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
-            .animation(.easeInOut(duration: 0.2), value: appState.selectedRef)
 
-            HStack {
-                LeftDrawerView(
-                    legendSections: legendSections,
-                    layers: layersForDataset(dsId),
-                    currentZoom: zoom,
-                    filterState: filterState,
-                    layerState: layerState
-                )
-                .padding(.top, 80).padding(.leading, 16)
-                Spacer()
+            if !exportMode {
+                HStack {
+                    LeftDrawerView(
+                        legendSections: legendSections,
+                        layers: layersForDataset(dsId),
+                        currentZoom: zoom,
+                        filterState: filterState,
+                        layerState: layerState
+                    )
+                    .padding(.top, 80).padding(.leading, 16)
+                    Spacer()
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                .transition(.move(edge: .leading).combined(with: .opacity))
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         }
+        .animation(.easeInOut(duration: 0.22), value: exportMode)
         .onChange(of: viewContext?.activeMapView?.id) { _, _ in
             layerState.resetForTheme(enabledIds: viewContext?.activeMapView?.enabledLayerIds ?? [])
             filterState.reset()
@@ -247,27 +257,51 @@ struct StudioRootView: View {
         var out: [Cand] = []
         if visibility["compound"] == true {
             for c in compounds where !c.deleted && c.datasetId == dsId {
-                out.append(.init(id: c.id, type: "compound", name: c.name, entity: c.styleEntity,
-                                 coordinate: c.coordinate, hasCoordinate: c.latitude != 0 || c.longitude != 0))
+                out.append(.init(
+                    id: c.id,
+                    type: "compound",
+                    name: c.name,
+                    entity: c.styleEntity,
+                    coordinate: c.coordinate,
+                    hasCoordinate: c.latitude != 0 || c.longitude != 0
+                ))
             }
         }
         if visibility["school"] == true {
             for s in schools where !s.deleted && s.datasetId == dsId {
-                out.append(.init(id: s.id, type: "school", name: s.name, entity: s.styleEntity,
-                                 coordinate: s.coordinate, hasCoordinate: s.latitude != 0 || s.longitude != 0))
+                out.append(.init(
+                    id: s.id,
+                    type: "school",
+                    name: s.name,
+                    entity: s.styleEntity,
+                    coordinate: s.coordinate,
+                    hasCoordinate: s.latitude != 0 || s.longitude != 0
+                ))
             }
         }
         if visibility["poi"] == true {
             for p in pois where !p.deleted && p.datasetId == dsId {
-                out.append(.init(id: p.id, type: "poi", name: p.name, entity: p.styleEntity,
-                                 coordinate: p.coordinate, hasCoordinate: p.latitude != 0 || p.longitude != 0))
+                out.append(.init(
+                    id: p.id,
+                    type: "poi",
+                    name: p.name,
+                    entity: p.styleEntity,
+                    coordinate: p.coordinate,
+                    hasCoordinate: p.latitude != 0 || p.longitude != 0
+                ))
             }
         }
         // areas 加入候选(供 layer 归属/可见集);无点坐标,buildPins 跳过
         if visibility["area"] == true {
             for a in areas where !a.deleted && a.datasetId == dsId {
-                out.append(.init(id: a.id, type: "area", name: a.name, entity: a.styleEntity,
-                                 coordinate: CLLocationCoordinate2D(), hasCoordinate: false))
+                out.append(.init(
+                    id: a.id,
+                    type: "area",
+                    name: a.name,
+                    entity: a.styleEntity,
+                    coordinate: CLLocationCoordinate2D(),
+                    hasCoordinate: false
+                ))
             }
         }
         return out
@@ -282,16 +316,24 @@ struct StudioRootView: View {
     ) -> [LegendSection] {
         // 仅统计可见实体(含 area)
         let items = cands.filter { visibleIds.contains($0.id) }.map {
-            DimensionLegendCounter.Item(id: $0.id, entity: $0.entity, coordinate: $0.coordinate,
-                                        layerNames: membership[$0.id] ?? [])
+            DimensionLegendCounter.Item(
+                id: $0.id,
+                entity: $0.entity,
+                coordinate: $0.coordinate,
+                layerNames: membership[$0.id] ?? []
+            )
         }
         var sections: [LegendSection] = []
 
         if let gb = primary.groupBy {
             // groupBy 维度的值 → palette 色(与 pin 一致):由全屏 distinct 值分配
             let distinct = items.flatMap { it -> [String] in
-                gb.resolve(MapDimension.Input(entity: it.entity, layerNames: it.layerNames,
-                                              context: modelContext, datasetId: dsId)).sorted().prefix(1).map { $0 }
+                gb.resolve(MapDimension.Input(
+                    entity: it.entity,
+                    layerNames: it.layerNames,
+                    context: modelContext,
+                    datasetId: dsId
+                )).sorted().prefix(1).map { $0 }
             }
             let assign = PaletteAssigner.assign(values: Array(Set(distinct)), palette: palette)
             let rows = DimensionLegendCounter.rows(
@@ -306,7 +348,7 @@ struct StudioRootView: View {
             let rows = DimensionLegendCounter.rows(
                 dimension: nf.dimension, items: items, region: visibleRegion,
                 context: modelContext, datasetId: dsId,
-                swatch: { _ in "#8E8E93" }   // normal filter 不参与染色 → 中性灰
+                swatch: { _ in "#8E8E93" } // normal filter 不参与染色 → 中性灰
             )
             sections.append(LegendSection(title: nf.name, dimensionKey: nf.dimension.key, rows: rows))
         }
@@ -315,10 +357,10 @@ struct StudioRootView: View {
 
     private func legendTitle(for dim: MapDimension, fallback: String) -> String {
         switch dim.kind {
-        case .field: return dim.fieldKey ?? fallback
-        case .layer: return "图层"
-        case .entityType: return "类型"
-        case .edgeField: return dim.edgeLabel ?? fallback
+        case .field: dim.fieldKey ?? fallback
+        case .layer: "图层"
+        case .entityType: "类型"
+        case .edgeField: dim.edgeLabel ?? fallback
         }
     }
 
@@ -334,8 +376,13 @@ struct StudioRootView: View {
                 entity: c.entity, theme: theme, rules: rules, palettes: palettes,
                 groupFillHex: groupColors[c.id]
             )
-            let pin = PinAnnotation(entityId: c.id, entityType: c.type, name: c.name,
-                                    coordinate: c.coordinate, style: style)
+            let pin = PinAnnotation(
+                entityId: c.id,
+                entityType: c.type,
+                name: c.name,
+                coordinate: c.coordinate,
+                style: style
+            )
             if let highlight {
                 pin.highlighted = highlight.contains(c.id)
                 pin.dimmed = !highlight.contains(c.id)

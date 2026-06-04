@@ -7,7 +7,9 @@ struct LegendSection: Identifiable {
     let title: String
     let dimensionKey: String
     let rows: [DimensionLegendCounter.Row]
-    var id: String { dimensionKey }
+    var id: String {
+        dimensionKey
+    }
 }
 
 struct LegendView: View {
@@ -16,16 +18,19 @@ struct LegendView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("图例").font(.system(size: 12, weight: .bold))
-            if sections.allSatisfy({ $0.rows.isEmpty }) {
-                Text("拖动地图后显示").font(.system(size: 11)).foregroundStyle(.secondary)
+            SectionLabel(text: "图例").padding(.horizontal, 8)
+            if sections.allSatisfy(\.rows.isEmpty) {
+                Text("拖动地图后显示").font(Studio.sans(11)).foregroundStyle(Studio.on3)
+                    .padding(.horizontal, 8)
             }
-            ForEach(sections) { section in
+            ForEach(Array(sections.enumerated()), id: \.element.id) { idx, section in
                 if !section.rows.isEmpty {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(section.title).font(.system(size: 11, weight: .semibold)).foregroundStyle(.secondary)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(section.title).font(Studio.sans(11, .semibold)).foregroundStyle(Studio.on2)
+                            .padding(.horizontal, 8)
                         ForEach(section.rows) { row in chip(section.dimensionKey, row) }
                     }
+                    .padding(.top, idx == 0 ? 0 : 4)
                 }
             }
         }
@@ -36,18 +41,22 @@ struct LegendView: View {
         return Button {
             filterState.toggle(dimensionKey: dimensionKey, value: row.value)
         } label: {
-            HStack(spacing: 6) {
-                Circle().fill(Color(uiColor: HexColor.parse(row.swatchHex) ?? .gray)).frame(width: 12, height: 12)
-                Text(row.value).font(.system(size: 11)).lineLimit(1)
+            HStack(spacing: 9) {
+                Circle().fill(Color(uiColor: HexColor.parse(row.swatchHex) ?? .gray))
+                    .frame(width: 12, height: 12)
+                    .overlay { Circle().strokeBorder(.white.opacity(hidden ? 0 : 0.08), lineWidth: 2) }
+                    .grayscale(hidden ? 0.6 : 0)
+                Text(row.value).font(Studio.sans(13)).foregroundStyle(Studio.on).lineLimit(1)
                 Spacer(minLength: 4)
                 Text("\(row.viewport) / \(row.total)")
-                    .font(.system(size: 10, weight: .semibold).monospacedDigit())
-                    .foregroundStyle(.secondary)
+                    .font(Studio.mono(11, .semibold)).foregroundStyle(Studio.on3)
             }
-            .opacity(hidden ? 0.35 : 1)
+            .opacity(hidden ? 0.4 : 1)
+            .padding(.horizontal, 8).padding(.vertical, 5)
+            .frame(minHeight: 36)
             .contentShape(Rectangle())
-            .padding(.leading, 8)
-        }.buttonStyle(.plain)
+        }
+        .buttonStyle(.plain)
     }
 }
 #endif

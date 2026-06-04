@@ -17,9 +17,9 @@ struct EntityEditor: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             header
-            Divider()
+            Rectangle().fill(Studio.glassLine).frame(height: 1)
             tabBar
-            Divider()
+            Rectangle().fill(Studio.glassLine).frame(height: 1)
             ScrollView {
                 Group {
                     switch appState.currentEditTab {
@@ -30,51 +30,76 @@ struct EntityEditor: View {
                     case .privateNotes: EditorCustomTab(ref: ref, datasetId: datasetId, showPrivate: true)
                     }
                 }
-                .padding(12)
+                .padding(14)
             }
         }
-        .frame(width: 320)
+        .frame(width: 340)
         .frame(maxHeight: 760)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 10))
-        .shadow(color: .black.opacity(0.12), radius: 10, x: 0, y: 4)
+        .glassSurface(radius: Studio.rPanel)
+        .environment(\.colorScheme, .dark)
+        .tint(Studio.cool)
         .onAppear { name = EntityReader.name(ref, in: context) ?? "" }
         .onChange(of: ref) { _, _ in name = EntityReader.name(ref, in: context) ?? "" }
     }
 
+    private var badgeKind: EntityBadge.Kind {
+        switch ref.kind {
+        case .compound: .compound
+        case .school: .school
+        case .poi: .poi
+        case .area: .zone
+        }
+    }
+
     private var header: some View {
-        HStack(spacing: 8) {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(spacing: 8) {
+                EntityBadge(kind: badgeKind)
+                Spacer()
+                Menu {
+                    Button(role: .destructive) { onDelete() } label: { Label("删除", systemImage: "trash") }
+                } label: {
+                    Image(systemName: "ellipsis").font(.system(size: 15, weight: .semibold))
+                        .foregroundStyle(Studio.on2).frame(width: 32, height: 32)
+                        .background(Studio.glassHover, in: RoundedRectangle(cornerRadius: Studio.rControl, style: .continuous))
+                }.menuStyle(.borderlessButton).fixedSize()
+                Button {
+                    EntityWriter.setName(ref, name, in: context)
+                    onClose()
+                } label: { Text("完成") }
+                    .buttonStyle(.tbtn(.cool))
+            }
             TextField("名称", text: $name)
                 .textFieldStyle(.plain)
-                .font(.system(size: 15, weight: .bold))
+                .font(Studio.sans(20, .bold))
+                .foregroundStyle(Studio.on)
                 .onSubmit { EntityWriter.setName(ref, name, in: context) }
-            Menu {
-                Button(role: .destructive) { onDelete() } label: { Label("删除", systemImage: "trash") }
-            } label: { Image(systemName: "ellipsis.circle") }
-            Button(action: { EntityWriter.setName(ref, name, in: context)
-                onClose()
-            }) {
-                Image(systemName: "checkmark.circle.fill")
-            }.buttonStyle(.plain)
         }
-        .padding(10)
+        .padding(.horizontal, 14).padding(.top, 14).padding(.bottom, 10)
     }
 
     private var tabBar: some View {
-        HStack(spacing: 4) {
-            tab("基本", .basic)
-            tab("关联", .relations)
-            tab("媒体", .media)
-            tab("自定义", .custom)
-            tab("私密", .privateNotes)
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 6) {
+                tab("基本", .basic)
+                tab("关联", .relations)
+                tab("媒体", .media)
+                tab("自定义", .custom)
+                tab("私密", .privateNotes)
+            }
+            .padding(.horizontal, 14)
         }
-        .padding(.horizontal, 8).padding(.vertical, 6)
+        .padding(.vertical, 8)
     }
 
     private func tab(_ title: String, _ value: AppState.EditTab) -> some View {
         let active = appState.currentEditTab == value
         return Button { appState.currentEditTab = value } label: {
-            Text(title).font(.system(size: 11, weight: active ? .bold : .regular))
-                .foregroundStyle(active ? Color.accentColor : .secondary)
+            Text(title).font(Studio.sans(13, .medium))
+                .foregroundStyle(active ? Studio.on : Studio.on2)
+                .padding(.horizontal, 13).frame(height: 30)
+                .background(active ? Studio.glassRaised : Studio.glassHover, in: Capsule())
+                .overlay { if active { Capsule().strokeBorder(Studio.glassLine, lineWidth: 1) } }
         }.buttonStyle(.plain)
     }
 }

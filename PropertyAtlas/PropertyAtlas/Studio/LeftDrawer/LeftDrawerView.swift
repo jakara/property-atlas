@@ -11,17 +11,18 @@ struct LeftDrawerView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 16) {
+            VStack(alignment: .leading, spacing: 14) {
                 LayersView(layers: layers, currentZoom: currentZoom, layerState: layerState)
-                Divider().opacity(0.5)
+                Rectangle().fill(Studio.glassLine).frame(height: 1)
                 LegendView(sections: legendSections, filterState: filterState)
             }
-            .padding(12)
+            .padding(.horizontal, 10).padding(.vertical, 12)
         }
-        .frame(width: 220)
+        .scrollIndicators(.hidden)
+        .frame(width: 244)
         .frame(maxHeight: 640)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
-        .shadow(color: .black.opacity(0.1), radius: 10, x: 0, y: 4)
+        .glassSurface(Studio.glass, radius: Studio.rPanel, elevation: .float)
+        .environment(\.colorScheme, .dark)
     }
 }
 #endif

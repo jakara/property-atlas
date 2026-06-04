@@ -7,8 +7,9 @@ struct AnyJSONValueField: View {
     private var text: Binding<String> {
         Binding(get: { ValueFormat.display(value) }, set: { value = .string($0) })
     }
+
     var body: some View {
-        TextField("值", text: text).font(.system(size: 12))
+        TextField("值", text: text).glassField()
     }
 }
 #endif

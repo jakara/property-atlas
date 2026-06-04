@@ -20,136 +20,156 @@ struct StyleRuleSettingsTab: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            HStack {
-                Text("样式规则").font(.system(size: 12, weight: .bold))
-                Spacer()
-                Button { addRule() } label: { Label("新规则", systemImage: "plus") }.font(.system(size: 12))
-            }
+        VStack(alignment: .leading, spacing: 12) {
+            SectionLabel(text: "样式规则", trailing: "\(dsRules.count)")
             ForEach(dsRules, id: \.id) { r in card(r) }
+            AddRow("新建样式规则") { addRule() }
         }
     }
 
     private func card(_ r: StyleRule) -> some View {
-        VStack(alignment: .leading, spacing: 6) {
-            HStack {
-                TextField("名称", text: Binding(get: { r.name }, set: { r.name = $0
-                    r.updatedAt = Date()
-                })).font(.system(size: 12, weight: .semibold))
-                Button(role: .destructive) { r.deleted = true
-                    r.updatedAt = Date()
-                } label: { Image(systemName: "trash").font(.system(size: 11)) }.buttonStyle(.plain)
-            }
-            HStack {
-                Picker("实体", selection: Binding(get: { r.entityType }, set: { r.entityType = $0
-                    r.updatedAt = Date()
-                })) {
-                    ForEach(entityTypes, id: \.self) { Text($0).tag($0) }
-                }.font(.system(size: 12))
-                Toggle("启用", isOn: Binding(get: { r.enabled }, set: { r.enabled = $0
-                    r.updatedAt = Date()
-                })).font(.system(size: 12))
-                Stepper("优先\(r.priority)", value: Binding(get: { r.priority }, set: { r.priority = $0
-                    r.updatedAt = Date()
-                }), in: 0...999).font(.system(size: 11))
-            }
-            appliesSection(r)
+        VStack(alignment: .leading, spacing: 10) {
+            headerCard(r)
+            StudioDisclosure("外观", open: false) { appliesBody(r) }
             conditionsSection(r)
         }
-        .padding(10).background(.quaternary.opacity(0.4), in: RoundedRectangle(cornerRadius: 10))
+        .padding(.bottom, 4)
     }
 
-    private func appliesSection(_ r: StyleRule) -> some View {
-        DisclosureGroup("样式") {
-            VStack(alignment: .leading, spacing: 6) {
-                Picker("形状", selection: Binding(get: { r.appliesShape ?? "" }, set: { r.appliesShape = $0.isEmpty ? nil : $0
-                    r.updatedAt = Date()
-                })) {
-                    Text("(无)").tag("")
-                    ForEach(shapes, id: \.self) { Text($0).tag($0) }
-                }.font(.system(size: 12))
-                Picker("填充模式", selection: Binding(get: { r.appliesFillMode }, set: { r.appliesFillMode = $0
-                    r.updatedAt = Date()
-                })) {
-                    Text("固定色").tag("fixed")
-                    Text("调色板").tag("palette")
-                }.pickerStyle(.segmented).font(.system(size: 11))
-                if r.appliesFillMode == "palette" {
-                    Picker("调色板", selection: Binding(get: { r.appliesPaletteId }, set: { r.appliesPaletteId = $0
+    private func headerCard(_ r: StyleRule) -> some View {
+        SettingsCard {
+            VStack(alignment: .leading, spacing: 0) {
+                HStack(spacing: 8) {
+                    TextField("名称", text: Binding(get: { r.name }, set: { r.name = $0
+                        r.updatedAt = Date()
+                    }))
+                    .glassField()
+                    Text("P\(r.priority)").font(Studio.sans(11, .semibold)).foregroundStyle(Studio.cool)
+                    Button(role: .destructive) { r.deleted = true
+                        r.updatedAt = Date()
+                    } label: {
+                        Image(systemName: "trash").font(.system(size: 12)).foregroundStyle(Studio.bad)
+                    }.buttonStyle(.plain)
+                }
+                .padding(.horizontal, 13).padding(.vertical, 11)
+                RowDivider()
+                HStack(spacing: 10) {
+                    Picker("实体", selection: Binding(get: { r.entityType }, set: { r.entityType = $0
                         r.updatedAt = Date()
                     })) {
-                        Text("无").tag(UUID?.none)
-                        ForEach(dsPalettes, id: \.id) { Text($0.name).tag($0.id as UUID?) }
-                    }.font(.system(size: 12))
-                    TextField("调色 key 字段", text: Binding(get: { r.appliesPaletteKeyField ?? "" }, set: { r.appliesPaletteKeyField = $0.isEmpty ? nil : $0
+                        ForEach(entityTypes, id: \.self) { Text($0).tag($0) }
+                    }.font(Studio.sans(12)).tint(Studio.cool)
+                    Spacer()
+                    Toggle("启用", isOn: Binding(get: { r.enabled }, set: { r.enabled = $0
                         r.updatedAt = Date()
-                    })).font(.system(size: 12))
-                } else {
-                    ColorHexField(title: "填充色", hex: hexBinding(get: { r.appliesFillHex }, set: { r.appliesFillHex = $0
+                    })).font(Studio.sans(12)).foregroundStyle(Studio.on).tint(Studio.cool).fixedSize()
+                    GlassStepper(value: Binding(get: { r.priority }, set: { r.priority = $0
                         r.updatedAt = Date()
-                    }))
+                    }), range: 0...999)
                 }
-                ColorHexField(title: "描边色", hex: hexBinding(get: { r.appliesStrokeHex }, set: { r.appliesStrokeHex = $0
+                .padding(.horizontal, 13).padding(.vertical, 9)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func appliesBody(_ r: StyleRule) -> some View {
+        labeled("形状") {
+            Picker("", selection: Binding(get: { r.appliesShape ?? "" }, set: { r.appliesShape = $0.isEmpty ? nil : $0
+                r.updatedAt = Date()
+            })) {
+                Text("(无)").tag("")
+                ForEach(shapes, id: \.self) { Text($0).tag($0) }
+            }.labelsHidden().tint(Studio.cool)
+        }
+        labeled("填充模式") {
+            GlassSegmented(
+                options: [(value: "fixed", label: "固定色"), (value: "palette", label: "调色板")],
+                selection: Binding(get: { r.appliesFillMode }, set: { r.appliesFillMode = $0
                     r.updatedAt = Date()
-                }))
-                HStack {
-                    TextField("glyph", text: Binding(get: { r.appliesGlyph ?? "" }, set: { r.appliesGlyph = $0.isEmpty ? nil : $0
-                        r.updatedAt = Date()
-                    })).font(.system(size: 12))
-                    ColorHexField(title: "glyph 色", hex: hexBinding(get: { r.appliesGlyphHex }, set: { r.appliesGlyphHex = $0
-                        r.updatedAt = Date()
-                    }))
-                }
-                HStack {
-                    optIntField("尺寸", get: { r.appliesSize }, set: { r.appliesSize = $0
-                        r.updatedAt = Date()
-                    })
-                    optDoubleField("描边宽", get: { r.appliesStrokeWidth }, set: { r.appliesStrokeWidth = $0
-                        r.updatedAt = Date()
-                    })
-                    optDoubleField("不透明", get: { r.appliesFillOpacity }, set: { r.appliesFillOpacity = $0
-                        r.updatedAt = Date()
-                    })
-                }
-                Picker("标签", selection: Binding(get: { labelTag(r.appliesLabelVisible) }, set: { r.appliesLabelVisible = labelValue($0)
+                })
+            )
+        }
+        if r.appliesFillMode == "palette" {
+            labeled("调色板") {
+                Picker("", selection: Binding(get: { r.appliesPaletteId }, set: { r.appliesPaletteId = $0
                     r.updatedAt = Date()
                 })) {
-                    Text("默认").tag(0)
-                    Text("显示").tag(1)
-                    Text("隐藏").tag(2)
-                }.pickerStyle(.segmented).font(.system(size: 11))
+                    Text("无").tag(UUID?.none)
+                    ForEach(dsPalettes, id: \.id) { Text($0.name).tag($0.id as UUID?) }
+                }.labelsHidden().tint(Studio.cool)
             }
-        }.font(.system(size: 12))
+            TextField("调色 key 字段", text: Binding(get: { r.appliesPaletteKeyField ?? "" }, set: { r.appliesPaletteKeyField = $0.isEmpty ? nil : $0
+                r.updatedAt = Date()
+            })).glassField()
+        } else {
+            ColorHexField(title: "填充色", hex: hexBinding(get: { r.appliesFillHex }, set: { r.appliesFillHex = $0
+                r.updatedAt = Date()
+            }))
+        }
+        ColorHexField(title: "描边色", hex: hexBinding(get: { r.appliesStrokeHex }, set: { r.appliesStrokeHex = $0
+            r.updatedAt = Date()
+        }))
+        TextField("glyph", text: Binding(get: { r.appliesGlyph ?? "" }, set: { r.appliesGlyph = $0.isEmpty ? nil : $0
+            r.updatedAt = Date()
+        })).glassField()
+        ColorHexField(title: "glyph 色", hex: hexBinding(get: { r.appliesGlyphHex }, set: { r.appliesGlyphHex = $0
+            r.updatedAt = Date()
+        }))
+        HStack(spacing: 10) {
+            optIntField("尺寸", get: { r.appliesSize }, set: { r.appliesSize = $0
+                r.updatedAt = Date()
+            })
+            optDoubleField("描边宽", get: { r.appliesStrokeWidth }, set: { r.appliesStrokeWidth = $0
+                r.updatedAt = Date()
+            })
+            optDoubleField("不透明", get: { r.appliesFillOpacity }, set: { r.appliesFillOpacity = $0
+                r.updatedAt = Date()
+            })
+        }
+        labeled("标签") {
+            GlassSegmented(
+                options: [(value: 0, label: "默认"), (value: 1, label: "显示"), (value: 2, label: "隐藏")],
+                selection: Binding(get: { labelTag(r.appliesLabelVisible) }, set: { r.appliesLabelVisible = labelValue($0)
+                    r.updatedAt = Date()
+                })
+            )
+        }
     }
 
     private func conditionsSection(_ r: StyleRule) -> some View {
         let conds = StyleConditionCodec.decode(r.conditionsJSON)
-        return DisclosureGroup("条件 (\(conds.count))") {
-            VStack(alignment: .leading, spacing: 6) {
-                ForEach(conds.indices, id: \.self) { i in
-                    StyleConditionRow(
-                        condition: Binding(
-                            get: { StyleConditionCodec.decode(r.conditionsJSON)[safe: i] ?? StyleCondition(field: "", op: .equals, value: .string("")) },
-                            set: { newCond in
-                                var arr = StyleConditionCodec.decode(r.conditionsJSON)
-                                if arr.indices.contains(i) { arr[i] = newCond
-                                    r.conditionsJSON = StyleConditionCodec.encode(arr)
-                                    r.updatedAt = Date()
-                                }
-                            }
-                        ),
-                        onDelete: {
+        return StudioDisclosure("条件", summary: "\(conds.count) 条", open: false) {
+            ForEach(conds.indices, id: \.self) { i in
+                StyleConditionRow(
+                    condition: Binding(
+                        get: { StyleConditionCodec.decode(r.conditionsJSON)[safe: i] ?? StyleCondition(field: "", op: .equals, value: .string("")) },
+                        set: { newCond in
                             var arr = StyleConditionCodec.decode(r.conditionsJSON)
-                            if arr.indices.contains(i) { arr.remove(at: i)
+                            if arr.indices.contains(i) { arr[i] = newCond
                                 r.conditionsJSON = StyleConditionCodec.encode(arr)
                                 r.updatedAt = Date()
                             }
                         }
-                    )
-                }
-                Button { addCondition(r) } label: { Label("加条件", systemImage: "plus") }.font(.system(size: 11))
+                    ),
+                    onDelete: {
+                        var arr = StyleConditionCodec.decode(r.conditionsJSON)
+                        if arr.indices.contains(i) { arr.remove(at: i)
+                            r.conditionsJSON = StyleConditionCodec.encode(arr)
+                            r.updatedAt = Date()
+                        }
+                    }
+                )
             }
-        }.font(.system(size: 12))
+            AddRow("添加条件") { addCondition(r) }
+        }
+    }
+
+    private func labeled(_ title: String, @ViewBuilder content: () -> some View) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(title).font(Studio.sans(11, .medium)).foregroundStyle(Studio.on2)
+            content()
+        }
     }
 
     private func hexBinding(get: @escaping () -> String?, set: @escaping (String?) -> Void) -> Binding<String> {
@@ -157,17 +177,21 @@ struct StyleRuleSettingsTab: View {
     }
 
     private func optIntField(_ title: String, get: @escaping () -> Int?, set: @escaping (Int?) -> Void) -> some View {
-        HStack(spacing: 4) {
-            Text(title).font(.system(size: 10)).foregroundStyle(.secondary)
-            TextField("—", text: Binding(get: { get().map(String.init) ?? "" }, set: { set($0.isEmpty ? nil : Int($0)) })).font(.system(size: 12).monospaced()).frame(width: 44)
+        VStack(alignment: .leading, spacing: 6) {
+            Text(title).font(Studio.sans(11, .medium)).foregroundStyle(Studio.on2)
+            TextField("—", text: Binding(get: { get().map(String.init) ?? "" }, set: { set($0.isEmpty ? nil : Int($0)) }))
+                .glassField().font(Studio.mono(13))
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     private func optDoubleField(_ title: String, get: @escaping () -> Double?, set: @escaping (Double?) -> Void) -> some View {
-        HStack(spacing: 4) {
-            Text(title).font(.system(size: 10)).foregroundStyle(.secondary)
-            TextField("—", text: Binding(get: { get().map { String($0) } ?? "" }, set: { set($0.isEmpty ? nil : Double($0)) })).font(.system(size: 12).monospaced()).frame(width: 50)
+        VStack(alignment: .leading, spacing: 6) {
+            Text(title).font(Studio.sans(11, .medium)).foregroundStyle(Studio.on2)
+            TextField("—", text: Binding(get: { get().map { String($0) } ?? "" }, set: { set($0.isEmpty ? nil : Double($0)) }))
+                .glassField().font(Studio.mono(13))
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     private func labelTag(_ v: Bool?) -> Int {

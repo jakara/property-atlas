@@ -7,27 +7,108 @@ struct StudioToolbar: View {
     @Binding var aspect: CanvasAspect
     let onSnapshot: () -> Void
     var showSettings: Binding<Bool>
+    @Binding var exportMode: Bool
+    @Binding var showSafeFrame: Bool
 
     var body: some View {
-        HStack(spacing: 12) {
-            Menu(viewContext.activeMapView?.name ?? "无视图") {
+        HStack(spacing: 4) {
+            // view switch
+            Menu {
                 ForEach(viewContext.allMapViews, id: \.id) { mv in
                     Button(mv.name) { viewContext.switchView(to: mv) }
                 }
+            } label: {
+                DockLabel(icon: "map", text: viewContext.activeMapView?.name ?? "无视图", caret: true)
             }
-            Menu("📐 \(aspect.rawValue)") {
-                ForEach(CanvasAspect.allCases) { a in
-                    Button(a.rawValue) { aspect = a }
+            .menuStyle(.borderlessButton).fixedSize()
+
+            // aspect ratio
+            Menu {
+                Toggle("显示出图框", isOn: $showSafeFrame)
+                Divider()
+                Picker("画幅", selection: $aspect) {
+                    ForEach(CanvasAspect.allCases) { a in Text(a.rawValue).tag(a) }
+                }
+            } label: {
+                DockLabel(icon: "crop", text: aspect.rawValue, caret: true)
+            }
+            .menuStyle(.borderlessButton).fixedSize()
+
+            // settings
+            Button { showSettings.wrappedValue = true } label: {
+                DockLabel(icon: "gearshape", iconOnly: true)
+            }
+            .buttonStyle(.plain)
+
+            sep
+
+            // 出图模式 toggle
+            Button { exportMode.toggle() } label: {
+                HStack(spacing: 6) {
+                    Circle().fill(exportMode ? Studio.cool : Studio.on3)
+                        .frame(width: 7, height: 7)
+                        .shadow(color: exportMode ? Studio.cool : .clear, radius: 4)
+                    Text("出图模式").font(Studio.sans(13, .medium))
+                }
+                .foregroundStyle(exportMode ? Studio.cool : Studio.on2)
+                .padding(.horizontal, 12).frame(height: 38)
+                .background(
+                    exportMode ? Studio.coolSoft : Studio.glassHover,
+                    in: RoundedRectangle(cornerRadius: Studio.rControl, style: .continuous)
+                )
+                .overlay {
+                    if exportMode {
+                        RoundedRectangle(cornerRadius: Studio.rControl, style: .continuous)
+                            .strokeBorder(Studio.coolLine, lineWidth: 1)
+                    }
                 }
             }
-            Button { showSettings.wrappedValue = true } label: { Text("⚙️ 设置") }
-            Divider().frame(height: 20)
-            Button(action: onSnapshot) { Text("📸 截屏") }
-                .keyboardShortcut("e", modifiers: .command)
+            .buttonStyle(.plain)
+
+            // capture (primary)
+            Button(action: onSnapshot) {
+                HStack(spacing: 7) {
+                    Image(systemName: "camera.fill").font(.system(size: 13, weight: .semibold))
+                    Text("截屏").font(Studio.sans(14, .semibold))
+                }
+                .foregroundStyle(Studio.onAmber)
+                .padding(.horizontal, 14).frame(height: 38)
+                .background(Studio.amber, in: RoundedRectangle(cornerRadius: Studio.rControl, style: .continuous))
+            }
+            .buttonStyle(.plain)
+            .keyboardShortcut("e", modifiers: .command)
         }
-        .padding(10)
-        .background(.regularMaterial, in: Capsule())
-        .shadow(color: .black.opacity(0.12), radius: 12, x: 0, y: 6)
+        .padding(6)
+        .glassSurface(Studio.glass, radius: Studio.rPanel, elevation: .float)
+        .environment(\.colorScheme, .dark)
+    }
+
+    private var sep: some View {
+        Rectangle().fill(Studio.glassLine).frame(width: 1, height: 24).padding(.horizontal, 3)
+    }
+}
+
+/// A dock pill label — icon (+ text) (+ caret).
+private struct DockLabel: View {
+    let icon: String
+    var text: String = ""
+    var caret: Bool = false
+    var iconOnly: Bool = false
+
+    var body: some View {
+        HStack(spacing: 7) {
+            Image(systemName: icon).font(.system(size: 15, weight: .regular))
+            if !iconOnly {
+                Text(text).font(Studio.sans(14, .medium)).lineLimit(1)
+                if caret {
+                    Image(systemName: "chevron.down").font(.system(size: 9, weight: .bold))
+                        .foregroundStyle(Studio.on2)
+                }
+            }
+        }
+        .foregroundStyle(Studio.on)
+        .padding(.horizontal, iconOnly ? 0 : 12)
+        .frame(width: iconOnly ? 38 : nil, height: 38)
     }
 }
 #endif

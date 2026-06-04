@@ -18,62 +18,107 @@ struct ThemeSettingsTab: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            HStack {
-                Text("主题").font(.system(size: 12, weight: .bold))
-                Spacer()
-                Button { addTheme() } label: { Label("新主题", systemImage: "plus") }.font(.system(size: 12))
-            }
+        VStack(alignment: .leading, spacing: 12) {
+            SectionLabel(text: "主题", trailing: "\(dsThemes.count)")
             ForEach(dsThemes, id: \.id) { t in card(t) }
+            AddRow("新主题") { addTheme() }
         }
     }
 
     private func card(_ t: Theme) -> some View {
-        VStack(alignment: .leading, spacing: 6) {
-            HStack {
-                TextField("名称", text: Binding(get: { t.name }, set: { t.name = $0
-                    t.updatedAt = Date()
-                })).font(.system(size: 12, weight: .semibold))
-                Button(role: .destructive) { t.deleted = true
-                    t.updatedAt = Date()
-                } label: { Image(systemName: "trash").font(.system(size: 11)) }.buttonStyle(.plain)
-            }
-            HStack {
-                Stepper(value: Binding(get: { t.sortOrder }, set: { t.sortOrder = $0
-                    t.updatedAt = Date()
-                }), in: 0...999) { Text("排序 \(t.sortOrder)").font(.system(size: 12)) }
-                Toggle("激活", isOn: Binding(get: { t.isActive }, set: { t.isActive = $0
-                    t.updatedAt = Date()
-                })).font(.system(size: 12))
-                Toggle("图例", isOn: Binding(get: { t.showLegend }, set: { t.showLegend = $0
-                    t.updatedAt = Date()
-                })).font(.system(size: 12))
-            }
-            DisclosureGroup("样式规则 (\(t.styleRuleIds.count))") {
-                ForEach(dsRules, id: \.id) { rule in
-                    Toggle(rule.name, isOn: ruleBinding(t, rule.id)).font(.system(size: 11))
+        VStack(alignment: .leading, spacing: 10) {
+            headerCard(t)
+            rulesCard(t)
+            jsonCard(t)
+        }
+        .padding(.bottom, 4)
+    }
+
+    private func headerCard(_ t: Theme) -> some View {
+        SettingsCard {
+            VStack(alignment: .leading, spacing: 0) {
+                HStack(spacing: 8) {
+                    TextField("名称", text: Binding(get: { t.name }, set: { t.name = $0
+                        t.updatedAt = Date()
+                    }))
+                    .glassField()
+                    Button(role: .destructive) { t.deleted = true
+                        t.updatedAt = Date()
+                    } label: {
+                        Image(systemName: "trash").font(.system(size: 12)).foregroundStyle(Studio.bad)
+                    }.buttonStyle(.plain)
                 }
-            }.font(.system(size: 12))
-            VStack(alignment: .leading, spacing: 2) {
-                Text("defaultStylesJSON").font(.system(size: 10)).foregroundStyle(.secondary)
-                TextEditor(text: jsonBinding(t)).font(.system(size: 11).monospaced()).frame(height: 70).border(.quaternary)
-                if !isValidJSON(draft[t.id] ?? t.defaultStylesJSON) {
-                    Text("⚠️ 无效 JSON,未保存").font(.system(size: 10)).foregroundStyle(.red)
+                .padding(.horizontal, 13).padding(.vertical, 11)
+                RowDivider()
+                SettingsRow(title: "排序") {
+                    GlassStepper(value: Binding(get: { t.sortOrder }, set: { t.sortOrder = $0
+                        t.updatedAt = Date()
+                    }), range: 0...999)
+                }
+                RowDivider()
+                SettingsRow(title: "激活", subtitle: "作为默认渲染主题") {
+                    Toggle("", isOn: Binding(get: { t.isActive }, set: { t.isActive = $0
+                        t.updatedAt = Date()
+                    })).labelsHidden().tint(Studio.cool)
+                }
+                RowDivider()
+                SettingsRow(title: "生成图例", subtitle: "自动按规则汇总") {
+                    Toggle("", isOn: Binding(get: { t.showLegend }, set: { t.showLegend = $0
+                        t.updatedAt = Date()
+                    })).labelsHidden().tint(Studio.cool)
                 }
             }
         }
-        .padding(10).background(.quaternary.opacity(0.4), in: RoundedRectangle(cornerRadius: 10))
     }
 
-    private func ruleBinding(_ t: Theme, _ ruleId: UUID) -> Binding<Bool> {
-        Binding(
-            get: { t.styleRuleIds.contains(ruleId) },
-            set: { on in
-                if on { if !t.styleRuleIds.contains(ruleId) { t.styleRuleIds.append(ruleId) } }
-                else { t.styleRuleIds.removeAll { $0 == ruleId } }
-                t.updatedAt = Date()
+    private func rulesCard(_ t: Theme) -> some View {
+        SettingsCard(
+            "样式规则（多选）",
+            trailing: AnyView(
+                Text("已选 \(t.styleRuleIds.count)").font(Studio.sans(11, .medium)).foregroundStyle(Studio.cool)
+            )
+        ) {
+            FlowChips(rules: dsRules, theme: t) { rule in
+                toggleRule(t, rule.id)
             }
-        )
+            .padding(.horizontal, 13).padding(.bottom, 12)
+        }
+    }
+
+    private func jsonCard(_ t: Theme) -> some View {
+        let raw = draft[t.id] ?? t.defaultStylesJSON
+        let valid = isValidJSON(raw)
+        return SettingsCard("defaultStylesJSON") {
+            VStack(alignment: .leading, spacing: 7) {
+                TextEditor(text: jsonBinding(t))
+                    .font(Studio.mono(12))
+                    .foregroundStyle(Studio.on)
+                    .scrollContentBackground(.hidden)
+                    .frame(height: 80)
+                    .padding(.horizontal, 8).padding(.vertical, 6)
+                    .background(Studio.glassInput, in: RoundedRectangle(cornerRadius: Studio.rControl, style: .continuous))
+                    .overlay {
+                        RoundedRectangle(cornerRadius: Studio.rControl, style: .continuous)
+                            .strokeBorder(Studio.glassLine, lineWidth: 1)
+                    }
+                HStack(spacing: 6) {
+                    Image(systemName: valid ? "checkmark.circle" : "xmark.circle")
+                        .font(.system(size: 11, weight: .semibold))
+                    Text(valid ? "JSON 合法" : "无效 JSON,未保存").font(Studio.sans(11))
+                }
+                .foregroundStyle(valid ? Studio.ok : Studio.bad)
+            }
+            .padding(.horizontal, 13).padding(.bottom, 13)
+        }
+    }
+
+    private func toggleRule(_ t: Theme, _ ruleId: UUID) {
+        if t.styleRuleIds.contains(ruleId) {
+            t.styleRuleIds.removeAll { $0 == ruleId }
+        } else {
+            t.styleRuleIds.append(ruleId)
+        }
+        t.updatedAt = Date()
     }
 
     private func jsonBinding(_ t: Theme) -> Binding<String> {
@@ -98,6 +143,26 @@ struct ThemeSettingsTab: View {
         let t = Theme(datasetId: datasetId, name: "新主题")
         t.sortOrder = (dsThemes.map(\.sortOrder).max() ?? 0) + 1
         modelContext.insert(t)
+    }
+}
+
+/// Wrapping chip group for style-rule multi-select (amber = brand/style).
+private struct FlowChips: View {
+    let rules: [StyleRule]
+    let theme: Theme
+    let toggle: (StyleRule) -> Void
+
+    var body: some View {
+        let cols = [GridItem(.adaptive(minimum: 96), spacing: 7, alignment: .leading)]
+        LazyVGrid(columns: cols, alignment: .leading, spacing: 7) {
+            ForEach(rules, id: \.id) { rule in
+                StudioChip(
+                    rule.name,
+                    isOn: theme.styleRuleIds.contains(rule.id),
+                    amber: true
+                ) { toggle(rule) }
+            }
+        }
     }
 }
 #endif

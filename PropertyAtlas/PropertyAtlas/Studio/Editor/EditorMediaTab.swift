@@ -15,15 +15,23 @@ struct EditorMediaTab: View {
         )
         let photos = (try? context.fetch(fd)) ?? []
         return VStack(alignment: .leading, spacing: 8) {
-            Text("照片 (\(photos.count))").font(.system(size: 11, weight: .semibold)).foregroundStyle(.secondary)
+            SectionLabel(text: "实拍照片", trailing: "\(photos.count)")
             ForEach(photos, id: \.id) { p in
-                HStack(spacing: 6) {
-                    Image(systemName: "photo").foregroundStyle(.secondary)
-                    Text(p.caption ?? p.url).font(.system(size: 12)).lineLimit(1)
+                HStack(spacing: 11) {
+                    Image(systemName: "photo").font(.system(size: 16))
+                        .foregroundStyle(Studio.on2)
+                        .frame(width: 34, height: 34)
+                        .background(Studio.glassHover, in: RoundedRectangle(cornerRadius: 9, style: .continuous))
+                    Text(p.caption ?? p.url).font(Studio.sans(14, .medium))
+                        .foregroundStyle(Studio.on).lineLimit(1)
+                    Spacer(minLength: 0)
                 }
+                .padding(.horizontal, 10).padding(.vertical, 8)
+                .frame(minHeight: 52)
+                .background(Studio.glassHover.opacity(0.5), in: RoundedRectangle(cornerRadius: Studio.rCard, style: .continuous))
             }
-            Text("（加图 / 加文档：PhotosPicker 集成留 P3.5）")
-                .font(.system(size: 10)).foregroundStyle(.tertiary)
+            Text("长边压缩 1280 · HEIC · 不入直播（PhotosPicker 集成留 P3.5）")
+                .font(Studio.mono(10)).foregroundStyle(Studio.on3)
         }
     }
 }

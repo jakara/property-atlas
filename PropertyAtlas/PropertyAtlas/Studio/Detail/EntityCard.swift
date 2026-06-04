@@ -15,44 +15,53 @@ struct EntityCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             header
-            Divider()
+            Rectangle().fill(Studio.glassLine).frame(height: 1)
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
                     fieldTable
                     RelationTabsView(ref: ref, datasetId: datasetId, onSelectRelated: onSelectRelated)
                 }
-                .padding(12)
+                .padding(14)
             }
+            .scrollIndicators(.hidden)
         }
         .frame(width: 320)
         .frame(maxHeight: 720)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 10))
-        .shadow(color: .black.opacity(0.12), radius: 10, x: 0, y: 4)
+        .glassSurface(Studio.glass, radius: Studio.rPanel, elevation: .float)
+        .environment(\.colorScheme, .dark)
+        .tint(Studio.cool)
     }
 
     private var header: some View {
-        HStack(alignment: .center, spacing: 8) {
-            Text(kindChip).font(.system(size: 11, weight: .bold))
-                .padding(.horizontal, 6).padding(.vertical, 2)
-                .background(.gray.opacity(0.2), in: Capsule())
-            VStack(alignment: .leading, spacing: 2) {
-                Text(EntityReader.name(ref, in: context) ?? "—")
-                    .font(.system(size: 15, weight: .bold))
+        VStack(alignment: .leading, spacing: 0) {
+            HStack(spacing: 8) {
+                EntityBadge(kind: badgeKind)
+                Spacer()
+                iconBtn("pencil", action: onEdit)
+                iconBtn("xmark", action: onClose)
             }
-            Spacer()
-            Button(action: onEdit) { Image(systemName: "pencil") }.buttonStyle(.plain)
-            Button(action: onClose) { Image(systemName: "xmark.circle.fill").foregroundStyle(.secondary) }
-                .buttonStyle(.plain)
+            Text(EntityReader.name(ref, in: context) ?? "—")
+                .font(.system(size: 20, weight: .bold)).foregroundStyle(Studio.on)
+                .padding(.top, 10)
         }
-        .padding(10)
+        .padding(.horizontal, 14).padding(.top, 14).padding(.bottom, 10)
     }
 
-    private var kindChip: String {
+    private func iconBtn(_ sym: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Image(systemName: sym).font(.system(size: 14, weight: .medium))
+                .foregroundStyle(Studio.on2).frame(width: 32, height: 32)
+                .background(Studio.glassHover, in: RoundedRectangle(cornerRadius: Studio.rControl, style: .continuous))
+        }
+        .buttonStyle(.plain)
+    }
+
+    private var badgeKind: EntityBadge.Kind {
         switch ref.kind {
-        case .compound: "小区"
-        case .school: "学校"
-        case .poi: "POI"
-        case .area: "片区"
+        case .compound: .compound
+        case .school: .school
+        case .poi: .poi
+        case .area: .zone
         }
     }
 
@@ -62,14 +71,10 @@ struct EntityCard: View {
             let s = Self.display(v)
             return s.isEmpty ? nil : (f.label, s)
         }
-        return VStack(alignment: .leading, spacing: 4) {
-            ForEach(rows, id: \.0) { label, value in
-                HStack(alignment: .top, spacing: 6) {
-                    Text(label).font(.system(size: 10, weight: .medium)).foregroundStyle(.secondary)
-                        .frame(width: 84, alignment: .leading)
-                    Text(value).font(.system(size: 12)).textSelection(.enabled)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                }
+        return VStack(alignment: .leading, spacing: 0) {
+            ForEach(Array(rows.enumerated()), id: \.offset) { idx, pair in
+                if idx > 0 { Rectangle().fill(Studio.glassLine).frame(height: 1) }
+                FieldRow(key: pair.0, value: pair.1)
             }
         }
     }
@@ -84,5 +89,4 @@ struct EntityCard: View {
         }
     }
 }
-
 #endif

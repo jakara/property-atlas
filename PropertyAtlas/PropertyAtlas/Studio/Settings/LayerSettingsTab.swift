@@ -1,6 +1,6 @@
 #if targetEnvironment(macCatalyst)
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 struct LayerSettingsTab: View {
     let datasetId: UUID
@@ -11,55 +11,92 @@ struct LayerSettingsTab: View {
     private var dsLayers: [Layer] {
         layers.filter { $0.datasetId == datasetId && !$0.deleted }.sorted { $0.zIndex < $1.zIndex }
     }
-    private var dsThemes: [Theme] { themes.filter { $0.datasetId == datasetId && !$0.deleted } }
+
+    private var dsThemes: [Theme] {
+        themes.filter { $0.datasetId == datasetId && !$0.deleted }
+    }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            HStack {
-                Text("图层").font(.system(size: 12, weight: .bold))
-                Spacer()
-                Button { addLayer() } label: { Label("新图层", systemImage: "plus") }.font(.system(size: 12))
-            }
+        VStack(alignment: .leading, spacing: 16) {
+            SectionLabel(text: "图层（按 zIndex 排序）", trailing: "\(dsLayers.count)")
             ForEach(dsLayers, id: \.id) { layer in layerCard(layer) }
+            AddRow("新建图层") { addLayer() }
         }
+        .environment(\.colorScheme, .dark)
+        .tint(Studio.cool)
     }
 
     private func layerCard(_ l: Layer) -> some View {
-        VStack(alignment: .leading, spacing: 6) {
-            HStack {
-                TextField("名称", text: Binding(get: { l.name }, set: { l.name = $0; l.updatedAt = Date() })).font(.system(size: 12, weight: .semibold))
-                Button(role: .destructive) { l.deleted = true; l.updatedAt = Date() } label: { Image(systemName: "trash").font(.system(size: 11)) }.buttonStyle(.plain)
+        SettingsCard(trailing: AnyView(cardHeader(l))) {
+            VStack(alignment: .leading, spacing: 10) {
+                HStack(spacing: 10) {
+                    field("zIndex") {
+                        GlassStepper(value: Binding(get: { l.zIndex }, set: { l.zIndex = $0
+                            l.updatedAt = Date()
+                        }), range: 0...999)
+                    }
+                    field("主题") {
+                        Picker("", selection: Binding(get: { l.themeId }, set: { l.themeId = $0
+                            l.updatedAt = Date()
+                        })) {
+                            Text("无").tag(UUID?.none)
+                            ForEach(dsThemes, id: \.id) { Text($0.name).tag($0.id as UUID?) }
+                        }.labelsHidden().tint(Studio.cool)
+                    }
+                }
+                ColorHexField(title: "图例色", hex: Binding(get: { l.colorHex ?? "" }, set: { l.colorHex = $0.isEmpty ? nil : ColorHexField.normalize($0)
+                    l.updatedAt = Date()
+                }))
+                field("SF 图标") {
+                    TextField("如 building.2", text: Binding(get: { l.iconSF ?? "" }, set: { l.iconSF = $0.isEmpty ? nil : $0
+                        l.updatedAt = Date()
+                    })).glassField()
+                }
+                HStack(spacing: 16) {
+                    Toggle("启用", isOn: Binding(get: { l.enabled }, set: { l.enabled = $0
+                        l.updatedAt = Date()
+                    })).font(Studio.sans(13)).tint(Studio.cool).fixedSize()
+                    Toggle("默认开", isOn: Binding(get: { l.isDefault }, set: { l.isDefault = $0
+                        l.updatedAt = Date()
+                    })).font(Studio.sans(13)).tint(Studio.cool).fixedSize()
+                    Spacer()
+                }
+                HStack(spacing: 10) {
+                    zoomField("minZoom", get: { l.minZoom }, set: { l.minZoom = $0
+                        l.updatedAt = Date()
+                    })
+                    zoomField("maxZoom", get: { l.maxZoom }, set: { l.maxZoom = $0
+                        l.updatedAt = Date()
+                    })
+                }
             }
-            HStack {
-                Text("zIndex").font(.system(size: 11)).foregroundStyle(.secondary)
-                Stepper(value: Binding(get: { l.zIndex }, set: { l.zIndex = $0; l.updatedAt = Date() }), in: 0...999) { Text("\(l.zIndex)").font(.system(size: 12).monospacedDigit()) }
-            }
-            Picker("主题", selection: Binding(get: { l.themeId }, set: { l.themeId = $0; l.updatedAt = Date() })) {
-                Text("无").tag(UUID?.none)
-                ForEach(dsThemes, id: \.id) { Text($0.name).tag($0.id as UUID?) }
-            }.font(.system(size: 12))
-            ColorHexField(title: "图例色", hex: Binding(get: { l.colorHex ?? "" }, set: { l.colorHex = $0.isEmpty ? nil : ColorHexField.normalize($0); l.updatedAt = Date() }))
-            HStack {
-                Text("SF 图标").frame(width: 84, alignment: .leading).font(.system(size: 12))
-                TextField("如 building.2", text: Binding(get: { l.iconSF ?? "" }, set: { l.iconSF = $0.isEmpty ? nil : $0; l.updatedAt = Date() })).font(.system(size: 12))
-            }
-            HStack {
-                Toggle("启用", isOn: Binding(get: { l.enabled }, set: { l.enabled = $0; l.updatedAt = Date() })).font(.system(size: 12))
-                Toggle("默认开", isOn: Binding(get: { l.isDefault }, set: { l.isDefault = $0; l.updatedAt = Date() })).font(.system(size: 12))
-            }
-            HStack {
-                zoomField("minZoom", get: { l.minZoom }, set: { l.minZoom = $0; l.updatedAt = Date() })
-                zoomField("maxZoom", get: { l.maxZoom }, set: { l.maxZoom = $0; l.updatedAt = Date() })
-            }
+            .padding(.horizontal, 13).padding(.bottom, 12)
         }
-        .padding(10).background(.quaternary.opacity(0.4), in: RoundedRectangle(cornerRadius: 10))
+    }
+
+    private func cardHeader(_ l: Layer) -> some View {
+        HStack(spacing: 8) {
+            TextField("名称", text: Binding(get: { l.name }, set: { l.name = $0
+                l.updatedAt = Date()
+            })).glassField()
+            Button(role: .destructive) { deleteLayer(l)
+            } label: {
+                Image(systemName: "trash").font(.system(size: 12)).foregroundStyle(Studio.bad)
+            }.buttonStyle(.plain)
+        }
+    }
+
+    private func field(_ title: String, @ViewBuilder _ content: () -> some View) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(title).font(Studio.sans(11, .medium)).foregroundStyle(Studio.on2)
+            content()
+        }.frame(maxWidth: .infinity, alignment: .leading)
     }
 
     private func zoomField(_ title: String, get: @escaping () -> Double?, set: @escaping (Double?) -> Void) -> some View {
-        HStack(spacing: 4) {
-            Text(title).font(.system(size: 10)).foregroundStyle(.secondary)
+        field(title) {
             TextField("—", text: Binding(get: { get().map { String(Int($0)) } ?? "" }, set: { set($0.isEmpty ? nil : Double($0)) }))
-                .font(.system(size: 12).monospaced()).frame(width: 44)
+                .glassField().font(Studio.mono(13))
         }
     }
 
@@ -68,6 +105,13 @@ struct LayerSettingsTab: View {
         l.zIndex = (dsLayers.map(\.zIndex).max() ?? 0) + 1
         l.sortOrder = l.zIndex
         modelContext.insert(l)
+        try? modelContext.save()
+    }
+
+    private func deleteLayer(_ l: Layer) {
+        // 硬删除:新图层是本地配置且常未持久化,软删 + autosave 会被下个合并周期丢弃而"复活"
+        modelContext.delete(l)
+        try? modelContext.save()
     }
 }
 #endif
