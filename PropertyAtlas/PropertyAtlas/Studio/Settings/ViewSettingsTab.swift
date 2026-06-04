@@ -76,7 +76,7 @@ struct ViewSettingsTab: View {
             Spacer()
             Button { addView() } label: { Image(systemName: "plus") }
                 .buttonStyle(.tbtn(.ghost))
-            if let mv = viewContext.activeMapView, viewContext.allMapViews.count > 1 {
+            if let mv = viewContext.activeMapView, viewContext.allMapViews.count > 1, !isDefaultView(mv) {
                 Button(role: .destructive) { deleteView(mv) } label: { Image(systemName: "trash") }
                     .buttonStyle(.tbtn(.dangerGhost))
             }
@@ -229,7 +229,14 @@ struct ViewSettingsTab: View {
         viewContext.switchView(to: v)
     }
 
+    /// 默认视图 = sortOrder 最小者(首个 seed 的视图),不可删。
+    private func isDefaultView(_ mv: MapView) -> Bool {
+        guard let minOrder = viewContext.allMapViews.map(\.sortOrder).min() else { return false }
+        return mv.sortOrder == minOrder
+    }
+
     private func deleteView(_ mv: MapView) {
+        guard !isDefaultView(mv) else { return }
         mv.deleted = true
         mv.updatedAt = Date()
         if let other = viewContext.allMapViews.first(where: { $0.id != mv.id }) { viewContext.switchView(to: other) }
