@@ -43,7 +43,12 @@ enum LegacyMigrator {
         let datasets = (try? ctx.fetch(FetchDescriptor<Dataset>())) ?? []
         let layers = (try? ctx.fetch(FetchDescriptor<Layer>())) ?? []
         for ds in datasets {
-            guard let home = layers.first(where: { $0.datasetId == ds.id && $0.isDefault && !$0.deleted })?.id
+            // 兜底目标与 RootView.defaultLayerId 一致:isDefault 优先,否则 zIndex 最小的图层
+            let dsLayers = layers.filter { $0.datasetId == ds.id && !$0.deleted }
+            guard let home = (
+                dsLayers.first(where: { $0.isDefault })
+                    ?? dsLayers.sorted { $0.zIndex < $1.zIndex }.first
+            )?.id
             else { continue }
             assignNilToDefault(Compound.self, ds.id, home, ctx)
             assignNilToDefault(School.self, ds.id, home, ctx)
