@@ -6,6 +6,7 @@ import SwiftData
 final class Area {
     var id: UUID = UUID()
     var datasetId: UUID = UUID()
+    var layerId: UUID?
 
     var name: String = ""
     var aliases: [String] = []
