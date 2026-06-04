@@ -232,11 +232,22 @@ struct StudioRootView: View {
             layerState.resetForTheme(enabledIds: viewContext?.activeMapView?.enabledLayerIds ?? [])
             filterState.reset()
         }
-        .confirmationDialog("新建实体", isPresented: $showCreateMenu, titleVisibility: .visible) {
-            Button("+ 小区") { createPin(.compound, layerId: nil) }
-            Button("+ 学校") { createPin(.school, layerId: nil) }
-            Button("+ POI") { createPin(.poi, layerId: nil) }
-            Button("取消", role: .cancel) {}
+        .sheet(isPresented: $showCreateMenu) {
+            if let dsId = viewContext?.datasetIdValue {
+                let layers = layersForDataset(dsId)
+                let defaultId = layers.first(where: { $0.isDefault })?.id
+                let enabled = layers.filter { layerState.isEnabled($0.id) }.map { (id: $0.id, name: $0.name) }
+                CreateEntitySheet(
+                    enabledLayers: enabled,
+                    defaultLayerId: defaultId,
+                    onCreate: { kind, layerId in
+                        showCreateMenu = false
+                        createPin(kind, layerId: layerId)
+                    },
+                    onCancel: { showCreateMenu = false }
+                )
+                .presentationDetents([.medium])
+            }
         }
         .sheet(isPresented: $showSettings) {
             if let ctx = viewContext {
