@@ -14,6 +14,7 @@ struct EditorBasicTab: View {
             if ref.kind != .area {
                 coordRow
             }
+            LayerPickerRow(ref: ref, datasetId: datasetId)
             ForEach(EntityFieldSchema.fields(for: ref.kind), id: \.key) { f in
                 fieldEditor(f)
             }
