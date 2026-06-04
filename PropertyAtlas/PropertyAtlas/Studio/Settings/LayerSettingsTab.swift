@@ -56,9 +56,9 @@ struct LayerSettingsTab: View {
                     Toggle("启用", isOn: Binding(get: { l.enabled }, set: { l.enabled = $0
                         l.updatedAt = Date()
                     })).font(Studio.sans(13)).tint(Studio.cool).fixedSize()
-                    Toggle("默认开", isOn: Binding(get: { l.isDefault }, set: { l.isDefault = $0
-                        l.updatedAt = Date()
-                    })).font(Studio.sans(13)).tint(Studio.cool).fixedSize()
+                    if l.isDefault {
+                        Text("默认图层").font(Studio.sans(11, .medium)).foregroundStyle(Studio.on3)
+                    }
                     Spacer()
                 }
                 HStack(spacing: 10) {
