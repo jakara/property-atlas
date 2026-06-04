@@ -32,8 +32,10 @@ enum SeedImporter {
     ) throws -> Bool {
         // 每次启动清理无主实体(独立于 seed 守卫)
         LegacyMigrator.cleanupOrphans(in: context)
+        LegacyMigrator.backfillLayerIds(in: context) // 旧库兜底:nil → 默认层
         // 已有 Dataset → 已 seed,跳过
         if try !context.fetch(FetchDescriptor<Dataset>()).isEmpty {
+            try context.save()
             progress(1.0, "已就绪")
             return false
         }
@@ -55,6 +57,7 @@ enum SeedImporter {
 
         progress(0.70, "迁移写入实体")
         try LegacyMigrator.run(seeds: bundle, in: context)
+        LegacyMigrator.backfillLayerIds(in: context) // 新库:全部实体归默认层
 
         progress(0.95, "保存")
         try context.save()

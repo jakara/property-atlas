@@ -38,6 +38,29 @@ enum LegacyMigrator {
         purge(CustomFieldDef.self) { $0.datasetId }
     }
 
+    /// 把 layerId == nil 的实体补设为本 dataset 的【默认】图层。幂等,每次启动可调。
+    static func backfillLayerIds(in ctx: ModelContext) {
+        let datasets = (try? ctx.fetch(FetchDescriptor<Dataset>())) ?? []
+        let layers = (try? ctx.fetch(FetchDescriptor<Layer>())) ?? []
+        for ds in datasets {
+            guard let home = layers.first(where: { $0.datasetId == ds.id && $0.isDefault && !$0.deleted })?.id
+            else { continue }
+            assignNilToDefault(Compound.self, ds.id, home, ctx)
+            assignNilToDefault(School.self, ds.id, home, ctx)
+            assignNilToDefault(POI.self, ds.id, home, ctx)
+            assignNilToDefault(Area.self, ds.id, home, ctx)
+        }
+    }
+
+    private static func assignNilToDefault<T: PersistentModel & LayerAssignable>(
+        _ type: T.Type, _ dsId: UUID, _ home: UUID, _ ctx: ModelContext
+    ) {
+        let all = (try? ctx.fetch(FetchDescriptor<T>())) ?? []
+        for e in all where e.datasetId == dsId && e.layerId == nil && !e.deleted {
+            e.layerId = home
+        }
+    }
+
     static func run(seeds: SeedBundle, in ctx: ModelContext) throws {
         if try !ctx.fetch(FetchDescriptor<Dataset>()).isEmpty { return }
         let hasData = !seeds.zones.isEmpty || !seeds.schools.isEmpty || !seeds.compounds.isEmpty
@@ -488,7 +511,7 @@ enum LegacyMigrator {
             if idx == 0 { defaultPalette = palette } // default-rainbow
         }
 
-        let defaultLayer = Layer(datasetId: dataset.id, name: "全部")
+        let defaultLayer = Layer(datasetId: dataset.id, name: "默认")
         defaultLayer.isDefault = true
         defaultLayer.enabled = true
         defaultLayer.dynamicQueryJSON = nil
