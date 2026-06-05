@@ -182,6 +182,20 @@ Never sync `pub_*` or `loc_*` to CloudKit.
 > (pitch 0–85 / heading 0–360)。组件 `StyleConditionRow`。改动直接 mutate + `updatedAt`,软删 `deleted=true`。
 > **逐实体-逐图层 theme 明确延后**(单 active theme + StyleRule 已覆盖)。CloudKit 仍延后(Catalyst `.none`)。
 
+> **Studio 地图性能优化 (2026-06-05)**: 拖/缩卡顿根因 = `regionDidChange` 高频触发 → `StudioRootView.body`
+> 整条重算(`styleEntity`×全实体 + 可见性×2 + 图例 N 维×全集 + 染色)+ `updateUIView` 每帧全量拆建
+> annotation。五处修复(纯 Catalyst 渲染路径,无 schema/行为变更):①`MapKitView` region 写回 debounce 0.12s
+> (连续触发塌缩成 1 次,期间不更新 `lastAppliedCamera` 防覆盖用户拖动);②`updateUIView` 用 annotation 内容
+> 签名(`Coordinator.annotationSignature`:id/坐标/PinStyle/dim/highlight)比对,未变跳过 `removeAll+addAll`;
+> ③`PinAnnotationView` shapeLayer 设 `shadowPath`(阴影从每帧离屏渲染→O(1));④`RootView` **内容签名缓存**
+> (`StudioRenderCache` 存 pins/overlays/styleMap/`LegendSpec`;签名含 dataset/可见类型/过滤 JSON/调色板/
+> 主题+规则+图层 updatedAt/chip 隐藏/启用图层/选中/各实体 count+maxUpdatedAt,**不含 visibleRegion**;
+> 经 `MapEntityVersioning` 协议读版本)→ pan/zoom 停手只走 `renderLegendSections`(`DimensionLegendCounter.
+> rowsFromEntries` 预解析 entries + bbox 计数,无 styleEntity/resolve);⑤zoom 仅当有图层设 `minZoom/maxZoom`
+> 才计入签名(默认图层无限制→缩放零重建);⑥`PinAnnotationView` 标签受 zoom 门控(`labelMinZoom=13`,
+> Coordinator region settle 跨阈值才刷新可见 view,不重建 annotation)。**异步**:SwiftData `@Model`/
+> `ModelContext` 是 `@MainActor`+非 Sendable,密集渲染卡在 MapKit 主线程/GPU,异步治不了 → 未做。
+
 ### School district logic
 
 - **小学** (primary): one compound → one school (`Compound.primarySchoolId`)

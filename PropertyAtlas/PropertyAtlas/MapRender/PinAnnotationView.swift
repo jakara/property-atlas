@@ -5,6 +5,14 @@ import UIKit
 final class PinAnnotationView: MKAnnotationView {
     static let reuseIdentifier = "pinAnnotation"
     private static let gap: CGFloat = 4
+    /// 由地图缩放门控:低于阈值时所有文字标签隐藏(只留圆点),降低密集渲染开销。
+    /// 单 Studio 地图,用类级状态即可;Coordinator 在 region settle 时设置 + 刷新可见视图。
+    static var labelsAllowed = true
+
+    /// 缩放跨阈值后由 Coordinator 调用,仅重排标签显隐,不重建 annotation。
+    func applyLabelVisibility() {
+        refresh()
+    }
 
     private let dot = UIView()
     private let shapeLayer = CAShapeLayer()
@@ -58,7 +66,11 @@ final class PinAnnotationView: MKAnnotationView {
         let glyphColor = HexColor.parse(style.glyphHex) ?? .white
 
         shapeLayer.frame = CGRect(x: 0, y: 0, width: dotSize, height: dotSize)
-        shapeLayer.path = PinShapePath.path(for: style.shape, in: shapeLayer.bounds).cgPath
+        let path = PinShapePath.path(for: style.shape, in: shapeLayer.bounds).cgPath
+        shapeLayer.path = path
+        // 显式 shadowPath:否则 CoreAnimation 每帧从 layer 内容算阴影(离屏渲染),
+        // 缩放时 ×数百 pin → 严重掉帧。给定 path 后阴影计算变 O(1)。
+        shapeLayer.shadowPath = path
         shapeLayer.fillColor = fill.cgColor
         shapeLayer.strokeColor = stroke.cgColor
 
@@ -67,7 +79,7 @@ final class PinAnnotationView: MKAnnotationView {
         glyphLabel.frame = CGRect(x: 0, y: 0, width: dotSize, height: dotSize)
         glyphLabel.isHidden = (style.glyph == nil) || (style.glyph?.isEmpty == true)
 
-        if style.labelVisible, !a.name.isEmpty {
+        if style.labelVisible, Self.labelsAllowed, !a.name.isEmpty {
             nameLabel.isHidden = false
             nameLabel.text = "  \(a.name)  "
             nameLabel.backgroundColor = fill.withAlphaComponent(0.92)

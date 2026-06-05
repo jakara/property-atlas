@@ -57,6 +57,37 @@ enum DimensionLegendCounter {
         }
     }
 
+    // 从预解析好的 entries(已 resolve 的维度值 + 坐标)计数,仅做 region bbox 判断。
+    // 用于缓存路径:pan / zoom-settle 时不再触 styleEntity / dimension.resolve。
+    #if targetEnvironment(macCatalyst)
+    static func rowsFromEntries(
+        dimensionKey: String,
+        entries: [LegendSpec.Entry],
+        region: MKCoordinateRegion?,
+        swatch: [String: String]
+    ) -> [Row] {
+        let bbox = region.map { BBox(region: $0) }
+        var totalByValue: [String: Int] = [:]
+        var viewportByValue: [String: Int] = [:]
+        for entry in entries {
+            let inViewport = bbox?.contains(entry.coordinate) ?? false
+            for value in entry.values where !value.isEmpty {
+                totalByValue[value, default: 0] += 1
+                if inViewport { viewportByValue[value, default: 0] += 1 }
+            }
+        }
+        return totalByValue.keys.sorted().map { value in
+            Row(
+                dimensionKey: dimensionKey,
+                value: value,
+                swatchHex: swatch[value] ?? "#8E8E93",
+                viewport: viewportByValue[value] ?? 0,
+                total: totalByValue[value] ?? 0
+            )
+        }
+    }
+    #endif
+
     private struct BBox {
         let minLat, maxLat, minLon, maxLon: Double
         init(region: MKCoordinateRegion) {
