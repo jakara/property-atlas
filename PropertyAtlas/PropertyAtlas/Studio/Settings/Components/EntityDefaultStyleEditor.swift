@@ -15,14 +15,14 @@ struct EntityDefaultStyleEditor: View {
 
     var body: some View {
         StudioDisclosure(title, summary: row?.fillHex ?? "默认", open: false) {
-            let bound = ensureRow()
             if entityType != "area" {
                 VStack(alignment: .leading, spacing: 6) {
                     Text("形状").font(Studio.sans(11, .medium)).foregroundStyle(Studio.on2)
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 7) {
                             ForEach(shapes, id: \.self) { shape in
-                                StudioChip(shape, isOn: bound.shape == shape) {
+                                StudioChip(shape, isOn: row?.shape == shape) {
+                                    let bound = getOrCreateRow()
                                     bound.shape = (bound.shape == shape) ? nil : shape
                                     bound.updatedAt = Date()
                                 }
@@ -31,11 +31,13 @@ struct EntityDefaultStyleEditor: View {
                     }
                 }
             }
-            ColorHexField(title: "填充色", hex: hexBinding(bound, \.fillHex))
-            ColorHexField(title: "描边色", hex: hexBinding(bound, \.strokeHex))
+            ColorHexField(title: "填充色", hex: lazyHexBinding(\.fillHex))
+            ColorHexField(title: "描边色", hex: lazyHexBinding(\.strokeHex))
             Toggle("显示标签", isOn: Binding(
-                get: { bound.labelVisible ?? false },
-                set: { bound.labelVisible = $0
+                get: { row?.labelVisible ?? false },
+                set: { newValue in
+                    let bound = getOrCreateRow()
+                    bound.labelVisible = newValue
                     bound.updatedAt = Date()
                 }
             ))
@@ -45,14 +47,15 @@ struct EntityDefaultStyleEditor: View {
         .onAppear { row = fetchRow() }
     }
 
-    private func hexBinding(
-        _ styleRow: ViewEntityStyle,
+    private func lazyHexBinding(
         _ keyPath: ReferenceWritableKeyPath<ViewEntityStyle, String?>
     ) -> Binding<String> {
         Binding(
-            get: { styleRow[keyPath: keyPath] ?? "" },
-            set: { styleRow[keyPath: keyPath] = $0.isEmpty ? nil : $0
-                styleRow.updatedAt = Date()
+            get: { row?[keyPath: keyPath] ?? "" },
+            set: { newValue in
+                let bound = getOrCreateRow()
+                bound[keyPath: keyPath] = newValue.isEmpty ? nil : newValue
+                bound.updatedAt = Date()
             }
         )
     }
@@ -65,7 +68,7 @@ struct EntityDefaultStyleEditor: View {
         )))?.first
     }
 
-    private func ensureRow() -> ViewEntityStyle {
+    private func getOrCreateRow() -> ViewEntityStyle {
         if let existing = row { return existing }
         let created = ViewEntityStyle(datasetId: datasetId, viewId: viewId, entityType: entityType)
         context.insert(created)
