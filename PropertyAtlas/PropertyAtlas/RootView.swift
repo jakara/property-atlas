@@ -62,8 +62,6 @@ struct StudioRootView: View {
     @Query private var schools: [School]
     @Query private var pois: [POI]
     @Query private var areas: [Area]
-    @Query private var styleRules: [StyleRule]
-    @Query private var palettes: [Palette]
     @Query private var layersQuery: [Layer]
 
     @State private var filterState = DimensionFilterState()
@@ -92,12 +90,8 @@ struct StudioRootView: View {
     @State private var createPrefillName: String?
 
     var body: some View {
-        let palettesById: [UUID: Palette] = Dictionary(uniqueKeysWithValues: palettes.map { ($0.id, $0) })
         let dsId = viewContext?.datasetIdValue ?? UUID()
         let activeMapView = viewContext?.activeMapView
-        let activeTheme = viewContext?.activeTheme
-        let activeRuleIds = Set(activeTheme?.styleRuleIds ?? [])
-        let rulesForTheme = styleRules.filter { activeRuleIds.contains($0.id) }
         let visibility = viewContext?.visibility ?? ["compound": true, "school": true, "poi": true, "area": true]
         let primary = viewContext?.primaryFilter ?? PrimaryFilter(conditions: [], groupBy: nil)
         let normals = viewContext?.normalFilters ?? []
@@ -110,7 +104,6 @@ struct StudioRootView: View {
         // 纯 pan/zoom 仅走下方廉价的图例视口重计数。(在 ViewBuilder 外做副作用 → 包成 Void 方法)
         let _: Void = refreshCacheIfNeeded(
             dsId: dsId, visibility: visibility, activeMapView: activeMapView,
-            activeTheme: activeTheme, rulesForTheme: rulesForTheme, palettesById: palettesById,
             primary: primary, normals: normals, zoom: zoom
         )
 
@@ -358,19 +351,16 @@ struct StudioRootView: View {
     /// 算签名并在变化时重建缓存。副作用包在普通方法里(ViewBuilder body 内不能写带副作用的 if)。
     private func refreshCacheIfNeeded(
         dsId: UUID, visibility: [String: Bool], activeMapView: MapView?,
-        activeTheme: Theme?, rulesForTheme: [StyleRule], palettesById: [UUID: Palette],
         primary: PrimaryFilter, normals: [NormalFilter], zoom: Double
     ) {
         let sig = contentSignature(
             dsId: dsId, visibility: visibility, activeMapView: activeMapView,
-            activeTheme: activeTheme, rulesForTheme: rulesForTheme,
             primary: primary, normals: normals, zoom: zoom
         )
         guard cache.sig != sig else { return }
         cache.sig = sig
         rebuildContent(
             dsId: dsId, visibility: visibility, activeMapView: activeMapView,
-            activeTheme: activeTheme, rulesForTheme: rulesForTheme, palettesById: palettesById,
             primary: primary, normals: normals, zoom: zoom
         )
     }
@@ -379,7 +369,6 @@ struct StudioRootView: View {
     /// pan/zoom 不改 → 签名不变 → 复用缓存。zoom 取整数档(= 图层 zoom 阈值边界)。
     private func contentSignature(
         dsId: UUID, visibility: [String: Bool], activeMapView: MapView?,
-        activeTheme: Theme?, rulesForTheme: [StyleRule],
         primary: PrimaryFilter, normals: [NormalFilter], zoom: Double
     ) -> Int {
         var hasher = Hasher()
@@ -394,11 +383,15 @@ struct StudioRootView: View {
         hasher.combine(activeMapView?.paletteId)
         hasher.combine(activeMapView?.spotlightOnSelect ?? false)
         hasher.combine((activeMapView?.drawEdgeLines ?? []).sorted().joined(separator: ","))
-        hasher.combine(activeTheme?.id)
-        hasher.combine(activeTheme?.updatedAt)
-        for rule in rulesForTheme {
-            hasher.combine(rule.id)
-            hasher.combine(rule.updatedAt)
+        hasher.combine((activeMapView?.paletteHex ?? []).joined(separator: ","))
+        hasher.combine(activeMapView?.showLegend ?? true)
+        let styleFetch = FetchDescriptor<ViewEntityStyle>(
+            predicate: #Predicate { $0.datasetId == dsId && !$0.deleted }
+        )
+        for row in (try? modelContext.fetch(styleFetch)) ?? [] {
+            hasher.combine(row.viewId)
+            hasher.combine(row.entityType)
+            hasher.combine(row.updatedAt)
         }
         for (key, values) in filterState.hidden.sorted(by: { $0.key < $1.key }) {
             hasher.combine(key)
@@ -441,7 +434,6 @@ struct StudioRootView: View {
     /// 重算整条内容管线写入 cache(只在内容签名变化时调用)。
     private func rebuildContent(
         dsId: UUID, visibility: [String: Bool], activeMapView: MapView?,
-        activeTheme: Theme?, rulesForTheme: [StyleRule], palettesById: [UUID: Palette],
         primary: PrimaryFilter, normals: [NormalFilter], zoom: Double
     ) {
         // spotlight 高亮(含 EdgeStore 查询)只在内容变化时算,避免每次 pan 打 store
@@ -496,8 +488,10 @@ struct StudioRootView: View {
             context: modelContext, datasetId: dsId,
             edgeProjection: edgeProjection, cache: dimCache
         )
-        let palette = activeMapView?.paletteId.flatMap { palettesById[$0]?.colorsHex }
-            ?? PaletteAssigner.highContrast
+        let viewStyles = buildViewStyles(dsId: dsId, viewId: activeMapView?.id)
+        let palette = (activeMapView?.paletteHex.isEmpty == false)
+            ? (activeMapView?.paletteHex ?? PaletteAssigner.highContrast)
+            : PaletteAssigner.highContrast
         let groupItems = cands
             .filter { visibleIds.contains($0.id) && $0.type != "area" }
             .map { GroupColorResolver.Item(id: $0.id, entity: $0.entity, layerNames: membership[$0.id] ?? []) }
@@ -508,11 +502,11 @@ struct StudioRootView: View {
         )
         let pins = buildPins(
             cands: cands, visibleIds: visibleIds, groupColors: groupColors,
-            theme: activeTheme, rules: rulesForTheme, palettes: palettesById, highlight: highlight
+            viewStyles: viewStyles, highlight: highlight
         )
         let (areaOverlays, styleMap) = buildAreaOverlays(
             areas: visibility["area"] == true ? areas.filter { $0.datasetId == dsId } : [],
-            visibleIds: visibleIds, theme: activeTheme, rules: rulesForTheme, palettes: palettesById
+            visibleIds: visibleIds, viewStyles: viewStyles
         )
         let edgeLines = buildEdgeLines(labels: activeMapView?.drawEdgeLines ?? [], datasetId: dsId)
 
@@ -592,14 +586,12 @@ struct StudioRootView: View {
 
     private func buildPins(
         cands: [Cand], visibleIds: Set<UUID>, groupColors: [UUID: String],
-        theme: Theme?, rules: [StyleRule], palettes: [UUID: Palette], highlight: Set<UUID>?
+        viewStyles: [String: ViewEntityStyle], highlight: Set<UUID>?
     ) -> [MKAnnotation] {
         var result: [MKAnnotation] = []
-        let themeDefaults = StyleResolver.parseDefaults(theme) // 解析一次,全部 pin 复用
         for c in cands where c.type != "area" && c.hasCoordinate && visibleIds.contains(c.id) {
             let style = StyleResolver.resolvePin(
-                entity: c.entity, theme: theme, rules: rules, palettes: palettes,
-                groupFillHex: groupColors[c.id], themeDefaults: themeDefaults
+                entity: c.entity, viewStyle: viewStyles[c.type], groupFillHex: groupColors[c.id]
             )
             let pin = PinAnnotation(
                 entityId: c.id,
@@ -618,14 +610,13 @@ struct StudioRootView: View {
     }
 
     private func buildAreaOverlays(
-        areas: [Area], visibleIds: Set<UUID>, theme: Theme?, rules: [StyleRule], palettes: [UUID: Palette]
+        areas: [Area], visibleIds: Set<UUID>, viewStyles: [String: ViewEntityStyle]
     ) -> ([MKOverlay], [ObjectIdentifier: AreaStyle]) {
         var overlays: [MKOverlay] = []
         var map: [ObjectIdentifier: AreaStyle] = [:]
-        let themeDefaults = StyleResolver.parseDefaults(theme) // 解析一次,全部 area 复用
         for a in areas where !a.deleted && visibleIds.contains(a.id) {
             let style = StyleResolver.resolveArea(
-                entity: a.styleEntity, theme: theme, rules: rules, palettes: palettes, themeDefaults: themeDefaults
+                entity: a.styleEntity, viewStyle: viewStyles["area"]
             )
             if let r = AreaOverlayFactory.makeOverlay(for: a, style: style) {
                 overlays.append(r.overlay)
@@ -676,6 +667,16 @@ struct StudioRootView: View {
             return EntityKind(rawValue: p.entityType)
         }
         return nil
+    }
+
+    /// 按 viewId 预取该视图 4 行 ViewEntityStyle → [entityType: ViewEntityStyle]。
+    private func buildViewStyles(dsId: UUID, viewId: UUID?) -> [String: ViewEntityStyle] {
+        guard let viewId else { return [:] }
+        let fetch = FetchDescriptor<ViewEntityStyle>(
+            predicate: #Predicate { $0.datasetId == dsId && $0.viewId == viewId && !$0.deleted }
+        )
+        let rows = (try? modelContext.fetch(fetch)) ?? []
+        return Dictionary(rows.map { ($0.entityType, $0) }, uniquingKeysWith: { first, _ in first })
     }
 
     /// edge 投影:一次 Edge fetch(按两端分组)+ 复用预建 entityById(取对端 targetField/name)。
