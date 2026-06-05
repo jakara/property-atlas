@@ -27,6 +27,8 @@ iPad-first iOS 17+ app for property research in Tianjin. Stack: SwiftUI · MapKi
 - 实施计划 P9b (已完成): `docs/superpowers/plans/2026-06-01-p9b-delete-filterfieldconfig-legendswatch.md`
 - 实施计划 P9c (已完成): `docs/superpowers/plans/2026-06-02-p9c-seed-pipeline-direct-write.md`
 - 实施计划 P9d (已完成): `docs/superpowers/plans/2026-06-02-p9d-remaining-settings-editors.md`
+- 视图持有样式 重设计 spec: `docs/superpowers/specs/2026-06-06-view-owned-style-redesign.md`
+- 实施计划 Stage A (已完成): `docs/superpowers/plans/2026-06-06-view-owned-style-stage-a.md`
 - CloudKit: 延后 (iOS 上手后;Catalyst 现 `.none`)
 - P9 余项: 逐实体-逐图层 theme 解析 (明确延后;单 active theme + StyleRule 已覆盖,等具体取景需求再做)
 
@@ -213,6 +215,25 @@ Never sync `pub_*` or `loc_*` to CloudKit.
 > (visibility 5.5/group 2.8/legend 2.5/entityIndex 15/edgeIndex 18/buildPins 21)。**pan/zoom 不进 rebuildContent**
 > (签名不含 region),其顺滑来自上面的视口裁剪,与本次无关。旧 `EdgeStore.relatedFieldValues` DB 路径保留作
 > 测试/无投影回退。
+
+> **视图持有样式 Stage A (2026-06-06) 完成后**: 样式从「Theme + StyleRule 两级全局」重构为「视图持有」。
+> 职责:**图层=实体容器**(`layerId` 归属)·**视图=样式容器**·**实体=可覆写**。新增 `ViewEntityStyle`
+> @Model(每视图×4 行 compound/school/poi/area,强类型可空样式列)= 视图默认样式;`MapView` 加
+> `paletteHex:[String]`(分组染色色板,空→`PaletteAssigner.highContrast`)+ `showLegend`;4 实体加强类型
+> 可空 override 列(`styleShape`/`styleFillHex`/…,取代 `overrideStyleJSON`);`StyleEntity` 携 `overridePin`/
+> `overrideArea`(从列填)。**全 typed 无 JSON**(`StyleFieldConvert` 列⇄`PartialPin/AreaStyle`)。`StyleResolver`
+> 新链:`builtin → ViewEntityStyle → 分组染色 groupFillHex → 实体 override`,删 rules 段 + theme-JSON 解析 +
+> JSON override。`RootView.buildViewStyles` 按 viewId 预取 4 行喂渲染;palette 源改 `paletteHex`;内容签名删
+> theme/rule 版本、加 paletteHex/showLegend/ViewEntityStyle 版本。设置页 **8→5 tab**(视图/图层/枚举/相机/字段),
+> 样式编辑并进**视图 tab**(`EntityDefaultStyleEditor` 4 组 + `PaletteHexEditor` + 图例开关;行在 setter 内懒建,
+> 不在 body 副作用)。**两阶段零丢失迁移**:Stage A 全加法 schema + 旧 `StyleRule`/`Theme`/`Palette` @Model 保留
+> 不删 + 启动幂等 `StyleConsolidationMigrator`(每视图闸=是否已有 ViewEntityStyle 行,只补缺失类型不重复;实体
+> override 闸=`Dataset.stylesMigratedV2`)搬运旧 theme.defaultStylesJSON/palette/overrideStyleJSON → 新模型,
+> `SeedImporter.runIfNeeded` 两条退出路径都调。清库/既有库双验证:实体数不变(175/823/0)、ViewEntityStyle 16
+> 行、二次启动幂等不重复。StyleRule 条件样式(学校 grade→glyph/tier 配色)停止生效(已确认接受)。
+> **Stage B(后续 plan)**:删三 @Model + ModelSchema 条目 + 死类型(`StyleRuleMatcher`/`StyleCondition`/
+> `ConditionEvaluator`/`PaletteResolver`/`ThemeContext`/`StyleDefaults.parseThemeDefaults`)+ `Layer.themeId`/
+> `Dataset.activeThemeId`/`MapView.paletteId`/实体 `overrideStyleJSON` 列/`Dataset.stylesMigratedV2` + 删迁移器。
 
 ### School district logic
 
