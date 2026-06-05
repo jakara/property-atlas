@@ -87,6 +87,8 @@ struct StudioRootView: View {
     @State private var cache = StudioRenderCache()
     @State private var showSearch = false
     @State private var searchMarker: SearchMarker?
+    @State private var searchPlace: ExternalPlaceSearch.PlaceHit?
+    @State private var showPlaceDetail = false
     @State private var createPrefillName: String?
 
     var body: some View {
@@ -129,7 +131,12 @@ struct StudioRootView: View {
                 },
                 onRegionChange: { visibleRegion = $0 },
                 onSchoolSelect: { id in
-                    if id == SearchMarkerFactory.markerId { return }
+                    if id == SearchMarkerFactory.markerId {
+                        appState.clearSelection()
+                        showPlaceDetail = true
+                        return
+                    }
+                    showPlaceDetail = false
                     if let id, let kind = idKind(for: id, in: cache.pins) {
                         appState.select(EntityRef(id: id, kind: kind))
                     } else {
@@ -161,11 +168,15 @@ struct StudioRootView: View {
                             appState.select(ref)
                             if hasCoord, let coord { flyTo(coord) }
                             searchMarker = nil
+                            searchPlace = nil
+                            showPlaceDetail = false
                             showSearch = false
                         },
                         onPickExternal: { hit in
                             flyTo(hit.coordinate)
                             searchMarker = SearchMarker(coordinate: hit.coordinate, name: hit.name)
+                            searchPlace = hit
+                            showPlaceDetail = false
                         },
                         onCreateAtExternal: { hit in
                             pendingCoordinate = hit.coordinate
@@ -183,8 +194,23 @@ struct StudioRootView: View {
             if !exportMode {
                 HStack {
                     Spacer()
-                    RightDrawer(appState: appState, datasetId: dsId)
-                        .padding(.top, 80).padding(.trailing, 16).padding(.bottom, 16)
+                    Group {
+                        if showPlaceDetail, let place = searchPlace {
+                            ExternalPlaceCard(
+                                place: place,
+                                onAddPOI: {
+                                    pendingCoordinate = place.coordinate
+                                    createPrefillName = place.name
+                                    showPlaceDetail = false
+                                    showCreateMenu = true
+                                },
+                                onClose: { showPlaceDetail = false }
+                            )
+                        } else {
+                            RightDrawer(appState: appState, datasetId: dsId)
+                        }
+                    }
+                    .padding(.top, 80).padding(.trailing, 16).padding(.bottom, 16)
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
                 .animation(.easeInOut(duration: 0.2), value: appState.selectedRef)
@@ -212,6 +238,8 @@ struct StudioRootView: View {
             layerState.resetForTheme(enabledIds: viewContext?.activeMapView?.enabledLayerIds ?? [])
             filterState.reset()
             searchMarker = nil
+            searchPlace = nil
+            showPlaceDetail = false
             showSearch = false
         }
         .sheet(isPresented: $showCreateMenu, onDismiss: { createPrefillName = nil }) {
@@ -594,6 +622,8 @@ struct StudioRootView: View {
             latitude: coord.latitude, longitude: coord.longitude, layerId: layerId, in: modelContext
         )
         searchMarker = nil
+        searchPlace = nil
+        showPlaceDetail = false
         createPrefillName = nil
         appState.select(ref)
         appState.beginEditing()
