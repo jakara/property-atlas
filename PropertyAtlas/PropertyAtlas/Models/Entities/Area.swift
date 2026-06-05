@@ -14,6 +14,12 @@ final class Area {
     var privateNotes: String?
     var customFieldsJSON: String?
     var overrideStyleJSON: String?
+    // 强类型 override(nil = 继承视图默认)。取代 overrideStyleJSON(后续阶段删旧列)。
+    var styleFillHex: String?
+    var styleFillOpacity: Double?
+    var styleStrokeHex: String?
+    var styleStrokeWidth: Double?
+    var styleLabelVisible: Bool?
     var photoIds: [UUID] = []
     var sourceUrl: String?
 

@@ -17,6 +17,14 @@ final class Compound {
     var privateNotes: String?
     var customFieldsJSON: String?
     var overrideStyleJSON: String?
+    // 强类型 override(nil = 继承视图默认)。取代 overrideStyleJSON(后续阶段删旧列)。
+    var styleShape: String?
+    var styleFillHex: String?
+    var styleStrokeHex: String?
+    var styleGlyph: String?
+    var styleGlyphHex: String?
+    var styleSize: Int?
+    var styleLabelVisible: Bool?
     var photoIds: [UUID] = []
     var contactPhone: String?
     var contactWechat: String?
