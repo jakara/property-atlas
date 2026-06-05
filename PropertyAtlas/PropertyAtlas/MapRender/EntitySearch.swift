@@ -43,13 +43,17 @@ enum EntitySearch {
         return ranked.prefix(limit).map(\.hit)
     }
 
+    private static func contains(_ haystack: String, _ needle: String) -> Bool {
+        haystack.range(of: needle, options: [.caseInsensitive, .diacriticInsensitive]) != nil
+    }
+
     private static func matchRank(_ query: String, _ item: Searchable) -> Int? {
         if let range = item.name.range(of: query, options: [.caseInsensitive, .diacriticInsensitive]) {
             return range.lowerBound == item.name.startIndex ? 0 : 1
         }
-        if item.aliases.contains(where: { $0.localizedCaseInsensitiveContains(query) }) { return 2 }
-        if item.address?.localizedCaseInsensitiveContains(query) == true { return 3 }
-        if item.category?.localizedCaseInsensitiveContains(query) == true { return 3 }
+        if item.aliases.contains(where: { contains($0, query) }) { return 2 }
+        if let address = item.address, contains(address, query) { return 3 }
+        if let category = item.category, contains(category, query) { return 3 }
         return nil
     }
 

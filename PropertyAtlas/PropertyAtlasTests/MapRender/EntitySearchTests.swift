@@ -27,6 +27,7 @@ struct EntitySearchTests {
         let hits = EntitySearch.search("城", in: items)
         #expect(hits.count == 2)
         #expect(hits[0].name == "城市花园")
+        #expect(hits[1].name == "万科城")
     }
 
     @Test func matchesAlias() {
@@ -53,6 +54,21 @@ struct EntitySearchTests {
     @Test func subtitleIncludesType() {
         let hits = EntitySearch.search("实验", in: [mk(.school, "实验小学", address: "河西区")])
         #expect(hits[0].subtitle == "学校 · 河西区")
+    }
+
+    @Test func limitZeroReturnsEmpty() {
+        let items = (0..<5).map { mk(.poi, "店\($0)") }
+        #expect(EntitySearch.search("店", in: items, limit: 0).isEmpty)
+    }
+
+    @Test func aliasMatchRanksAfterNameSubstring() {
+        let items = [
+            mk(.compound, "中心广场"), // name 含"中" → rank 1
+            mk(.compound, "实验小区", aliases: ["中"]), // alias 含"中" → rank 2
+        ]
+        let hits = EntitySearch.search("中", in: items)
+        #expect(hits.count == 2)
+        #expect(hits[0].name == "中心广场")
     }
 }
 #endif
