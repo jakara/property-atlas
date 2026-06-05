@@ -57,6 +57,51 @@ enum EntityReader {
         }
     }
 
+    static func overrideStyle(_ ref: EntityRef, in context: ModelContext) -> OverrideStyle {
+        switch ref.kind {
+        case .compound:
+            guard let entity = fetch(Compound.self, ref.id, context) else { return OverrideStyle() }
+            return OverrideStyle(
+                shape: entity.styleShape,
+                fillHex: entity.styleFillHex,
+                glyph: entity.styleGlyph,
+                glyphHex: entity.styleGlyphHex,
+                size: entity.styleSize,
+                labelVisible: entity.styleLabelVisible
+            )
+        case .school:
+            guard let entity = fetch(School.self, ref.id, context) else { return OverrideStyle() }
+            return OverrideStyle(
+                shape: entity.styleShape,
+                fillHex: entity.styleFillHex,
+                glyph: entity.styleGlyph,
+                glyphHex: entity.styleGlyphHex,
+                size: entity.styleSize,
+                labelVisible: entity.styleLabelVisible
+            )
+        case .poi:
+            guard let entity = fetch(POI.self, ref.id, context) else { return OverrideStyle() }
+            return OverrideStyle(
+                shape: entity.styleShape,
+                fillHex: entity.styleFillHex,
+                glyph: entity.styleGlyph,
+                glyphHex: entity.styleGlyphHex,
+                size: entity.styleSize,
+                labelVisible: entity.styleLabelVisible
+            )
+        case .area:
+            guard let entity = fetch(Area.self, ref.id, context) else { return OverrideStyle() }
+            return OverrideStyle(
+                shape: nil,
+                fillHex: entity.styleFillHex,
+                glyph: nil,
+                glyphHex: nil,
+                size: nil,
+                labelVisible: entity.styleLabelVisible
+            )
+        }
+    }
+
     static func layerId(_ ref: EntityRef, in context: ModelContext) -> UUID? {
         switch ref.kind {
         case .compound: fetch(Compound.self, ref.id, context)?.layerId

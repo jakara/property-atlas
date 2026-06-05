@@ -65,11 +65,11 @@ struct StyleOverrideSection: View {
         }
         .environment(\.colorScheme, .dark)
         .tint(Studio.cool)
-        .onAppear { override = OverrideStyleCodec.decode(EntityReader.overrideStyleJSON(ref, in: context)) }
+        .onAppear { override = EntityReader.overrideStyle(ref, in: context) }
     }
 
     private func persist() {
-        EntityWriter.setOverrideStyleJSON(ref, OverrideStyleCodec.encode(override), in: context)
+        EntityWriter.setOverrideStyle(ref, override, in: context)
     }
 }
 #endif

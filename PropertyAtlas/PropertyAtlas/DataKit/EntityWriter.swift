@@ -69,6 +69,34 @@ enum EntityWriter {
             p: { $0.overrideStyleJSON = json } a: { $0.overrideStyleJSON = json }
     }
 
+    static func setOverrideStyle(_ ref: EntityRef, _ override: OverrideStyle, in context: ModelContext) {
+        touch(ref, in: context) { compound in
+            compound.styleShape = override.shape
+            compound.styleFillHex = override.fillHex
+            compound.styleGlyph = override.glyph
+            compound.styleGlyphHex = override.glyphHex
+            compound.styleSize = override.size
+            compound.styleLabelVisible = override.labelVisible
+        } s: { school in
+            school.styleShape = override.shape
+            school.styleFillHex = override.fillHex
+            school.styleGlyph = override.glyph
+            school.styleGlyphHex = override.glyphHex
+            school.styleSize = override.size
+            school.styleLabelVisible = override.labelVisible
+        } p: { poi in
+            poi.styleShape = override.shape
+            poi.styleFillHex = override.fillHex
+            poi.styleGlyph = override.glyph
+            poi.styleGlyphHex = override.glyphHex
+            poi.styleSize = override.size
+            poi.styleLabelVisible = override.labelVisible
+        } a: { area in
+            area.styleFillHex = override.fillHex
+            area.styleLabelVisible = override.labelVisible
+        }
+    }
+
     static func setCustomFieldsJSON(_ ref: EntityRef, _ json: String?, in context: ModelContext) {
         touch(ref, in: context) { $0.customFieldsJSON = json } s: { $0.customFieldsJSON = json }
             p: { $0.customFieldsJSON = json } a: { $0.customFieldsJSON = json }
