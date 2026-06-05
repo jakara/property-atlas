@@ -104,7 +104,6 @@ extension School {
         if let v = foundYear { base["foundYear"] = .int(v) }
         if let v = capacity { base["capacity"] = .int(v) }
         if let v = communitiesText { base["communitiesText"] = .string(v) }
-        if let v = overrideStyleJSON { base["__overrideStyleJSON"] = .string(v) }
         return StyleEntity(
             entityType: "school", id: id, baseFields: base, customFields: custom,
             overridePin: StyleFieldConvert.pinPartial(
@@ -130,7 +129,6 @@ extension Compound {
         if let v = finishType { base["finishType"] = .string(v) }
         if let v = deliveryTime { base["deliveryTime"] = .string(v) }
         base["isNewHouse"] = .bool(isNewHouse)
-        if let v = overrideStyleJSON { base["__overrideStyleJSON"] = .string(v) }
         return StyleEntity(
             entityType: "compound", id: id, baseFields: base, customFields: custom,
             overridePin: StyleFieldConvert.pinPartial(
@@ -149,7 +147,6 @@ extension POI {
         base["name"] = .string(name)
         if let v = address { base["address"] = .string(v) }
         if let v = category { base["category"] = .string(v) }
-        if let v = overrideStyleJSON { base["__overrideStyleJSON"] = .string(v) }
         return StyleEntity(
             entityType: "poi", id: id, baseFields: base, customFields: custom,
             overridePin: StyleFieldConvert.pinPartial(
@@ -169,7 +166,6 @@ extension Area {
         if let v = category { base["category"] = .string(v) }
         base["fillOpacity"] = .double(fillOpacity)
         if let v = textDescription { base["textDescription"] = .string(v) }
-        if let v = overrideStyleJSON { base["__overrideStyleJSON"] = .string(v) }
         return StyleEntity(
             entityType: "area", id: id, baseFields: base, customFields: custom,
             overrideArea: StyleFieldConvert.areaPartial(

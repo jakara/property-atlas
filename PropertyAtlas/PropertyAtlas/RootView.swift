@@ -380,13 +380,13 @@ struct StudioRootView: View {
         hasher.combine(activeMapView?.id)
         hasher.combine(activeMapView?.primaryFilterJSON)
         hasher.combine(activeMapView?.normalFiltersJSON)
-        hasher.combine(activeMapView?.paletteId)
         hasher.combine(activeMapView?.spotlightOnSelect ?? false)
         hasher.combine((activeMapView?.drawEdgeLines ?? []).sorted().joined(separator: ","))
         hasher.combine((activeMapView?.paletteHex ?? []).joined(separator: ","))
         hasher.combine(activeMapView?.showLegend ?? true)
+        let activeViewId = activeMapView?.id ?? UUID()
         let styleFetch = FetchDescriptor<ViewEntityStyle>(
-            predicate: #Predicate { $0.datasetId == dsId && !$0.deleted }
+            predicate: #Predicate { $0.datasetId == dsId && $0.viewId == activeViewId && !$0.deleted }
         )
         for row in (try? modelContext.fetch(styleFetch)) ?? [] {
             hasher.combine(row.viewId)
@@ -489,9 +489,8 @@ struct StudioRootView: View {
             edgeProjection: edgeProjection, cache: dimCache
         )
         let viewStyles = buildViewStyles(dsId: dsId, viewId: activeMapView?.id)
-        let palette = (activeMapView?.paletteHex.isEmpty == false)
-            ? (activeMapView?.paletteHex ?? PaletteAssigner.highContrast)
-            : PaletteAssigner.highContrast
+        let palette = activeMapView.flatMap { $0.paletteHex.isEmpty ? nil : $0.paletteHex }
+            ?? PaletteAssigner.highContrast
         let groupItems = cands
             .filter { visibleIds.contains($0.id) && $0.type != "area" }
             .map { GroupColorResolver.Item(id: $0.id, entity: $0.entity, layerNames: membership[$0.id] ?? []) }
@@ -669,7 +668,7 @@ struct StudioRootView: View {
         return nil
     }
 
-    /// 按 viewId 预取该视图 4 行 ViewEntityStyle → [entityType: ViewEntityStyle]。
+    /// 按 viewId 预取该视图的 ViewEntityStyle → [entityType: ViewEntityStyle]。
     private func buildViewStyles(dsId: UUID, viewId: UUID?) -> [String: ViewEntityStyle] {
         guard let viewId else { return [:] }
         let fetch = FetchDescriptor<ViewEntityStyle>(
