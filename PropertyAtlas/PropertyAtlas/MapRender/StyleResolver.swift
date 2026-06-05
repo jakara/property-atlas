@@ -3,22 +3,28 @@ import Foundation
 
 @MainActor
 enum StyleResolver {
+    /// 单 theme 的 defaultStylesJSON 解析一次,复用于全部 pin/area。批量渲染时由调用方
+    /// 预解析传入(`themeDefaults`),避免每 pin 重复 JSON 解码(N pin = N 次 → 1 次)。
+    static func parseDefaults(_ theme: Theme?) -> StyleDefaults.ParsedDefaults {
+        guard let theme else { return .init(pin: [:], area: [:]) }
+        return (try? StyleDefaults.parseThemeDefaults(theme.defaultStylesJSON))
+            ?? .init(pin: [:], area: [:])
+    }
+
     static func resolvePin(
         entity: StyleEntity,
         theme: Theme?,
         rules: [StyleRule],
         palettes: [UUID: Palette],
-        groupFillHex: String? = nil
+        groupFillHex: String? = nil,
+        themeDefaults: StyleDefaults.ParsedDefaults? = nil
     ) -> PinStyle {
         let base = StyleDefaults.builtinPin(for: entity.entityType)
         var partial = PartialPinStyle()
 
-        if let theme {
-            let parsed = (try? StyleDefaults.parseThemeDefaults(theme.defaultStylesJSON))
-                ?? StyleDefaults.ParsedDefaults(pin: [:], area: [:])
-            if let themeDefault = parsed.pin[entity.entityType] {
-                partial.merge(themeDefault)
-            }
+        let parsed = themeDefaults ?? parseDefaults(theme)
+        if let themeDefault = parsed.pin[entity.entityType] {
+            partial.merge(themeDefault)
         }
 
         let matching = rules.filter { StyleRuleMatcher.matches(rule: $0, entity: entity) }
@@ -42,17 +48,15 @@ enum StyleResolver {
         entity: StyleEntity,
         theme: Theme?,
         rules: [StyleRule],
-        palettes: [UUID: Palette]
+        palettes: [UUID: Palette],
+        themeDefaults: StyleDefaults.ParsedDefaults? = nil
     ) -> AreaStyle {
         let base = StyleDefaults.builtinArea()
         var partial = PartialAreaStyle()
 
-        if let theme {
-            let parsed = (try? StyleDefaults.parseThemeDefaults(theme.defaultStylesJSON))
-                ?? StyleDefaults.ParsedDefaults(pin: [:], area: [:])
-            if let themeDefault = parsed.area["area"] {
-                partial.merge(themeDefault)
-            }
+        let parsed = themeDefaults ?? parseDefaults(theme)
+        if let themeDefault = parsed.area["area"] {
+            partial.merge(themeDefault)
         }
 
         let matching = rules.filter { StyleRuleMatcher.matches(rule: $0, entity: entity) }

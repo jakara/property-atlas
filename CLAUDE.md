@@ -202,6 +202,18 @@ Never sync `pub_*` or `loc_*` to CloudKit.
 > 子集给 MapKit。全量 resolve 仍缓存(pan 不 re-resolve);该过滤每 body 跑(O(N) 廉价,同图例计数)。
 > region=nil(首帧)→ 全留。pan settle(debounce 0.12s)重裁,margin 掩边缘弹出。
 
+> **Studio rebuild 提速 11.7× (2026-06-05)**: os.Logger 埋点实测开图层 rebuildContent=821ms,三杀手
+> visibility=400/groupColors=194/legendSpecs=196,根因 = **edgeField 维度 resolve 每实体一次
+> `EdgeStore.relatedFieldValues`(`FetchDescriptor<Edge>` fetch + per-edge 实体 fetch)**,且同维度同实体被
+> visibility(×2)/groupColors/legend 重复调 ~4× ×823 ≈ 3300 次 DB fetch。修:①`StyleResolver.parseDefaults`
+> 把 theme defaultStylesJSON 解析从 per-pin 提到一次(buildPins 传 `themeDefaults`);②`MapDimension.Input`
+> 注入 `EdgeProjection`(一次 Edge fetch + 全实体 `entityById` 内存查表,取代 per-entity DB)+ `DimResolveCache`
+> (引用类型 per-rebuild 跨 stage 共享,同 dimKey#entityId 只算一次);③`buildEntityIndex` 全实体 styleEntity
+> 只 decode 一次,`buildCandidates`/`buildEdgeProjection` 共用(去重复 JSON decode)。结果 ON 821→70ms
+> (visibility 5.5/group 2.8/legend 2.5/entityIndex 15/edgeIndex 18/buildPins 21)。**pan/zoom 不进 rebuildContent**
+> (签名不含 region),其顺滑来自上面的视口裁剪,与本次无关。旧 `EdgeStore.relatedFieldValues` DB 路径保留作
+> 测试/无投影回退。
+
 ### School district logic
 
 - **小学** (primary): one compound → one school (`Compound.primarySchoolId`)

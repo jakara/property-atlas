@@ -290,44 +290,53 @@ struct StudioRootView: View {
         let hasCoordinate: Bool
     }
 
-    private func buildCandidates(dsId: UUID, visibility: [String: Bool]) -> [Cand] {
+    /// 全实体 styleEntity 解析一次(含 customFieldsJSON decode),candidates 与 edgeProjection 共用,
+    /// 避免重复 decode。覆盖全部类型(edge 对端可能是当前隐藏类型,投影需要)。
+    private func buildEntityIndex(dsId: UUID) -> [UUID: StyleEntity] {
+        var index: [UUID: StyleEntity] = [:]
+        for compound in compounds where !compound.deleted && compound.datasetId == dsId {
+            index[compound.id] = compound.styleEntity
+        }
+        for school in schools where !school.deleted && school.datasetId == dsId {
+            index[school.id] = school.styleEntity
+        }
+        for poi in pois where !poi.deleted && poi.datasetId == dsId {
+            index[poi.id] = poi.styleEntity
+        }
+        for area in areas where !area.deleted && area.datasetId == dsId {
+            index[area.id] = area.styleEntity
+        }
+        return index
+    }
+
+    private func buildCandidates(
+        dsId: UUID, visibility: [String: Bool], entityById: [UUID: StyleEntity]
+    ) -> [Cand] {
         var out: [Cand] = []
         if visibility["compound"] == true {
             for c in compounds where !c.deleted && c.datasetId == dsId {
                 out.append(.init(
-                    id: c.id,
-                    type: "compound",
-                    layerId: c.layerId,
-                    name: c.name,
-                    entity: c.styleEntity,
-                    coordinate: c.coordinate,
-                    hasCoordinate: c.latitude != 0 || c.longitude != 0
+                    id: c.id, type: "compound", layerId: c.layerId, name: c.name,
+                    entity: entityById[c.id] ?? c.styleEntity,
+                    coordinate: c.coordinate, hasCoordinate: c.latitude != 0 || c.longitude != 0
                 ))
             }
         }
         if visibility["school"] == true {
             for s in schools where !s.deleted && s.datasetId == dsId {
                 out.append(.init(
-                    id: s.id,
-                    type: "school",
-                    layerId: s.layerId,
-                    name: s.name,
-                    entity: s.styleEntity,
-                    coordinate: s.coordinate,
-                    hasCoordinate: s.latitude != 0 || s.longitude != 0
+                    id: s.id, type: "school", layerId: s.layerId, name: s.name,
+                    entity: entityById[s.id] ?? s.styleEntity,
+                    coordinate: s.coordinate, hasCoordinate: s.latitude != 0 || s.longitude != 0
                 ))
             }
         }
         if visibility["poi"] == true {
             for p in pois where !p.deleted && p.datasetId == dsId {
                 out.append(.init(
-                    id: p.id,
-                    type: "poi",
-                    layerId: p.layerId,
-                    name: p.name,
-                    entity: p.styleEntity,
-                    coordinate: p.coordinate,
-                    hasCoordinate: p.latitude != 0 || p.longitude != 0
+                    id: p.id, type: "poi", layerId: p.layerId, name: p.name,
+                    entity: entityById[p.id] ?? p.styleEntity,
+                    coordinate: p.coordinate, hasCoordinate: p.latitude != 0 || p.longitude != 0
                 ))
             }
         }
@@ -335,13 +344,9 @@ struct StudioRootView: View {
         if visibility["area"] == true {
             for a in areas where !a.deleted && a.datasetId == dsId {
                 out.append(.init(
-                    id: a.id,
-                    type: "area",
-                    layerId: a.layerId,
-                    name: a.name,
-                    entity: a.styleEntity,
-                    coordinate: CLLocationCoordinate2D(),
-                    hasCoordinate: false
+                    id: a.id, type: "area", layerId: a.layerId, name: a.name,
+                    entity: entityById[a.id] ?? a.styleEntity,
+                    coordinate: CLLocationCoordinate2D(), hasCoordinate: false
                 ))
             }
         }
@@ -448,7 +453,14 @@ struct StudioRootView: View {
             enabled: activeMapView?.spotlightOnSelect ?? false
         )
 
-        let cands = buildCandidates(dsId: dsId, visibility: visibility)
+        // 全实体 styleEntity 只解析一次,candidates 与 edgeProjection 共用(去重复 JSON decode)。
+        let entityById = buildEntityIndex(dsId: dsId)
+        let cands = buildCandidates(dsId: dsId, visibility: visibility, entityById: entityById)
+
+        // edgeField 维度的 per-entity DB fetch 是 ON 卡顿主因 —— 一次性建内存投影 + 解析缓存,
+        // 供 visibility/groupColors/legend 共享(同维度同实体只算一次,且不再打 DB)。
+        let edgeProjection = buildEdgeProjection(dsId: dsId, entityById: entityById)
+        let dimCache = DimResolveCache()
         let defaultLayerId = layersForDataset(dsId).first(where: { $0.isDefault })?.id
             ?? layersForDataset(dsId).first?.id ?? dsId
         let namedLayers = layersForDataset(dsId).map {
@@ -474,13 +486,15 @@ struct StudioRootView: View {
         let visibleIds = VisibilityResolver.visibleIds(
             candidates: visCands, layerVisible: layerVisible,
             primary: primary, normals: normals, filterState: filterState,
-            context: modelContext, datasetId: dsId
+            context: modelContext, datasetId: dsId,
+            edgeProjection: edgeProjection, cache: dimCache
         )
         // layer ∩ primary 但不含 chip 隐藏 —— 普通过滤图例列全部可切换值(隐藏态仍列出、可再点亮)
         let normalLegendIds = VisibilityResolver.visibleIds(
             candidates: visCands, layerVisible: layerVisible,
             primary: primary, normals: [], filterState: DimensionFilterState(),
-            context: modelContext, datasetId: dsId
+            context: modelContext, datasetId: dsId,
+            edgeProjection: edgeProjection, cache: dimCache
         )
         let palette = activeMapView?.paletteId.flatMap { palettesById[$0]?.colorsHex }
             ?? PaletteAssigner.highContrast
@@ -489,7 +503,8 @@ struct StudioRootView: View {
             .map { GroupColorResolver.Item(id: $0.id, entity: $0.entity, layerNames: membership[$0.id] ?? []) }
         let groupColors = GroupColorResolver.colors(
             items: groupItems, groupBy: primary.groupBy, palette: palette,
-            context: modelContext, datasetId: dsId
+            context: modelContext, datasetId: dsId,
+            edgeProjection: edgeProjection, cache: dimCache
         )
         let pins = buildPins(
             cands: cands, visibleIds: visibleIds, groupColors: groupColors,
@@ -506,7 +521,8 @@ struct StudioRootView: View {
         cache.styleMap = styleMap
         cache.legendSpecs = buildLegendSpecs(
             cands: cands, visibleIds: visibleIds, normalLegendIds: normalLegendIds,
-            membership: membership, primary: primary, normals: normals, palette: palette, dsId: dsId
+            membership: membership, primary: primary, normals: normals, palette: palette, dsId: dsId,
+            edgeProjection: edgeProjection, dimCache: dimCache
         )
     }
 
@@ -515,13 +531,15 @@ struct StudioRootView: View {
     /// 预解析图例规格:每个 item 的维度值 resolve 一次存入 entries。settle/pan 时只按 region bbox 计数。
     private func buildLegendSpecs(
         cands: [Cand], visibleIds: Set<UUID>, normalLegendIds: Set<UUID>, membership: [UUID: [String]],
-        primary: PrimaryFilter, normals: [NormalFilter], palette: [String], dsId: UUID
+        primary: PrimaryFilter, normals: [NormalFilter], palette: [String], dsId: UUID,
+        edgeProjection: EdgeProjection? = nil, dimCache: DimResolveCache? = nil
     ) -> [LegendSpec] {
         func entriesFor(_ ids: Set<UUID>, _ dim: MapDimension, prefixOne: Bool) -> [LegendSpec.Entry] {
             cands.filter { ids.contains($0.id) }.map { cand in
                 let input = MapDimension.Input(
                     entity: cand.entity, layerNames: membership[cand.id] ?? [],
-                    context: modelContext, datasetId: dsId
+                    context: modelContext, datasetId: dsId,
+                    edgeProjection: edgeProjection, cache: dimCache
                 )
                 var values = dim.resolve(input)
                 if prefixOne { values = values.sorted().prefix(1).map { $0 } }
@@ -577,10 +595,11 @@ struct StudioRootView: View {
         theme: Theme?, rules: [StyleRule], palettes: [UUID: Palette], highlight: Set<UUID>?
     ) -> [MKAnnotation] {
         var result: [MKAnnotation] = []
+        let themeDefaults = StyleResolver.parseDefaults(theme) // 解析一次,全部 pin 复用
         for c in cands where c.type != "area" && c.hasCoordinate && visibleIds.contains(c.id) {
             let style = StyleResolver.resolvePin(
                 entity: c.entity, theme: theme, rules: rules, palettes: palettes,
-                groupFillHex: groupColors[c.id]
+                groupFillHex: groupColors[c.id], themeDefaults: themeDefaults
             )
             let pin = PinAnnotation(
                 entityId: c.id,
@@ -603,8 +622,11 @@ struct StudioRootView: View {
     ) -> ([MKOverlay], [ObjectIdentifier: AreaStyle]) {
         var overlays: [MKOverlay] = []
         var map: [ObjectIdentifier: AreaStyle] = [:]
+        let themeDefaults = StyleResolver.parseDefaults(theme) // 解析一次,全部 area 复用
         for a in areas where !a.deleted && visibleIds.contains(a.id) {
-            let style = StyleResolver.resolveArea(entity: a.styleEntity, theme: theme, rules: rules, palettes: palettes)
+            let style = StyleResolver.resolveArea(
+                entity: a.styleEntity, theme: theme, rules: rules, palettes: palettes, themeDefaults: themeDefaults
+            )
             if let r = AreaOverlayFactory.makeOverlay(for: a, style: style) {
                 overlays.append(r.overlay)
                 map[ObjectIdentifier(r.overlay)] = r.style
@@ -654,6 +676,23 @@ struct StudioRootView: View {
             return EntityKind(rawValue: p.entityType)
         }
         return nil
+    }
+
+    /// edge 投影:一次 Edge fetch(按两端分组)+ 复用预建 entityById(取对端 targetField/name)。
+    /// 取代 edgeField 维度的 per-entity DB fetch —— rebuild 内全部 edgeField 解析转为纯内存查表。
+    private func buildEdgeProjection(dsId: UUID, entityById: [UUID: StyleEntity]) -> EdgeProjection {
+        let fetch = FetchDescriptor<Edge>(
+            predicate: #Predicate { $0.datasetId == dsId && !$0.deleted },
+            sortBy: [SortDescriptor(\.sortOrder), SortDescriptor(\.createdAt)]
+        )
+        let edges = (try? modelContext.fetch(fetch)) ?? []
+        var byEntity: [UUID: [EdgeProjection.E]] = [:]
+        for edge in edges {
+            let projected = EdgeProjection.E(fromId: edge.fromId, toId: edge.toId, label: edge.label)
+            byEntity[edge.fromId, default: []].append(projected)
+            byEntity[edge.toId, default: []].append(projected)
+        }
+        return EdgeProjection(edgesByEntity: byEntity, entityById: entityById)
     }
 
     private func buildEdgeLines(labels: [String], datasetId: UUID) -> [MKOverlay] {

@@ -16,13 +16,18 @@ enum GroupColorResolver {
         groupBy: MapDimension?,
         palette: [String],
         context: ModelContext?,
-        datasetId: UUID?
+        datasetId: UUID?,
+        edgeProjection: EdgeProjection? = nil,
+        cache: DimResolveCache? = nil
     ) -> [UUID: String] {
         guard let gb = groupBy, !palette.isEmpty else { return [:] }
         var firstValue: [UUID: String] = [:]
         var distinct = Set<String>()
         for it in items {
-            let input = MapDimension.Input(entity: it.entity, layerNames: it.layerNames, context: context, datasetId: datasetId)
+            let input = MapDimension.Input(
+                entity: it.entity, layerNames: it.layerNames, context: context, datasetId: datasetId,
+                edgeProjection: edgeProjection, cache: cache
+            )
             let vals = gb.resolve(input).sorted()
             guard let first = vals.first, !first.isEmpty else { continue }
             firstValue[it.id] = first

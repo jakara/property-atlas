@@ -16,12 +16,17 @@ enum VisibilityResolver {
         normals: [NormalFilter],
         filterState: DimensionFilterState,
         context: ModelContext?,
-        datasetId: UUID?
+        datasetId: UUID?,
+        edgeProjection: EdgeProjection? = nil,
+        cache: DimResolveCache? = nil
     ) -> Set<UUID> {
         var out = Set<UUID>()
         for c in candidates {
             guard layerVisible.contains(c.id) else { continue }
-            let input = MapDimension.Input(entity: c.entity, layerNames: c.layerNames, context: context, datasetId: datasetId)
+            let input = MapDimension.Input(
+                entity: c.entity, layerNames: c.layerNames, context: context, datasetId: datasetId,
+                edgeProjection: edgeProjection, cache: cache
+            )
             guard primary.matches(input) else { continue }
             if isHiddenByAnyChip(input: input, primary: primary, normals: normals, filterState: filterState) { continue }
             out.insert(c.id)
