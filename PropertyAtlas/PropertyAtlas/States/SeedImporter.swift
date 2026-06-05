@@ -35,6 +35,7 @@ enum SeedImporter {
         LegacyMigrator.backfillLayerIds(in: context) // 旧库兜底:nil → 默认层
         // 已有 Dataset → 已 seed,跳过
         if try !context.fetch(FetchDescriptor<Dataset>()).isEmpty {
+            StyleConsolidationMigrator.run(in: context)
             try context.save()
             progress(1.0, "已就绪")
             return false
@@ -60,6 +61,7 @@ enum SeedImporter {
         LegacyMigrator.backfillLayerIds(in: context) // 新库:全部实体归默认层
 
         progress(0.95, "保存")
+        StyleConsolidationMigrator.run(in: context)
         try context.save()
         progress(1.0, "完成")
         return true
