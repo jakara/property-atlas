@@ -5,7 +5,6 @@ import SwiftUI
 struct ViewSettingsTab: View {
     @Bindable var viewContext: MapViewContext
     @Environment(\.modelContext) private var modelContext
-    @Query private var palettes: [Palette]
     @Query private var cameraPresets: [CameraPreset]
     @Query private var layers: [Layer]
 
@@ -21,6 +20,21 @@ struct ViewSettingsTab: View {
                 SettingsCard("视图") {
                     fieldRow("名称") { TextField("名称", text: nameBinding(mv)).glassField() }
                 }
+                SettingsCard("默认样式") {
+                    VStack(alignment: .leading, spacing: 8) {
+                        ForEach(
+                            [("compound", "小区"), ("school", "学校"), ("poi", "POI"), ("area", "片区")],
+                            id: \.0
+                        ) { entityType, label in
+                            EntityDefaultStyleEditor(
+                                datasetId: mv.datasetId, viewId: mv.id, entityType: entityType, title: label
+                            )
+                        }
+                    }.padding(.horizontal, 13).padding(.bottom, 12)
+                }
+                SettingsCard("分组染色调色板") {
+                    PaletteHexEditor(view: mv).padding(.horizontal, 13).padding(.bottom, 12)
+                }
                 SettingsCard("可见类型") { visibilityChips(mv) }
                 SettingsCard("启用图层") { layerToggles(mv) }
                 SettingsCard("出图文案") {
@@ -31,11 +45,13 @@ struct ViewSettingsTab: View {
                     }.padding(.horizontal, 13).padding(.bottom, 12)
                 }
                 SettingsCard("引用") {
-                    SettingsRow(title: "调色板") {
-                        Picker("", selection: paletteBinding(mv)) {
-                            Text("默认高对比").tag(UUID?.none)
-                            ForEach(palettes.filter { !$0.deleted }, id: \.id) { Text($0.name).tag($0.id as UUID?) }
-                        }.labelsHidden().tint(Studio.cool)
+                    SettingsRow(title: "显示图例") {
+                        Toggle("", isOn: Binding(
+                            get: { mv.showLegend },
+                            set: { mv.showLegend = $0
+                                mv.updatedAt = Date()
+                            }
+                        )).labelsHidden().tint(Studio.cool)
                     }
                     RowDivider()
                     SettingsRow(title: "相机") {
@@ -190,12 +206,6 @@ struct ViewSettingsTab: View {
         })
     }
 
-    private func paletteBinding(_ mv: MapView) -> Binding<UUID?> {
-        Binding(get: { mv.paletteId }, set: { mv.paletteId = $0
-            mv.updatedAt = Date()
-        })
-    }
-
     private func cameraBinding(_ mv: MapView) -> Binding<UUID?> {
         Binding(get: { mv.cameraPresetId }, set: { mv.cameraPresetId = $0
             mv.updatedAt = Date()
@@ -212,7 +222,8 @@ struct ViewSettingsTab: View {
     }
 
     private func decodeVis(_ mv: MapView) -> [String: Bool] {
-        (try? JSONSerialization.jsonObject(with: Data(mv.visibilityJSON.utf8)) as? [String: Bool]) ?? ["compound": true, "school": true, "poi": true, "area": true]
+        let fallback: [String: Bool] = ["compound": true, "school": true, "poi": true, "area": true]
+        return (try? JSONSerialization.jsonObject(with: Data(mv.visibilityJSON.utf8)) as? [String: Bool]) ?? fallback
     }
 
     private func encodeVis(_ d: [String: Bool]) -> String {
