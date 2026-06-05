@@ -160,6 +160,7 @@ struct StudioRootView: View {
                         onPickEntity: { ref, coord, hasCoord in
                             appState.select(ref)
                             if hasCoord, let coord { flyTo(coord) }
+                            searchMarker = nil
                             showSearch = false
                         },
                         onPickExternal: { hit in
