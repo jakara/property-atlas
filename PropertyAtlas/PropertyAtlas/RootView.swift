@@ -218,9 +218,12 @@ struct StudioRootView: View {
             if let dsId = viewContext?.datasetIdValue {
                 let layers = layersForDataset(dsId)
                 let defaultId = layers.first(where: { $0.isDefault })?.id
-                let enabled = layers.filter { layerState.isEnabled($0.id) }.map { (id: $0.id, name: $0.name) }
+                // 列全部图层(非仅已启用);未在当前视图启用的标注提示——选中后需到视图设置启用才会显示
+                let pickable = layers.map {
+                    (id: $0.id, name: layerState.isEnabled($0.id) ? $0.name : "\($0.name)(未启用)")
+                }
                 CreateEntitySheet(
-                    enabledLayers: enabled,
+                    enabledLayers: pickable,
                     defaultLayerId: defaultId,
                     prefillName: createPrefillName,
                     defaultKind: createPrefillName != nil ? .poi : .compound,

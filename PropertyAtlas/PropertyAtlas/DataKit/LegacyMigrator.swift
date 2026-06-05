@@ -45,11 +45,14 @@ enum LegacyMigrator {
         for ds in datasets {
             // 兜底目标与 RootView.defaultLayerId 一致:isDefault 优先,否则 zIndex 最小的图层
             let dsLayers = layers.filter { $0.datasetId == ds.id && !$0.deleted }
-            guard let home = (
-                dsLayers.first(where: { $0.isDefault })
-                    ?? dsLayers.sorted { $0.zIndex < $1.zIndex }.first
-            )?.id
-            else { continue }
+            let homeLayer = dsLayers.first(where: { $0.isDefault })
+                ?? dsLayers.sorted { $0.zIndex < $1.zIndex }.first
+            // 旧库追溯改名:默认图层早期 seed 叫「全部」,现统一「默认」(幂等)。
+            if let homeLayer, homeLayer.name == "全部" {
+                homeLayer.name = "默认"
+                homeLayer.updatedAt = Date()
+            }
+            guard let home = homeLayer?.id else { continue }
             assignNilToDefault(Compound.self, ds.id, home, ctx)
             assignNilToDefault(School.self, ds.id, home, ctx)
             assignNilToDefault(POI.self, ds.id, home, ctx)
