@@ -10,6 +10,7 @@ struct StudioOverlay: View {
     @Binding var showSettings: Bool
     @Binding var exportMode: Bool
     @Binding var showSafeFrame: Bool
+    @Binding var showSearch: Bool
 
     var body: some View {
         ZStack {
@@ -46,7 +47,7 @@ struct StudioOverlay: View {
                     StudioToolbar(
                         viewContext: viewContext, aspect: $aspect,
                         onSnapshot: {}, showSettings: $showSettings, exportMode: $exportMode,
-                        showSafeFrame: $showSafeFrame
+                        showSafeFrame: $showSafeFrame, showSearch: $showSearch
                     )
                     .padding(.bottom, 22)
                 }

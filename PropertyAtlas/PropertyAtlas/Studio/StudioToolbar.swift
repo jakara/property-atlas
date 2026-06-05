@@ -9,6 +9,7 @@ struct StudioToolbar: View {
     var showSettings: Binding<Bool>
     @Binding var exportMode: Bool
     @Binding var showSafeFrame: Bool
+    @Binding var showSearch: Bool
 
     var body: some View {
         HStack(spacing: 4) {
@@ -33,6 +34,13 @@ struct StudioToolbar: View {
                 DockLabel(icon: "crop", text: aspect.rawValue, caret: true)
             }
             .menuStyle(.borderlessButton).fixedSize()
+
+            // search
+            Button { showSearch.toggle() } label: {
+                DockLabel(icon: "magnifyingglass", iconOnly: true)
+            }
+            .buttonStyle(.plain)
+            .keyboardShortcut("f", modifiers: .command)
 
             // settings
             Button { showSettings.wrappedValue = true } label: {
