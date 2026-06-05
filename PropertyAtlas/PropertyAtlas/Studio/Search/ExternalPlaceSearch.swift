@@ -9,6 +9,10 @@ enum ExternalPlaceSearch {
         let name: String
         let subtitle: String
         let coordinate: CLLocationCoordinate2D
+        var category: String?
+        var phone: String?
+        var url: URL?
+        var fullAddress: String?
     }
 
     static let fallbackRegion = MKCoordinateRegion(
@@ -28,7 +32,11 @@ enum ExternalPlaceSearch {
             PlaceHit(
                 name: item.name ?? "未命名",
                 subtitle: subtitle(item.placemark),
-                coordinate: item.placemark.coordinate
+                coordinate: item.placemark.coordinate,
+                category: categoryLabel(item.pointOfInterestCategory),
+                phone: item.phoneNumber,
+                url: item.url,
+                fullAddress: item.placemark.title ?? subtitle(item.placemark)
             )
         }
     }
@@ -37,6 +45,12 @@ enum ExternalPlaceSearch {
         [placemark.locality, placemark.thoroughfare, placemark.subThoroughfare]
             .compactMap { $0 }
             .joined(separator: " ")
+    }
+
+    /// "MKPOICategoryRestaurant" → "Restaurant";nil → nil。
+    private static func categoryLabel(_ category: MKPointOfInterestCategory?) -> String? {
+        guard let raw = category?.rawValue else { return nil }
+        return raw.replacingOccurrences(of: "MKPOICategory", with: "")
     }
 }
 #endif
