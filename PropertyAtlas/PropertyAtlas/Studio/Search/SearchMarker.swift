@@ -17,7 +17,7 @@ struct SearchMarker: Equatable {
 enum SearchMarkerFactory {
     /// 区别于实体 pin 的哨兵类型/ID。onSchoolSelect 命中此 ID 时不做 select。
     static let markerType = "__searchMarker"
-    static let markerId = UUID(uuidString: "00000000-0000-0000-0000-0000000000FF")!
+    static let markerId = UUID(uuid: (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0xFF))
 
     static func annotation(for marker: SearchMarker) -> PinAnnotation {
         let style = PinStyle(
