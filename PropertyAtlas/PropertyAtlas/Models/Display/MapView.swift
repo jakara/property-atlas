@@ -13,6 +13,8 @@ final class MapView {
     var normalFiltersJSON: String = "[]"
     var visibilityJSON: String = #"{"compound":true,"school":true,"poi":true,"area":true}"#
     var paletteId: UUID?
+    var paletteHex: [String] = []
+    var showLegend: Bool = true
     var cameraPresetId: UUID?
     var bgMapStyle: String = "standard"
     var drawEdgeLines: [String] = []
