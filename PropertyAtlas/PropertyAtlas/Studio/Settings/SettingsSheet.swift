@@ -3,8 +3,8 @@ import SwiftData
 import SwiftUI
 
 enum SettingsTab: String, CaseIterable, Identifiable {
-    case view = "视图", layer = "图层", palette = "调色板", enumOption = "枚举"
-    case theme = "主题", styleRule = "样式", camera = "相机", customField = "字段"
+    case view = "视图", layer = "图层", enumOption = "枚举"
+    case camera = "相机", customField = "字段"
     var id: String {
         rawValue
     }
@@ -13,10 +13,7 @@ enum SettingsTab: String, CaseIterable, Identifiable {
         switch self {
         case .view: "rectangle.on.rectangle"
         case .layer: "square.3.layers.3d"
-        case .palette: "paintpalette"
         case .enumOption: "list.bullet"
-        case .theme: "paintbrush"
-        case .styleRule: "wand.and.stars"
         case .camera: "camera"
         case .customField: "character.textbox"
         }
@@ -37,10 +34,7 @@ struct SettingsSheet: View {
                     switch tab {
                     case .view: ViewSettingsTab(viewContext: viewContext)
                     case .layer: LayerSettingsTab(datasetId: viewContext.datasetIdValue)
-                    case .palette: PaletteSettingsTab()
                     case .enumOption: EnumOptionSettingsTab(datasetId: viewContext.datasetIdValue)
-                    case .theme: ThemeSettingsTab(datasetId: viewContext.datasetIdValue)
-                    case .styleRule: StyleRuleSettingsTab(datasetId: viewContext.datasetIdValue)
                     case .camera: CameraSettingsTab(datasetId: viewContext.datasetIdValue)
                     case .customField: CustomFieldSettingsTab(datasetId: viewContext.datasetIdValue)
                     }
@@ -70,7 +64,7 @@ struct SettingsSheet: View {
         .padding(.horizontal, 16)
     }
 
-    /// THE 8-SEGMENT CONTROL — icon over 2-char label, equal widths.
+    /// THE 5-SEGMENT CONTROL — icon over 2-char label, equal widths.
     private var segTabs: some View {
         HStack(spacing: 3) {
             ForEach(SettingsTab.allCases) { t in
