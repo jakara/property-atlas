@@ -1,19 +1,25 @@
 #if targetEnvironment(macCatalyst)
 import SwiftUI
 
-/// 长按地图新建实体:选类型 + 选一个启用图层。
+/// 长按地图 / 外部搜索新建实体:名称 + 选类型 + 选一个启用图层。
 struct CreateEntitySheet: View {
     let enabledLayers: [(id: UUID, name: String)]
     let defaultLayerId: UUID?
-    let onCreate: (EntityKind, UUID?) -> Void
+    var prefillName: String?
+    var defaultKind: EntityKind = .compound
+    let onCreate: (EntityKind, UUID?, String) -> Void
     let onCancel: () -> Void
 
     @State private var kind: EntityKind = .compound
     @State private var layerId: UUID?
+    @State private var name: String = ""
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             Text("新建实体").font(Studio.sans(17, .bold)).foregroundStyle(Studio.on)
+
+            Text("名称").font(Studio.sans(11, .medium)).foregroundStyle(Studio.on2)
+            TextField("未命名", text: $name).glassField()
 
             Text("类型").font(Studio.sans(11, .medium)).foregroundStyle(Studio.on2)
             GlassSegmented(
@@ -26,18 +32,18 @@ struct CreateEntitySheet: View {
                 Text("无启用图层 → 进【默认】").font(Studio.sans(12)).foregroundStyle(Studio.on3)
             } else {
                 VStack(spacing: 2) {
-                    ForEach(enabledLayers, id: \.id) { l in
-                        Button { layerId = l.id } label: {
+                    ForEach(enabledLayers, id: \.id) { layer in
+                        Button { layerId = layer.id } label: {
                             HStack {
-                                Text(l.name).font(Studio.sans(13)).foregroundStyle(Studio.on)
+                                Text(layer.name).font(Studio.sans(13)).foregroundStyle(Studio.on)
                                 Spacer()
-                                if (layerId ?? defaultLayerId) == l.id {
+                                if (layerId ?? defaultLayerId) == layer.id {
                                     Image(systemName: "checkmark").foregroundStyle(Studio.cool)
                                 }
                             }
                             .padding(.horizontal, 10).frame(height: 38)
                             .background(
-                                (layerId ?? defaultLayerId) == l.id ? Studio.glassHover : .clear,
+                                (layerId ?? defaultLayerId) == layer.id ? Studio.glassHover : .clear,
                                 in: RoundedRectangle(cornerRadius: Studio.rControl, style: .continuous)
                             )
                             .contentShape(Rectangle())
@@ -50,7 +56,9 @@ struct CreateEntitySheet: View {
             HStack(spacing: 10) {
                 Spacer()
                 Button("取消") { onCancel() }.buttonStyle(.tbtn(.ghost))
-                Button("建立") { onCreate(kind, layerId ?? defaultLayerId) }.buttonStyle(.tbtn(.primary))
+                Button("建立") {
+                    onCreate(kind, layerId ?? defaultLayerId, name)
+                }.buttonStyle(.tbtn(.primary))
             }
         }
         .padding(18)
@@ -58,7 +66,11 @@ struct CreateEntitySheet: View {
         .background(Studio.glassStrong).background(.ultraThinMaterial)
         .clipShape(RoundedRectangle(cornerRadius: Studio.rPanel, style: .continuous))
         .environment(\.colorScheme, .dark)
-        .onAppear { layerId = defaultLayerId }
+        .tint(Studio.cool)
+        .onAppear {
+            kind = defaultKind
+            name = prefillName ?? ""
+        }
     }
 }
 #endif

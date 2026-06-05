@@ -182,7 +182,7 @@ struct StudioRootView: View {
                 CreateEntitySheet(
                     enabledLayers: enabled,
                     defaultLayerId: defaultId,
-                    onCreate: { kind, layerId in
+                    onCreate: { kind, layerId, _ in
                         showCreateMenu = false
                         createPin(kind, layerId: layerId)
                     },
