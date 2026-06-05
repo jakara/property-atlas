@@ -22,12 +22,14 @@ enum StyleConsolidationMigrator {
             let existing = (try? context.fetch(FetchDescriptor<ViewEntityStyle>(
                 predicate: #Predicate { $0.viewId == viewId && !$0.deleted }
             ))) ?? []
-            guard existing.isEmpty else { continue }
+            let existingTypes = Set(existing.map(\.entityType))
+            let missing = ["compound", "school", "poi", "area"].filter { !existingTypes.contains($0) }
+            if missing.isEmpty { continue } // 全 4 类已有 → 跳过整视图(含 palette/legend),不覆盖用户编辑
 
             let theme = resolveTheme(for: view, in: context)
             let parsed = theme.flatMap { try? StyleDefaults.parseThemeDefaults($0.defaultStylesJSON) }
 
-            for entityType in ["compound", "school", "poi", "area"] {
+            for entityType in missing {
                 let row = ViewEntityStyle(datasetId: datasetId, viewId: viewId, entityType: entityType)
                 applyParsedDefaults(parsed, entityType: entityType, to: row)
                 context.insert(row)
@@ -62,7 +64,7 @@ enum StyleConsolidationMigrator {
     private static func applyPaletteAndLegend(view: MapView, theme: Theme?, in context: ModelContext) {
         if let paletteId = view.paletteId {
             let palette = (try? context.fetch(FetchDescriptor<Palette>(
-                predicate: #Predicate { $0.id == paletteId }
+                predicate: #Predicate { $0.id == paletteId && !$0.deleted }
             )))?.first
             if let palette { view.paletteHex = palette.colorsHex }
         }
@@ -106,8 +108,15 @@ enum StyleConsolidationMigrator {
     }
 
     private static func applyOverrides(datasetId: UUID, in context: ModelContext) {
+        applyCompoundOverrides(datasetId: datasetId, in: context)
+        applySchoolOverrides(datasetId: datasetId, in: context)
+        applyPOIOverrides(datasetId: datasetId, in: context)
+        applyAreaOverrides(datasetId: datasetId, in: context)
+    }
+
+    private static func applyCompoundOverrides(datasetId: UUID, in context: ModelContext) {
         let compounds = (try? context.fetch(FetchDescriptor<Compound>(
-            predicate: #Predicate { $0.datasetId == datasetId }
+            predicate: #Predicate { $0.datasetId == datasetId && !$0.deleted }
         ))) ?? []
         for compound in compounds {
             let style = OverrideStyleCodec.decode(compound.overrideStyleJSON)
@@ -118,8 +127,11 @@ enum StyleConsolidationMigrator {
             compound.styleSize = style.size
             compound.styleLabelVisible = style.labelVisible
         }
+    }
+
+    private static func applySchoolOverrides(datasetId: UUID, in context: ModelContext) {
         let schools = (try? context.fetch(FetchDescriptor<School>(
-            predicate: #Predicate { $0.datasetId == datasetId }
+            predicate: #Predicate { $0.datasetId == datasetId && !$0.deleted }
         ))) ?? []
         for school in schools {
             let style = OverrideStyleCodec.decode(school.overrideStyleJSON)
@@ -130,8 +142,11 @@ enum StyleConsolidationMigrator {
             school.styleSize = style.size
             school.styleLabelVisible = style.labelVisible
         }
+    }
+
+    private static func applyPOIOverrides(datasetId: UUID, in context: ModelContext) {
         let pois = (try? context.fetch(FetchDescriptor<POI>(
-            predicate: #Predicate { $0.datasetId == datasetId }
+            predicate: #Predicate { $0.datasetId == datasetId && !$0.deleted }
         ))) ?? []
         for poi in pois {
             let style = OverrideStyleCodec.decode(poi.overrideStyleJSON)
@@ -142,8 +157,11 @@ enum StyleConsolidationMigrator {
             poi.styleSize = style.size
             poi.styleLabelVisible = style.labelVisible
         }
+    }
+
+    private static func applyAreaOverrides(datasetId: UUID, in context: ModelContext) {
         let areas = (try? context.fetch(FetchDescriptor<Area>(
-            predicate: #Predicate { $0.datasetId == datasetId }
+            predicate: #Predicate { $0.datasetId == datasetId && !$0.deleted }
         ))) ?? []
         for area in areas {
             let style = OverrideStyleCodec.decode(area.overrideStyleJSON)

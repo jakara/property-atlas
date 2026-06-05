@@ -60,8 +60,34 @@ struct StyleConsolidationMigratorTests {
         try ctx.save()
         StyleConsolidationMigrator.run(in: ctx)
         let afterStyles = try ctx.fetch(FetchDescriptor<ViewEntityStyle>())
+        #expect(afterStyles.count == 4)
         let afterStyle = afterStyles.first { $0.entityType == "compound" }
         #expect(afterStyle?.fillHex == "#999999")
+    }
+
+    @Test func resolvesThemeFromTopEnabledLayer() throws {
+        let ctx = try makeContext()
+        let dataset = Dataset(name: "ds4")
+        ctx.insert(dataset)
+        let theme = Theme(datasetId: dataset.id, name: "t")
+        theme.defaultStylesJSON = ##"{"compound":{"fillHex":"#ABCDEF"}}"##
+        ctx.insert(theme)
+        let layer = Layer(datasetId: dataset.id, name: "L")
+        layer.themeId = theme.id
+        layer.zIndex = 10
+        ctx.insert(layer)
+        let view = MapView(datasetId: dataset.id, name: "v")
+        view.enabledLayerIds = [layer.id]
+        view.isActive = true
+        ctx.insert(view)
+        // dataset.activeThemeId 故意留 nil:验证经 layer.themeId 解析
+        try ctx.save()
+
+        StyleConsolidationMigrator.run(in: ctx)
+
+        let styles = try ctx.fetch(FetchDescriptor<ViewEntityStyle>())
+        let compound = styles.first { $0.entityType == "compound" }
+        #expect(compound?.fillHex == "#ABCDEF")
     }
 
     @Test func migratesEntityOverrideJSONToColumns() throws {
