@@ -213,7 +213,7 @@ struct StudioRootView: View {
             searchMarker = nil
             showSearch = false
         }
-        .sheet(isPresented: $showCreateMenu) {
+        .sheet(isPresented: $showCreateMenu, onDismiss: { createPrefillName = nil }) {
             if let dsId = viewContext?.datasetIdValue {
                 let layers = layersForDataset(dsId)
                 let defaultId = layers.first(where: { $0.isDefault })?.id
