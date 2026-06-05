@@ -196,6 +196,12 @@ Never sync `pub_*` or `loc_*` to CloudKit.
 > Coordinator region settle 跨阈值才刷新可见 view,不重建 annotation)。**异步**:SwiftData `@Model`/
 > `ModelContext` 是 `@MainActor`+非 Sendable,密集渲染卡在 MapKit 主线程/GPU,异步治不了 → 未做。
 
+> **Studio 视口裁剪 (2026-06-05)**: 开/关默认图层卡 = `cache.pins`(全量 resolve 结果)整批交给
+> MapKit,`PinAnnotationView.displayPriority=.required` 不去重 → 全城几百 pin 全量渲染。修:`RootView.
+> viewportPins(_:region:)` 在交付前按 `visibleRegion` 外扩 0.5×span margin 各方向做 bbox 过滤,只交视口
+> 子集给 MapKit。全量 resolve 仍缓存(pan 不 re-resolve);该过滤每 body 跑(O(N) 廉价,同图例计数)。
+> region=nil(首帧)→ 全留。pan settle(debounce 0.12s)重裁,margin 掩边缘弹出。
+
 ### School district logic
 
 - **小学** (primary): one compound → one school (`Compound.primarySchoolId`)

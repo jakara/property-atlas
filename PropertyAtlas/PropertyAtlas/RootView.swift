@@ -118,7 +118,10 @@ struct StudioRootView: View {
         let legendSections = renderLegendSections(cache.legendSpecs, region: visibleRegion)
         let overlays = cache.overlays
         let markerAnnotations: [MKAnnotation] = searchMarker.map { [SearchMarkerFactory.annotation(for: $0)] } ?? []
-        let annotations = cache.pins + markerAnnotations
+        // 视口裁剪:只把 region(外扩 margin)内的 pin 交给 MapKit。全量 resolve 仍缓存在
+        // cache.pins;此处只做廉价 bbox 过滤,pan settle 后重算(无 re-resolve)。降低同屏
+        // annotation 渲染量(displayPriority=.required 不去重,全量交付 = 全量渲染 → 卡)。
+        let annotations = viewportPins(cache.pins, region: visibleRegion) + markerAnnotations
 
         ZStack {
             MapContainerView(
@@ -608,6 +611,23 @@ struct StudioRootView: View {
             }
         }
         return (overlays, map)
+    }
+
+    /// 视口裁剪:保留 region 外扩 margin(各方向 0.5×span)内的 pin。region 未知 → 全留。
+    /// O(N) bbox 比较,无 styleEntity/resolve;pan settle 时随 body 重跑,交付集合随视口移动。
+    private func viewportPins(_ pins: [MKAnnotation], region: MKCoordinateRegion?) -> [MKAnnotation] {
+        guard let region else { return pins }
+        let latPad = region.span.latitudeDelta
+        let lonPad = region.span.longitudeDelta
+        let minLat = region.center.latitude - latPad
+        let maxLat = region.center.latitude + latPad
+        let minLon = region.center.longitude - lonPad
+        let maxLon = region.center.longitude + lonPad
+        return pins.filter { annotation in
+            let coord = annotation.coordinate
+            return coord.latitude >= minLat && coord.latitude <= maxLat
+                && coord.longitude >= minLon && coord.longitude <= maxLon
+        }
     }
 
     private func flyTo(_ coord: CLLocationCoordinate2D) {
