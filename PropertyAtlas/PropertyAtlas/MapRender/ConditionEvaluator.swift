@@ -21,21 +21,28 @@ struct StyleEntity {
     let id: UUID
     private let baseFields: [String: AnyJSON]
     private let customFields: [String: AnyJSON]
+    /// 实体级 override（typed 列 → partial）。空 partial = 无 override。
+    let overridePin: PartialPinStyle
+    let overrideArea: PartialAreaStyle
 
     init(
         entityType: String,
         id: UUID,
         baseFields: [String: AnyJSON],
-        customFields: [String: AnyJSON]
+        customFields: [String: AnyJSON],
+        overridePin: PartialPinStyle = PartialPinStyle(),
+        overrideArea: PartialAreaStyle = PartialAreaStyle()
     ) {
         self.entityType = entityType
         self.id = id
         self.baseFields = baseFields
         self.customFields = customFields
+        self.overridePin = overridePin
+        self.overrideArea = overrideArea
     }
 
     func field(_ name: String) -> AnyJSON? {
-        if let v = baseFields[name] { return v }
+        if let val = baseFields[name] { return val }
         return customFields[name]
     }
 }
@@ -98,7 +105,13 @@ extension School {
         if let v = capacity { base["capacity"] = .int(v) }
         if let v = communitiesText { base["communitiesText"] = .string(v) }
         if let v = overrideStyleJSON { base["__overrideStyleJSON"] = .string(v) }
-        return StyleEntity(entityType: "school", id: id, baseFields: base, customFields: custom)
+        return StyleEntity(
+            entityType: "school", id: id, baseFields: base, customFields: custom,
+            overridePin: StyleFieldConvert.pinPartial(
+                shape: styleShape, fillHex: styleFillHex, strokeHex: styleStrokeHex,
+                glyph: styleGlyph, glyphHex: styleGlyphHex, size: styleSize, labelVisible: styleLabelVisible
+            )
+        )
     }
 }
 
@@ -118,7 +131,13 @@ extension Compound {
         if let v = deliveryTime { base["deliveryTime"] = .string(v) }
         base["isNewHouse"] = .bool(isNewHouse)
         if let v = overrideStyleJSON { base["__overrideStyleJSON"] = .string(v) }
-        return StyleEntity(entityType: "compound", id: id, baseFields: base, customFields: custom)
+        return StyleEntity(
+            entityType: "compound", id: id, baseFields: base, customFields: custom,
+            overridePin: StyleFieldConvert.pinPartial(
+                shape: styleShape, fillHex: styleFillHex, strokeHex: styleStrokeHex,
+                glyph: styleGlyph, glyphHex: styleGlyphHex, size: styleSize, labelVisible: styleLabelVisible
+            )
+        )
     }
 }
 
@@ -131,7 +150,13 @@ extension POI {
         if let v = address { base["address"] = .string(v) }
         if let v = category { base["category"] = .string(v) }
         if let v = overrideStyleJSON { base["__overrideStyleJSON"] = .string(v) }
-        return StyleEntity(entityType: "poi", id: id, baseFields: base, customFields: custom)
+        return StyleEntity(
+            entityType: "poi", id: id, baseFields: base, customFields: custom,
+            overridePin: StyleFieldConvert.pinPartial(
+                shape: styleShape, fillHex: styleFillHex, strokeHex: styleStrokeHex,
+                glyph: styleGlyph, glyphHex: styleGlyphHex, size: styleSize, labelVisible: styleLabelVisible
+            )
+        )
     }
 }
 
@@ -145,6 +170,12 @@ extension Area {
         base["fillOpacity"] = .double(fillOpacity)
         if let v = textDescription { base["textDescription"] = .string(v) }
         if let v = overrideStyleJSON { base["__overrideStyleJSON"] = .string(v) }
-        return StyleEntity(entityType: "area", id: id, baseFields: base, customFields: custom)
+        return StyleEntity(
+            entityType: "area", id: id, baseFields: base, customFields: custom,
+            overrideArea: StyleFieldConvert.areaPartial(
+                fillHex: styleFillHex, fillOpacity: styleFillOpacity, strokeHex: styleStrokeHex,
+                strokeWidth: styleStrokeWidth, labelVisible: styleLabelVisible
+            )
+        )
     }
 }
