@@ -85,6 +85,9 @@ struct StudioRootView: View {
     @State private var exportMode = false
     @State private var showSafeFrame = false
     @State private var cache = StudioRenderCache()
+    @State private var showSearch = false
+    @State private var searchMarker: SearchMarker?
+    @State private var createPrefillName: String?
 
     var body: some View {
         let palettesById: [UUID: Palette] = Dictionary(uniqueKeysWithValues: palettes.map { ($0.id, $0) })
@@ -112,10 +115,12 @@ struct StudioRootView: View {
         // 廉价:仅按 region 对预解析 entries 做 bbox 计数(无 styleEntity / resolve)
         let legendSections = renderLegendSections(cache.legendSpecs, region: visibleRegion)
         let overlays = cache.overlays
+        let markerAnnotations: [MKAnnotation] = searchMarker.map { [SearchMarkerFactory.annotation(for: $0)] } ?? []
+        let annotations = cache.pins + markerAnnotations
 
         ZStack {
             MapContainerView(
-                camera: $camera, overlays: overlays, annotations: cache.pins,
+                camera: $camera, overlays: overlays, annotations: annotations,
                 rendererFor: { overlay in
                     if let polygon = overlay as? MKPolygon, let style = cache.styleMap[ObjectIdentifier(overlay)] {
                         return AreaOverlayRenderer(polygon: polygon, style: style)
@@ -124,8 +129,12 @@ struct StudioRootView: View {
                 },
                 onRegionChange: { visibleRegion = $0 },
                 onSchoolSelect: { id in
-                    if let id, let kind = idKind(for: id, in: cache.pins) { appState.select(EntityRef(id: id, kind: kind)) }
-                    else { appState.clearSelection() }
+                    if id == SearchMarkerFactory.markerId { return }
+                    if let id, let kind = idKind(for: id, in: cache.pins) {
+                        appState.select(EntityRef(id: id, kind: kind))
+                    } else {
+                        appState.clearSelection()
+                    }
                 },
                 onLongPressCoordinate: { coord in
                     pendingCoordinate = coord
@@ -138,8 +147,36 @@ struct StudioRootView: View {
                 StudioOverlay(
                     title: $title, subtitle: $subtitle, watermark: $watermark,
                     aspect: $aspect, viewContext: ctx, showSettings: $showSettings,
-                    exportMode: $exportMode, showSafeFrame: $showSafeFrame
+                    exportMode: $exportMode, showSafeFrame: $showSafeFrame, showSearch: $showSearch
                 )
+            }
+
+            if !exportMode, showSearch {
+                VStack {
+                    Spacer()
+                    StudioSearchPanel(
+                        datasetId: dsId,
+                        visibleRegion: visibleRegion,
+                        onPickEntity: { ref, coord, hasCoord in
+                            appState.select(ref)
+                            if hasCoord, let coord { flyTo(coord) }
+                            showSearch = false
+                        },
+                        onPickExternal: { hit in
+                            flyTo(hit.coordinate)
+                            searchMarker = SearchMarker(coordinate: hit.coordinate, name: hit.name)
+                        },
+                        onCreateAtExternal: { hit in
+                            pendingCoordinate = hit.coordinate
+                            createPrefillName = hit.name
+                            showSearch = false
+                            showCreateMenu = true
+                        },
+                        onClose: { showSearch = false }
+                    )
+                    .padding(.bottom, 76)
+                }
+                .transition(.opacity)
             }
 
             if !exportMode {
@@ -173,6 +210,8 @@ struct StudioRootView: View {
         .onChange(of: viewContext?.activeMapView?.id) { _, _ in
             layerState.resetForTheme(enabledIds: viewContext?.activeMapView?.enabledLayerIds ?? [])
             filterState.reset()
+            searchMarker = nil
+            showSearch = false
         }
         .sheet(isPresented: $showCreateMenu) {
             if let dsId = viewContext?.datasetIdValue {
@@ -182,11 +221,15 @@ struct StudioRootView: View {
                 CreateEntitySheet(
                     enabledLayers: enabled,
                     defaultLayerId: defaultId,
-                    onCreate: { kind, layerId, _ in
+                    prefillName: createPrefillName,
+                    defaultKind: createPrefillName != nil ? .poi : .compound,
+                    onCreate: { kind, layerId, name in
                         showCreateMenu = false
-                        createPin(kind, layerId: layerId)
+                        createPin(kind, layerId: layerId, name: name)
                     },
-                    onCancel: { showCreateMenu = false }
+                    onCancel: { showCreateMenu = false
+                        createPrefillName = nil
+                    }
                 )
                 .presentationDetents([.medium])
             }
@@ -535,12 +578,19 @@ struct StudioRootView: View {
         return (overlays, map)
     }
 
-    private func createPin(_ kind: EntityKind, layerId: UUID?) {
+    private func flyTo(_ coord: CLLocationCoordinate2D) {
+        camera = MKMapCamera(lookingAtCenter: coord, fromDistance: 2000, pitch: 0, heading: 0)
+    }
+
+    private func createPin(_ kind: EntityKind, layerId: UUID?, name: String = "") {
         guard let coord = pendingCoordinate, let dsId = viewContext?.datasetIdValue else { return }
+        let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
         let ref = EntityWriter.createPin(
-            kind: kind, datasetId: dsId, name: "未命名",
+            kind: kind, datasetId: dsId, name: trimmed.isEmpty ? "未命名" : trimmed,
             latitude: coord.latitude, longitude: coord.longitude, layerId: layerId, in: modelContext
         )
+        searchMarker = nil
+        createPrefillName = nil
         appState.select(ref)
         appState.beginEditing()
     }
