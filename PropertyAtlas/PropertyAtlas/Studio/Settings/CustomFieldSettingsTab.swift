@@ -12,6 +12,16 @@ struct CustomFieldSettingsTab: View {
     private let entityTypes = ["compound", "school", "poi", "area"]
     private let fieldTypes = ["string", "int", "double", "bool", "date", "multiline"]
 
+    private static func entityLabel(_ type: String) -> String {
+        switch type {
+        case "compound": "小区"
+        case "school": "学校"
+        case "poi": "POI"
+        case "area": "片区"
+        default: type
+        }
+    }
+
     private var rows: [CustomFieldDef] {
         defs.filter { $0.datasetId == datasetId && $0.entityType == entityType && !$0.deleted }
             .sorted { $0.sortOrder < $1.sortOrder }
@@ -20,7 +30,7 @@ struct CustomFieldSettingsTab: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             GlassSegmented(
-                options: entityTypes.map { (value: $0, label: $0) },
+                options: entityTypes.map { (value: $0, label: Self.entityLabel($0)) },
                 selection: $entityType
             )
             SectionLabel(text: "自定义字段", trailing: "\(rows.count)")
