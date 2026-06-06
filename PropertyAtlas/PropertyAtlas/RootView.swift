@@ -230,8 +230,33 @@ struct StudioRootView: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
                 .transition(.move(edge: .leading).combined(with: .opacity))
             }
+
+            // 设置抽屉:右侧浮层,宽=屏×0.382,上下占满,浮于一切之上。
+            // 点 scrim / 完成 关闭。出图模式下隐藏(与其它 chrome 一致)。
+            if !exportMode, showSettings, let ctx = viewContext {
+                Color.black.opacity(0.12)
+                    .ignoresSafeArea()
+                    .contentShape(Rectangle())
+                    .onTapGesture { showSettings = false }
+                    .transition(.opacity)
+                    .zIndex(39)
+
+                GeometryReader { geo in
+                    HStack(spacing: 0) {
+                        Spacer(minLength: 0)
+                        SettingsSheet(viewContext: ctx, onClose: { showSettings = false })
+                            .frame(width: geo.size.width * 0.382)
+                            .padding(.top, 40)
+                            .padding(.bottom, 16)
+                            .padding(.trailing, 16)
+                    }
+                }
+                .transition(.move(edge: .trailing).combined(with: .opacity))
+                .zIndex(40)
+            }
         }
         .animation(.easeInOut(duration: 0.22), value: exportMode)
+        .animation(.easeInOut(duration: 0.25), value: showSettings)
         .onChange(of: viewContext?.activeMapView?.id) { _, _ in
             layerState.resetForTheme(enabledIds: viewContext?.activeMapView?.enabledLayerIds ?? [])
             filterState.reset()
@@ -262,11 +287,6 @@ struct StudioRootView: View {
                     }
                 )
                 .presentationDetents([.medium])
-            }
-        }
-        .sheet(isPresented: $showSettings) {
-            if let ctx = viewContext {
-                SettingsSheet(viewContext: ctx, onClose: { showSettings = false })
             }
         }
         .onAppear { ensureViewContext() }
