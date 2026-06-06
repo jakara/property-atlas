@@ -77,6 +77,23 @@ struct StyleResolverRuleTests {
         #expect(style.fillHex == "#00FF00")
     }
 
+    @Test func areaRuleApplies() {
+        let area = StyleEntity(
+            entityType: "area",
+            id: UUID(),
+            baseFields: ["category": .string("学区")],
+            customFields: [:]
+        )
+        let rule = ResolvedStyleRule(
+            pinPartial: PartialPinStyle(),
+            areaPartial: PartialAreaStyle(fillHex: "#ABCDEF"),
+            priority: 5, enabled: true,
+            conditions: [StyleCondition(field: "category", op: .equals, value: .string("学区"))]
+        )
+        let style = StyleResolver.resolveArea(entity: area, viewStyle: nil, rules: [rule])
+        #expect(style.fillHex == "#ABCDEF")
+    }
+
     @Test func emptyConditionsAlwaysMatch() {
         let always = ResolvedStyleRule(
             pinPartial: PartialPinStyle(glyph: "★"),

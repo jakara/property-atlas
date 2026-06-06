@@ -63,6 +63,8 @@ struct StudioRootView: View {
     @Query private var pois: [POI]
     @Query private var areas: [Area]
     @Query private var layersQuery: [Layer]
+    @Query private var viewStyleRules: [ViewStyleRule]
+    @Query private var viewStyleConditions: [ViewStyleCondition]
 
     @State private var filterState = DimensionFilterState()
     @State private var layerState = LayerState()
@@ -393,22 +395,7 @@ struct StudioRootView: View {
             hasher.combine(row.entityType)
             hasher.combine(row.updatedAt)
         }
-        let ruleSignFetch = FetchDescriptor<ViewStyleRule>(
-            predicate: #Predicate { $0.datasetId == dsId && $0.viewId == activeViewId && !$0.deleted }
-        )
-        for rule in (try? modelContext.fetch(ruleSignFetch)) ?? [] {
-            hasher.combine(rule.id)
-            hasher.combine(rule.priority)
-            hasher.combine(rule.enabled)
-            hasher.combine(rule.updatedAt)
-            let ruleId = rule.id
-            let condSignFetch = FetchDescriptor<ViewStyleCondition>(
-                predicate: #Predicate { $0.ruleId == ruleId && !$0.deleted }
-            )
-            for condition in (try? modelContext.fetch(condSignFetch)) ?? [] {
-                hasher.combine(condition.updatedAt)
-            }
-        }
+        combineRuleSignature(&hasher, dsId: dsId, activeViewId: activeViewId)
         for (key, values) in filterState.hidden.sorted(by: { $0.key < $1.key }) {
             hasher.combine(key)
             for value in values.sorted() {
@@ -445,6 +432,28 @@ struct StudioRootView: View {
         }
         hasher.combine(count)
         hasher.combine(maxUpdated)
+    }
+
+    /// 活跃视图的样式规则 + 条件签名(纯内存,走 @Query)。count 抓增删,maxUpdatedAt 抓改,
+    /// priority/enabled 单独并入 —— 改任一即触发 rebuild,但 pan/zoom 不打 DB。
+    private func combineRuleSignature(_ hasher: inout Hasher, dsId: UUID, activeViewId: UUID) {
+        let activeRules = viewStyleRules.filter { $0.viewId == activeViewId && $0.datasetId == dsId && !$0.deleted }
+        hasher.combine(activeRules.count)
+        var rulesMaxUpdated = Date.distantPast
+        for rule in activeRules {
+            hasher.combine(rule.priority)
+            hasher.combine(rule.enabled)
+            if rule.updatedAt > rulesMaxUpdated { rulesMaxUpdated = rule.updatedAt }
+        }
+        hasher.combine(rulesMaxUpdated)
+        let activeRuleIds = Set(activeRules.map(\.id))
+        let activeConds = viewStyleConditions.filter { activeRuleIds.contains($0.ruleId) && !$0.deleted }
+        hasher.combine(activeConds.count)
+        var condsMaxUpdated = Date.distantPast
+        for condition in activeConds {
+            if condition.updatedAt > condsMaxUpdated { condsMaxUpdated = condition.updatedAt }
+        }
+        hasher.combine(condsMaxUpdated)
     }
 
     /// 重算整条内容管线写入 cache(只在内容签名变化时调用)。
