@@ -35,7 +35,10 @@ enum StyleConsolidationMigrator {
                 context.insert(row)
             }
 
-            applyPaletteAndLegend(view: view, theme: theme, in: context)
+            // palette/legend 仅在全新视图(此前零行)搬运,避免部分迁移时覆盖用户已编辑的 palette/legend
+            if existing.isEmpty {
+                applyPaletteAndLegend(view: view, theme: theme, in: context)
+            }
         }
     }
 

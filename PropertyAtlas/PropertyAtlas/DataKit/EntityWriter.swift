@@ -64,11 +64,6 @@ enum EntityWriter {
         a: { _ in } // Area 无单点
     }
 
-    static func setOverrideStyleJSON(_ ref: EntityRef, _ json: String?, in context: ModelContext) {
-        touch(ref, in: context) { $0.overrideStyleJSON = json } s: { $0.overrideStyleJSON = json }
-            p: { $0.overrideStyleJSON = json } a: { $0.overrideStyleJSON = json }
-    }
-
     static func setOverrideStyle(_ ref: EntityRef, _ override: OverrideStyle, in context: ModelContext) {
         touch(ref, in: context) { compound in
             compound.styleShape = override.shape

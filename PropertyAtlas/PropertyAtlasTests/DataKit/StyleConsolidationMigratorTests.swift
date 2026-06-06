@@ -108,4 +108,25 @@ struct StyleConsolidationMigratorTests {
         let refreshedDs = refreshedDatasets.first
         #expect(refreshedDs?.stylesMigratedV2 == true)
     }
+
+    /// seed 的 theme.defaultStylesJSON 是空 "{}" —— 应建 4 行全 nil(渲染回退 builtin),不崩。
+    @Test func emptyThemeJSONProducesFourNilRows() throws {
+        let ctx = try makeContext()
+        let dataset = Dataset(name: "ds5")
+        ctx.insert(dataset)
+        let theme = Theme(datasetId: dataset.id, name: "t")
+        theme.defaultStylesJSON = "{}"
+        ctx.insert(theme)
+        dataset.activeThemeId = theme.id
+        let view = MapView(datasetId: dataset.id, name: "v")
+        view.isActive = true
+        ctx.insert(view)
+        try ctx.save()
+
+        StyleConsolidationMigrator.run(in: ctx)
+
+        let styles = try ctx.fetch(FetchDescriptor<ViewEntityStyle>())
+        #expect(styles.count == 4)
+        #expect(styles.allSatisfy { $0.fillHex == nil && $0.shape == nil && $0.labelVisible == nil })
+    }
 }

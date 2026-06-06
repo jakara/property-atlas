@@ -11,7 +11,7 @@ struct StyleOverrideSection: View {
     private let shapes = ["circle", "square", "hexagon", "diamond", "triangle", "star"]
 
     private var summary: String {
-        (override.shape ?? "圆点") + " · " + (override.fillHex == nil ? "跟随主题" : "自定义")
+        (override.shape ?? "圆点") + " · " + (override.fillHex == nil ? "继承视图默认" : "自定义")
     }
 
     private var fillBinding: Binding<String> {
@@ -59,7 +59,7 @@ struct StyleOverrideSection: View {
                 override = OverrideStyle()
                 persist()
             } label: {
-                Label("清空 → 跟随主题", systemImage: "eraser")
+                Label("清空 → 继承视图默认", systemImage: "eraser")
             }
             .buttonStyle(.tbtn(.dangerGhost))
         }

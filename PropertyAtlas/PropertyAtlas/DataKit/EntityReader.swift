@@ -48,15 +48,6 @@ enum EntityReader {
         }
     }
 
-    static func overrideStyleJSON(_ ref: EntityRef, in context: ModelContext) -> String? {
-        switch ref.kind {
-        case .compound: fetch(Compound.self, ref.id, context)?.overrideStyleJSON
-        case .school: fetch(School.self, ref.id, context)?.overrideStyleJSON
-        case .poi: fetch(POI.self, ref.id, context)?.overrideStyleJSON
-        case .area: fetch(Area.self, ref.id, context)?.overrideStyleJSON
-        }
-    }
-
     static func overrideStyle(_ ref: EntityRef, in context: ModelContext) -> OverrideStyle {
         switch ref.kind {
         case .compound:
