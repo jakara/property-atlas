@@ -190,31 +190,46 @@ enum StyleConsolidationMigrator {
             guard let theme = resolveTheme(for: view, in: context) else { continue }
             for styleRuleId in theme.styleRuleIds {
                 guard let old = styleRuleById(styleRuleId, in: context) else { continue }
-                let rule = ViewStyleRule(datasetId: view.datasetId, viewId: viewId, entityType: old.entityType)
-                rule.priority = old.priority
-                rule.enabled = old.enabled
-                rule.shape = old.appliesShape
-                rule.fillHex = (old.appliesFillMode == "palette") ? nil : old.appliesFillHex
-                rule.strokeHex = old.appliesStrokeHex
-                rule.glyph = old.appliesGlyph
-                rule.glyphHex = old.appliesGlyphHex
-                rule.size = old.appliesSize
-                rule.labelVisible = old.appliesLabelVisible
-                rule.fillOpacity = old.appliesFillOpacity
-                rule.strokeWidth = old.appliesStrokeWidth
-                context.insert(rule)
-                let conditions: [StyleCondition] = (try? JSONHelpers.decode(old.conditionsJSON)) ?? []
-                for (index, condition) in conditions.enumerated() {
-                    let columns = ViewStyleConditionCodec.columns(from: condition.value, op: condition.op)
-                    let newCondition = ViewStyleCondition(
-                        ruleId: rule.id, field: condition.field, op: condition.op.rawValue
-                    )
-                    newCondition.valueString = columns.valueString
-                    newCondition.valueList = columns.valueList
-                    newCondition.sortOrder = index
-                    context.insert(newCondition)
-                }
+                migrateStyleRule(old, viewId: viewId, datasetId: view.datasetId, in: context)
             }
+        }
+    }
+
+    private static func migrateStyleRule(
+        _ old: StyleRule,
+        viewId: UUID,
+        datasetId: UUID,
+        in context: ModelContext
+    ) {
+        let conditions: [StyleCondition]
+        do {
+            conditions = try JSONHelpers.decode(old.conditionsJSON)
+        } catch {
+            return // conditionsJSON 损坏 → 跳过整条规则,避免产生 match-all
+        }
+        let rule = ViewStyleRule(datasetId: datasetId, viewId: viewId, entityType: old.entityType)
+        rule.priority = old.priority
+        rule.enabled = old.enabled
+        rule.shape = old.appliesShape
+        // palette 模式:fillHex 由 PaletteAssigner 渲染时决定;paletteId/keyField 不存在 ViewStyleRule 上,故丢弃
+        rule.fillHex = (old.appliesFillMode == "palette") ? nil : old.appliesFillHex
+        rule.strokeHex = old.appliesStrokeHex
+        rule.glyph = old.appliesGlyph
+        rule.glyphHex = old.appliesGlyphHex
+        rule.size = old.appliesSize
+        rule.labelVisible = old.appliesLabelVisible
+        rule.fillOpacity = old.appliesFillOpacity
+        rule.strokeWidth = old.appliesStrokeWidth
+        context.insert(rule)
+        for (index, condition) in conditions.enumerated() {
+            let columns = ViewStyleConditionCodec.columns(from: condition.value, op: condition.op)
+            let newCondition = ViewStyleCondition(
+                ruleId: rule.id, field: condition.field, op: condition.op.rawValue
+            )
+            newCondition.valueString = columns.valueString
+            newCondition.valueList = columns.valueList
+            newCondition.sortOrder = index
+            context.insert(newCondition)
         }
     }
 
