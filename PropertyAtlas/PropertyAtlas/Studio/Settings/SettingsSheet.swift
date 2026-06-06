@@ -43,10 +43,8 @@ struct SettingsSheet: View {
             }
         }
         .padding(.top, 16)
-        .frame(width: 460, height: 820)
-        .background(Studio.glassStrong)
-        .background(.ultraThinMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: Studio.rSheet, style: .continuous))
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        .glassSurface(Studio.glassStrong, radius: Studio.rSheet, elevation: .pop)
         .environment(\.colorScheme, .dark)
         .tint(Studio.cool)
     }
