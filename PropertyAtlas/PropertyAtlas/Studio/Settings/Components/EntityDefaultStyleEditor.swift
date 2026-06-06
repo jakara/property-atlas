@@ -15,37 +15,111 @@ struct EntityDefaultStyleEditor: View {
 
     var body: some View {
         StudioDisclosure(title, summary: row?.fillHex ?? "默认", open: false) {
-            if entityType != "area" {
-                VStack(alignment: .leading, spacing: 6) {
-                    Text("形状").font(Studio.sans(11, .medium)).foregroundStyle(Studio.on2)
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 7) {
-                            ForEach(shapes, id: \.self) { shape in
-                                StudioChip(shape, isOn: row?.shape == shape) {
-                                    let bound = getOrCreateRow()
-                                    bound.shape = (bound.shape == shape) ? nil : shape
-                                    bound.updatedAt = Date()
-                                }
-                            }
-                        }
-                    }
-                }
+            if entityType == "area" {
+                ColorHexField(title: "填充色", hex: lazyHexBinding(\.fillHex))
+                opacityStepper
+                ColorHexField(title: "描边色", hex: lazyHexBinding(\.strokeHex))
+                widthStepper
+            } else {
+                shapePicker
+                ColorHexField(title: "填充色", hex: lazyHexBinding(\.fillHex))
+                ColorHexField(title: "描边色", hex: lazyHexBinding(\.strokeHex))
+                glyphField
+                ColorHexField(title: "字符色", hex: lazyHexBinding(\.glyphHex))
+                sizeStepper
             }
-            ColorHexField(title: "填充色", hex: lazyHexBinding(\.fillHex))
-            ColorHexField(title: "描边色", hex: lazyHexBinding(\.strokeHex))
-            Toggle("显示标签", isOn: Binding(
-                get: { row?.labelVisible ?? false },
-                set: { newValue in
-                    let bound = getOrCreateRow()
-                    bound.labelVisible = newValue
-                    bound.updatedAt = Date()
-                }
-            ))
+            labelToggle
         }
         .environment(\.colorScheme, .dark)
         .tint(Studio.cool)
         .onAppear { row = fetchRow() }
     }
+
+    // MARK: - Subviews
+
+    private var shapePicker: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text("形状").font(Studio.sans(11, .medium)).foregroundStyle(Studio.on2)
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 7) {
+                    ForEach(shapes, id: \.self) { shape in
+                        StudioChip(shape, isOn: row?.shape == shape) {
+                            let bound = getOrCreateRow()
+                            bound.shape = (bound.shape == shape) ? nil : shape
+                            bound.updatedAt = Date()
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private var glyphField: some View {
+        TextField("字符 / 图标", text: Binding(
+            get: { row?.glyph ?? "" },
+            set: { newValue in
+                let bound = getOrCreateRow()
+                bound.glyph = newValue.isEmpty ? nil : String(newValue.prefix(2))
+                bound.updatedAt = Date()
+            }
+        )).glassField().font(Studio.sans(13))
+    }
+
+    private var sizeStepper: some View {
+        Stepper("大小 \(row?.size ?? 22)", value: Binding(
+            get: { row?.size ?? 22 },
+            set: { newValue in
+                let bound = getOrCreateRow()
+                bound.size = newValue
+                bound.updatedAt = Date()
+            }
+        ), in: 8...60)
+    }
+
+    private var opacityStepper: some View {
+        Stepper(
+            "不透明度 \(String(format: "%.2f", row?.fillOpacity ?? 0.2))",
+            value: Binding(
+                get: { row?.fillOpacity ?? 0.2 },
+                set: { newValue in
+                    let bound = getOrCreateRow()
+                    bound.fillOpacity = newValue
+                    bound.updatedAt = Date()
+                }
+            ),
+            in: 0...1,
+            step: 0.05
+        )
+    }
+
+    private var widthStepper: some View {
+        Stepper(
+            "描边宽 \(String(format: "%.1f", row?.strokeWidth ?? 1.0))",
+            value: Binding(
+                get: { row?.strokeWidth ?? 1.0 },
+                set: { newValue in
+                    let bound = getOrCreateRow()
+                    bound.strokeWidth = newValue
+                    bound.updatedAt = Date()
+                }
+            ),
+            in: 0...10,
+            step: 0.5
+        )
+    }
+
+    private var labelToggle: some View {
+        Toggle("显示标签", isOn: Binding(
+            get: { row?.labelVisible ?? false },
+            set: { newValue in
+                let bound = getOrCreateRow()
+                bound.labelVisible = newValue
+                bound.updatedAt = Date()
+            }
+        ))
+    }
+
+    // MARK: - Helpers
 
     private func lazyHexBinding(
         _ keyPath: ReferenceWritableKeyPath<ViewEntityStyle, String?>

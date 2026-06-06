@@ -26,17 +26,49 @@ struct ViewStyleRuleEditor: View {
                     .buttonStyle(.tbtn(.ghost))
             }
             Divider().overlay(Studio.on2.opacity(0.2))
-            if rule.entityType != "area" {
+            if rule.entityType == "area" {
+                ColorHexField(title: "填充色", hex: hexBinding(\.fillHex))
+                Stepper(
+                    "不透明度 \(String(format: "%.2f", rule.fillOpacity ?? 0.2))",
+                    value: Binding(
+                        get: { rule.fillOpacity ?? 0.2 },
+                        set: { rule.fillOpacity = $0
+                            rule.updatedAt = Date()
+                        }
+                    ),
+                    in: 0...1,
+                    step: 0.05
+                )
+                ColorHexField(title: "描边色", hex: hexBinding(\.strokeHex))
+                Stepper(
+                    "描边宽 \(String(format: "%.1f", rule.strokeWidth ?? 1.0))",
+                    value: Binding(
+                        get: { rule.strokeWidth ?? 1.0 },
+                        set: { rule.strokeWidth = $0
+                            rule.updatedAt = Date()
+                        }
+                    ),
+                    in: 0...10,
+                    step: 0.5
+                )
+            } else {
                 shapePicker
+                ColorHexField(title: "填充色", hex: hexBinding(\.fillHex))
+                ColorHexField(title: "描边色", hex: hexBinding(\.strokeHex))
+                TextField("字符 / 图标", text: Binding(
+                    get: { rule.glyph ?? "" },
+                    set: { rule.glyph = $0.isEmpty ? nil : String($0.prefix(2))
+                        rule.updatedAt = Date()
+                    }
+                )).glassField().font(Studio.sans(13))
+                ColorHexField(title: "字符色", hex: hexBinding(\.glyphHex))
+                Stepper("大小 \(rule.size ?? 22)", value: Binding(
+                    get: { rule.size ?? 22 },
+                    set: { rule.size = $0
+                        rule.updatedAt = Date()
+                    }
+                ), in: 8...60)
             }
-            ColorHexField(title: "填充色", hex: hexBinding(\.fillHex))
-            ColorHexField(title: "描边色", hex: hexBinding(\.strokeHex))
-            TextField("字符 / 图标", text: Binding(
-                get: { rule.glyph ?? "" },
-                set: { rule.glyph = $0.isEmpty ? nil : String($0.prefix(2))
-                    rule.updatedAt = Date()
-                }
-            )).glassField().font(Studio.mono(13))
             Toggle("显示标签", isOn: Binding(
                 get: { rule.labelVisible ?? false },
                 set: { rule.labelVisible = $0
