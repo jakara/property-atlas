@@ -67,8 +67,8 @@ struct StyleConditionRow: View {
         }
     }
 
-    private func opLabel(_ op: StyleConditionOp) -> String {
-        switch op {
+    private func opLabel(_ kind: StyleConditionOp) -> String {
+        switch kind {
         case .equals: "等于"
         case .notEquals: "不等于"
         case .inOp: "属于"

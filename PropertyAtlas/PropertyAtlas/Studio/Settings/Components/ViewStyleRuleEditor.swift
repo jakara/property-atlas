@@ -13,7 +13,7 @@ struct ViewStyleRuleEditor: View {
     private let shapes = ["circle", "square", "hexagon", "diamond", "triangle", "star"]
 
     var body: some View {
-        StudioDisclosure(summaryTitle, summary: rule.glyph ?? rule.fillHex ?? "规则", open: false) {
+        StudioDisclosure("规则", summary: summaryText, open: false) {
             VStack(alignment: .leading, spacing: 8) {
                 Text("条件(全部满足)").font(Studio.sans(11, .medium)).foregroundStyle(Studio.on2)
                 ForEach(conditions, id: \.id) { condition in
@@ -67,8 +67,8 @@ struct ViewStyleRuleEditor: View {
         .onAppear { conditions = fetchConditions() }
     }
 
-    private var summaryTitle: String {
-        conditions.isEmpty ? "无条件规则" : conditions.map(\.field).joined(separator: "+")
+    private var summaryText: String {
+        conditions.isEmpty ? "无条件" : conditions.map(\.field).joined(separator: "+")
     }
 
     private var shapePicker: some View {

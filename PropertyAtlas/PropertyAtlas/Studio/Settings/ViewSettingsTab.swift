@@ -32,6 +32,7 @@ struct ViewSettingsTab: View {
                         }
                     }.padding(.horizontal, 13).padding(.bottom, 12)
                 }
+                .id(mv.id)
                 SettingsCard("条件样式") {
                     VStack(alignment: .leading, spacing: 12) {
                         ForEach(
@@ -45,6 +46,7 @@ struct ViewSettingsTab: View {
                         }
                     }.padding(.horizontal, 13).padding(.bottom, 12)
                 }
+                .id(mv.id)
                 SettingsCard("分组染色调色板") {
                     PaletteHexEditor(view: mv).padding(.horizontal, 13).padding(.bottom, 12)
                 }
