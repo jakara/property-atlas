@@ -20,33 +20,7 @@ struct ViewSettingsTab: View {
                 SettingsCard("视图") {
                     fieldRow("名称") { TextField("名称", text: nameBinding(mv)).glassField() }
                 }
-                SettingsCard("默认样式") {
-                    VStack(alignment: .leading, spacing: 8) {
-                        ForEach(
-                            [("compound", "小区"), ("school", "学校"), ("poi", "POI"), ("area", "片区")],
-                            id: \.0
-                        ) { entityType, label in
-                            EntityDefaultStyleEditor(
-                                datasetId: mv.datasetId, viewId: mv.id, entityType: entityType, title: label
-                            )
-                        }
-                    }.padding(.horizontal, 13).padding(.bottom, 12)
-                }
-                .id(mv.id)
-                SettingsCard("条件样式") {
-                    VStack(alignment: .leading, spacing: 12) {
-                        ForEach(
-                            [("compound", "小区"), ("school", "学校"), ("poi", "POI"), ("area", "片区")],
-                            id: \.0
-                        ) { type, label in
-                            VStack(alignment: .leading, spacing: 6) {
-                                Text(label).font(Studio.sans(12, .semibold)).foregroundStyle(Studio.on)
-                                ViewStyleRulesSection(datasetId: mv.datasetId, viewId: mv.id, entityType: type)
-                            }
-                        }
-                    }.padding(.horizontal, 13).padding(.bottom, 12)
-                }
-                .id(mv.id)
+                ViewStyleSection(mv: mv)
                 SettingsCard("分组染色调色板") {
                     PaletteHexEditor(view: mv).padding(.horizontal, 13).padding(.bottom, 12)
                 }
