@@ -100,6 +100,7 @@ struct EntityEditor: View {
                 .padding(.horizontal, 13).frame(height: 30)
                 .background(active ? Studio.glassRaised : Studio.glassHover, in: Capsule())
                 .overlay { if active { Capsule().strokeBorder(Studio.glassLine, lineWidth: 1) } }
+                .contentShape(Capsule())
         }.buttonStyle(.plain)
     }
 }

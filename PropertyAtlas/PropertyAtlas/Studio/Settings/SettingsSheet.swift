@@ -80,6 +80,7 @@ struct SettingsSheet: View {
                         in: RoundedRectangle(cornerRadius: 9, style: .continuous)
                     )
                     .shadow(color: .black.opacity(on ? 0.3 : 0), radius: 1.5, y: 1)
+                    .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
             }

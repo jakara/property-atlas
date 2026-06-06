@@ -42,6 +42,7 @@ struct RelationTabsView: View {
                 .overlay {
                     if active { Capsule().strokeBorder(Studio.glassLine, lineWidth: 1) }
                 }
+                .contentShape(Capsule())
         }
         .buttonStyle(.plain)
     }

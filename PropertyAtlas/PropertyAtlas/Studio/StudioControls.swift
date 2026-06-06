@@ -59,6 +59,7 @@ struct StudioChip: View {
             .frame(height: 32)
             .background(isOn ? soft : .clear, in: Capsule())
             .overlay { Capsule().strokeBorder(isOn ? line : Studio.glassLine, lineWidth: 1) }
+            .contentShape(Capsule())
         }
         .buttonStyle(.plain)
     }
