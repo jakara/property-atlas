@@ -32,6 +32,19 @@ struct ViewSettingsTab: View {
                         }
                     }.padding(.horizontal, 13).padding(.bottom, 12)
                 }
+                SettingsCard("条件样式") {
+                    VStack(alignment: .leading, spacing: 12) {
+                        ForEach(
+                            [("compound", "小区"), ("school", "学校"), ("poi", "POI"), ("area", "片区")],
+                            id: \.0
+                        ) { type, label in
+                            VStack(alignment: .leading, spacing: 6) {
+                                Text(label).font(Studio.sans(12, .semibold)).foregroundStyle(Studio.on)
+                                ViewStyleRulesSection(datasetId: mv.datasetId, viewId: mv.id, entityType: type)
+                            }
+                        }
+                    }.padding(.horizontal, 13).padding(.bottom, 12)
+                }
                 SettingsCard("分组染色调色板") {
                     PaletteHexEditor(view: mv).padding(.horizontal, 13).padding(.bottom, 12)
                 }
