@@ -84,10 +84,14 @@ struct GlassSegmented<T: Hashable>: View {
                             in: RoundedRectangle(cornerRadius: 6, style: .continuous)
                         )
                         .shadow(color: .black.opacity(on ? 0.25 : 0), radius: 1, y: 1)
+                        // 整段可点:背景含 .clear,无 contentShape 时只有文字字形被命中,
+                        // 段内空白成死区(点矩形部分无反应)。补成整 frame 命中。
+                        .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
             }
         }
+        .frame(maxWidth: .infinity)
         .padding(3)
         .background(Studio.glassInput, in: RoundedRectangle(cornerRadius: Studio.rControl, style: .continuous))
     }
