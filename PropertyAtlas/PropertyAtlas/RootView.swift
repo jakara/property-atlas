@@ -246,11 +246,13 @@ struct StudioRootView: View {
                         Spacer(minLength: 0)
                         SettingsSheet(viewContext: ctx, onClose: { showSettings = false })
                             .frame(width: geo.size.width * 0.382)
-                            .padding(.top, 40)
-                            .padding(.bottom, 16)
+                            // 顶 44 让出菜单/标题栏;底 88 清开底部浮动工具栏(dock 在 bottom 22 + 高约 52)
+                            .padding(.top, 44)
+                            .padding(.bottom, 88)
                             .padding(.trailing, 16)
                     }
                 }
+                .ignoresSafeArea()
                 .transition(.move(edge: .trailing).combined(with: .opacity))
                 .zIndex(40)
             }
