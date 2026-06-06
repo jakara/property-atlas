@@ -2,13 +2,15 @@ import Foundation
 import SwiftData
 
 /// Stage A 启动幂等搬运:旧 Theme/Palette/实体 overrideStyleJSON → 新视图样式模型。
-/// 每视图闸 = 是否已有 ViewEntityStyle 行;实体 override 闸 = Dataset.stylesMigratedV2。
+/// 每视图闸(views pass) = 是否已有 ViewEntityStyle 行;实体 override 闸 = Dataset.stylesMigratedV2。
+/// 第三段(style rules pass):旧 StyleRule → ViewStyleRule + ViewStyleCondition;每视图闸 = 已有 ViewStyleRule 行。
 /// 后续阶段删除本文件。
 @MainActor
 enum StyleConsolidationMigrator {
     static func run(in context: ModelContext) {
         migrateViews(in: context)
         migrateEntityOverrides(in: context)
+        migrateStyleRules(in: context)
         try? context.save()
     }
 
@@ -171,5 +173,54 @@ enum StyleConsolidationMigrator {
             area.styleFillHex = style.fillHex
             area.styleLabelVisible = style.labelVisible
         }
+    }
+
+    /// 旧 StyleRule(挂 theme.styleRuleIds)→ ViewStyleRule + ViewStyleCondition。
+    /// 每视图闸 = 已有 ViewStyleRule 行则跳过。
+    private static func migrateStyleRules(in context: ModelContext) {
+        let views = (try? context.fetch(FetchDescriptor<MapView>(
+            predicate: #Predicate { !$0.deleted }
+        ))) ?? []
+        for view in views {
+            let viewId = view.id
+            let existing = (try? context.fetch(FetchDescriptor<ViewStyleRule>(
+                predicate: #Predicate { $0.viewId == viewId && !$0.deleted }
+            ))) ?? []
+            if !existing.isEmpty { continue }
+            guard let theme = resolveTheme(for: view, in: context) else { continue }
+            for styleRuleId in theme.styleRuleIds {
+                guard let old = styleRuleById(styleRuleId, in: context) else { continue }
+                let rule = ViewStyleRule(datasetId: view.datasetId, viewId: viewId, entityType: old.entityType)
+                rule.priority = old.priority
+                rule.enabled = old.enabled
+                rule.shape = old.appliesShape
+                rule.fillHex = (old.appliesFillMode == "palette") ? nil : old.appliesFillHex
+                rule.strokeHex = old.appliesStrokeHex
+                rule.glyph = old.appliesGlyph
+                rule.glyphHex = old.appliesGlyphHex
+                rule.size = old.appliesSize
+                rule.labelVisible = old.appliesLabelVisible
+                rule.fillOpacity = old.appliesFillOpacity
+                rule.strokeWidth = old.appliesStrokeWidth
+                context.insert(rule)
+                let conditions: [StyleCondition] = (try? JSONHelpers.decode(old.conditionsJSON)) ?? []
+                for (index, condition) in conditions.enumerated() {
+                    let columns = ViewStyleConditionCodec.columns(from: condition.value, op: condition.op)
+                    let newCondition = ViewStyleCondition(
+                        ruleId: rule.id, field: condition.field, op: condition.op.rawValue
+                    )
+                    newCondition.valueString = columns.valueString
+                    newCondition.valueList = columns.valueList
+                    newCondition.sortOrder = index
+                    context.insert(newCondition)
+                }
+            }
+        }
+    }
+
+    private static func styleRuleById(_ id: UUID, in context: ModelContext) -> StyleRule? {
+        (try? context.fetch(FetchDescriptor<StyleRule>(
+            predicate: #Predicate { $0.id == id && !$0.deleted }
+        )))?.first
     }
 }
