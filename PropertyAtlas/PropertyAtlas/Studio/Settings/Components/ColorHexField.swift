@@ -12,21 +12,25 @@ struct ColorHexField: View {
         return t
     }
 
+    /// 系统取色器双向绑定:hex 空/非法 → 灰;选色 → 回写规范化 hex。
+    private var colorBinding: Binding<Color> {
+        Binding(
+            get: { Color(uiColor: HexColor.parse(hex) ?? .gray) },
+            set: { hex = HexColor.hexString(from: UIColor($0)) }
+        )
+    }
+
     var body: some View {
         HStack(spacing: 10) {
             Text(title)
                 .frame(width: Studio.fieldW, alignment: .leading)
                 .font(Studio.sans(11, .medium))
                 .foregroundStyle(Studio.on2)
-            // `.hex` well: 26pt rounded color dot (radius 7) + mono uppercase hex field
+            // 原生 ColorPicker(色块即触发系统取色器)+ mono uppercase hex 输入,两种皆可改
             HStack(spacing: 8) {
-                RoundedRectangle(cornerRadius: 7, style: .continuous)
-                    .fill(Color(uiColor: HexColor.parse(hex) ?? .clear))
+                ColorPicker("", selection: colorBinding, supportsOpacity: false)
+                    .labelsHidden()
                     .frame(width: 26, height: 26)
-                    .overlay {
-                        RoundedRectangle(cornerRadius: 7, style: .continuous)
-                            .strokeBorder(Studio.glassRim, lineWidth: 1)
-                    }
                 TextField("#RRGGBB", text: $hex)
                     .textFieldStyle(.plain)
                     .font(Studio.mono(13))

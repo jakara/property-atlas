@@ -6,14 +6,9 @@ struct LayerSettingsTab: View {
     let datasetId: UUID
     @Environment(\.modelContext) private var modelContext
     @Query private var layers: [Layer]
-    @Query private var themes: [Theme]
 
     private var dsLayers: [Layer] {
         layers.filter { $0.datasetId == datasetId && !$0.deleted }.sorted { $0.zIndex < $1.zIndex }
-    }
-
-    private var dsThemes: [Theme] {
-        themes.filter { $0.datasetId == datasetId && !$0.deleted }
     }
 
     var body: some View {
@@ -29,21 +24,10 @@ struct LayerSettingsTab: View {
     private func layerCard(_ l: Layer) -> some View {
         SettingsCard(trailing: AnyView(cardHeader(l))) {
             VStack(alignment: .leading, spacing: 10) {
-                HStack(spacing: 10) {
-                    field("zIndex") {
-                        GlassStepper(value: Binding(get: { l.zIndex }, set: { l.zIndex = $0
-                            l.updatedAt = Date()
-                        }), range: 0...999)
-                    }
-                    field("主题") {
-                        Picker("", selection: Binding(get: { l.themeId }, set: { l.themeId = $0
-                            l.updatedAt = Date()
-                        })) {
-                            Text("无").tag(UUID?.none)
-                            ForEach(dsThemes, id: \.id) { Text($0.name).tag($0.id as UUID?) }
-                        }.labelsHidden().tint(Studio.cool)
-                            .lineLimit(1).fixedSize(horizontal: true, vertical: false)
-                    }
+                field("zIndex") {
+                    GlassStepper(value: Binding(get: { l.zIndex }, set: { l.zIndex = $0
+                        l.updatedAt = Date()
+                    }), range: 0...999)
                 }
                 ColorHexField(title: "图例色", hex: Binding(get: { l.colorHex ?? "" }, set: { l.colorHex = $0.isEmpty ? nil : ColorHexField.normalize($0)
                     l.updatedAt = Date()

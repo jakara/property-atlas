@@ -121,5 +121,15 @@ enum HexColor {
         let b = CGFloat(n & 0xFF) / 255
         return UIColor(red: r, green: g, blue: b, alpha: 1)
     }
+
+    /// UIColor → "#RRGGBB"(钳到 0–255,忽略 alpha)。供 ColorPicker 回写 hex 用。
+    static func hexString(from color: UIColor) -> String {
+        var red: CGFloat = 0, green: CGFloat = 0, blue: CGFloat = 0, alpha: CGFloat = 0
+        color.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
+        func channel(_ value: CGFloat) -> Int {
+            max(0, min(255, Int((value * 255).rounded())))
+        }
+        return String(format: "#%02X%02X%02X", channel(red), channel(green), channel(blue))
+    }
 }
 #endif
