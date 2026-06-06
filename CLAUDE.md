@@ -29,6 +29,8 @@ iPad-first iOS 17+ app for property research in Tianjin. Stack: SwiftUI · MapKi
 - 实施计划 P9d (已完成): `docs/superpowers/plans/2026-06-02-p9d-remaining-settings-editors.md`
 - 视图持有样式 重设计 spec: `docs/superpowers/specs/2026-06-06-view-owned-style-redesign.md`
 - 实施计划 Stage A (已完成): `docs/superpowers/plans/2026-06-06-view-owned-style-stage-a.md`
+- 视图条件样式 spec: `docs/superpowers/specs/2026-06-06-view-conditional-style-design.md`
+- 实施计划 条件样式 (已完成): `docs/superpowers/plans/2026-06-06-view-conditional-style.md`
 - CloudKit: 延后 (iOS 上手后;Catalyst 现 `.none`)
 - P9 余项: 逐实体-逐图层 theme 解析 (明确延后;单 active theme + StyleRule 已覆盖,等具体取景需求再做)
 
@@ -234,6 +236,21 @@ Never sync `pub_*` or `loc_*` to CloudKit.
 > **Stage B(后续 plan)**:删三 @Model + ModelSchema 条目 + 死类型(`StyleRuleMatcher`/`StyleCondition`/
 > `ConditionEvaluator`/`PaletteResolver`/`ThemeContext`/`StyleDefaults.parseThemeDefaults`)+ `Layer.themeId`/
 > `Dataset.activeThemeId`/`MapView.paletteId`/实体 `overrideStyleJSON` 列/`Dataset.stylesMigratedV2` + 删迁移器。
+
+> **视图条件样式 (2026-06-06) 完成后**: 条件样式作为视图持有的通用能力加回(Stage A 删 StyleRule 后丢失的
+> 学校 重/区/普 标识由此还原)。三层求值:`builtin → ViewEntityStyle 固定默认 → 命中的 ViewStyleRule(priority
+> 升序合并)→ 分组染色 → 实体 override(仅固定)`。新 `ViewStyleRule` @Model(每视图×entityType 的规则,设
+> 任意属性子集 + priority/enabled)+ `ViewStyleCondition` @Model(规则的多字段 AND 谓词,typed:field/op/
+> valueString/valueList,**无 JSON**)。`ViewStyleConditionCodec` typed 列⇄`StyleCondition`/`AnyJSON`;求值复用
+> `ConditionEvaluator`。为避免 resolver 查 DB:`RootView.buildViewStyleRules` 按 viewId 预取规则+条件组装成纯内存
+> `ResolvedStyleRule` 喂 `StyleResolver.resolvePin/resolveArea(rules:)`;内容签名经 `@Query` 纯内存算规则/条件版本
+> (count+maxUpdatedAt),pan/zoom 不触发。UI:视图 tab「条件样式」卡(每 entityType 一组 `ViewStyleRulesSection`
+> → `ViewStyleRuleEditor` 条件 `StyleConditionRow` + 全 9 属性 + enabled/priority/软删);默认样式与规则编辑器均覆盖
+> 全部 9 属性(shape/fill/stroke/glyph/glyphHex/size/label;area:fill/opacity/stroke/width/label);样式卡 `.id(mv.id)`
+> 切视图刷新。迁移:`StyleConsolidationMigrator` 第 3 趟 `migrateStyleRules`(每视图闸=已有 ViewStyleRule 行;旧
+> theme.styleRuleIds→旧 StyleRule→ViewStyleRule+ViewStyleCondition;conditionsJSON 解析失败跳过整条规则避免 match-all)。
+> 双库验证:既有库次启动还原学校标识(16 rule/12 cond)、实体数不变(175/823)、幂等。**Stage B**:删旧 StyleRule/
+> Theme/Palette @Model 时一并删 migrateStyleRules,LegacyMigrator 改直接 seed ViewStyleRule+ViewStyleCondition。
 
 ### School district logic
 
