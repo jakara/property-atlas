@@ -393,6 +393,22 @@ struct StudioRootView: View {
             hasher.combine(row.entityType)
             hasher.combine(row.updatedAt)
         }
+        let ruleSignFetch = FetchDescriptor<ViewStyleRule>(
+            predicate: #Predicate { $0.datasetId == dsId && $0.viewId == activeViewId && !$0.deleted }
+        )
+        for rule in (try? modelContext.fetch(ruleSignFetch)) ?? [] {
+            hasher.combine(rule.id)
+            hasher.combine(rule.priority)
+            hasher.combine(rule.enabled)
+            hasher.combine(rule.updatedAt)
+            let ruleId = rule.id
+            let condSignFetch = FetchDescriptor<ViewStyleCondition>(
+                predicate: #Predicate { $0.ruleId == ruleId && !$0.deleted }
+            )
+            for condition in (try? modelContext.fetch(condSignFetch)) ?? [] {
+                hasher.combine(condition.updatedAt)
+            }
+        }
         for (key, values) in filterState.hidden.sorted(by: { $0.key < $1.key }) {
             hasher.combine(key)
             for value in values.sorted() {
@@ -489,6 +505,7 @@ struct StudioRootView: View {
             edgeProjection: edgeProjection, cache: dimCache
         )
         let viewStyles = buildViewStyles(dsId: dsId, viewId: activeMapView?.id)
+        let viewRules = buildViewStyleRules(dsId: dsId, viewId: activeMapView?.id)
         let palette = activeMapView.flatMap { $0.paletteHex.isEmpty ? nil : $0.paletteHex }
             ?? PaletteAssigner.highContrast
         let groupItems = cands
@@ -501,11 +518,11 @@ struct StudioRootView: View {
         )
         let pins = buildPins(
             cands: cands, visibleIds: visibleIds, groupColors: groupColors,
-            viewStyles: viewStyles, highlight: highlight
+            viewStyles: viewStyles, viewRules: viewRules, highlight: highlight
         )
         let (areaOverlays, styleMap) = buildAreaOverlays(
             areas: visibility["area"] == true ? areas.filter { $0.datasetId == dsId } : [],
-            visibleIds: visibleIds, viewStyles: viewStyles
+            visibleIds: visibleIds, viewStyles: viewStyles, viewRules: viewRules
         )
         let edgeLines = buildEdgeLines(labels: activeMapView?.drawEdgeLines ?? [], datasetId: dsId)
 
@@ -585,12 +602,14 @@ struct StudioRootView: View {
 
     private func buildPins(
         cands: [Cand], visibleIds: Set<UUID>, groupColors: [UUID: String],
-        viewStyles: [String: ViewEntityStyle], highlight: Set<UUID>?
+        viewStyles: [String: ViewEntityStyle], viewRules: [String: [ResolvedStyleRule]],
+        highlight: Set<UUID>?
     ) -> [MKAnnotation] {
         var result: [MKAnnotation] = []
         for c in cands where c.type != "area" && c.hasCoordinate && visibleIds.contains(c.id) {
             let style = StyleResolver.resolvePin(
-                entity: c.entity, viewStyle: viewStyles[c.type], groupFillHex: groupColors[c.id]
+                entity: c.entity, viewStyle: viewStyles[c.type],
+                rules: viewRules[c.type] ?? [], groupFillHex: groupColors[c.id]
             )
             let pin = PinAnnotation(
                 entityId: c.id,
@@ -609,13 +628,14 @@ struct StudioRootView: View {
     }
 
     private func buildAreaOverlays(
-        areas: [Area], visibleIds: Set<UUID>, viewStyles: [String: ViewEntityStyle]
+        areas: [Area], visibleIds: Set<UUID>, viewStyles: [String: ViewEntityStyle],
+        viewRules: [String: [ResolvedStyleRule]]
     ) -> ([MKOverlay], [ObjectIdentifier: AreaStyle]) {
         var overlays: [MKOverlay] = []
         var map: [ObjectIdentifier: AreaStyle] = [:]
         for a in areas where !a.deleted && visibleIds.contains(a.id) {
             let style = StyleResolver.resolveArea(
-                entity: a.styleEntity, viewStyle: viewStyles["area"]
+                entity: a.styleEntity, viewStyle: viewStyles["area"], rules: viewRules["area"] ?? []
             )
             if let r = AreaOverlayFactory.makeOverlay(for: a, style: style) {
                 overlays.append(r.overlay)
@@ -676,6 +696,45 @@ struct StudioRootView: View {
         )
         let rows = (try? modelContext.fetch(fetch)) ?? []
         return Dictionary(rows.map { ($0.entityType, $0) }, uniquingKeysWith: { first, _ in first })
+    }
+
+    /// 按 viewId 预取该视图全部 ViewStyleRule(+ 各自 ViewStyleCondition)→ 按 entityType 分组、
+    /// priority 升序的 ResolvedStyleRule。resolver 纯内存,不再查 DB。
+    private func buildViewStyleRules(dsId: UUID, viewId: UUID?) -> [String: [ResolvedStyleRule]] {
+        guard let viewId else { return [:] }
+        let ruleFetch = FetchDescriptor<ViewStyleRule>(
+            predicate: #Predicate { $0.datasetId == dsId && $0.viewId == viewId && !$0.deleted },
+            sortBy: [SortDescriptor(\.priority)]
+        )
+        let rules = (try? modelContext.fetch(ruleFetch)) ?? []
+        var out: [String: [ResolvedStyleRule]] = [:]
+        for rule in rules {
+            let ruleId = rule.id
+            let condFetch = FetchDescriptor<ViewStyleCondition>(
+                predicate: #Predicate { $0.ruleId == ruleId && !$0.deleted },
+                sortBy: [SortDescriptor(\.sortOrder)]
+            )
+            let conditions = ((try? modelContext.fetch(condFetch)) ?? []).map { condition in
+                ViewStyleConditionCodec.styleCondition(
+                    field: condition.field,
+                    op: StyleConditionOp(rawValue: condition.op) ?? .equals,
+                    valueString: condition.valueString, valueList: condition.valueList
+                )
+            }
+            let resolved = ResolvedStyleRule(
+                pinPartial: StyleFieldConvert.pinPartial(
+                    shape: rule.shape, fillHex: rule.fillHex, strokeHex: rule.strokeHex,
+                    glyph: rule.glyph, glyphHex: rule.glyphHex, size: rule.size, labelVisible: rule.labelVisible
+                ),
+                areaPartial: StyleFieldConvert.areaPartial(
+                    fillHex: rule.fillHex, fillOpacity: rule.fillOpacity,
+                    strokeHex: rule.strokeHex, strokeWidth: rule.strokeWidth, labelVisible: rule.labelVisible
+                ),
+                priority: rule.priority, enabled: rule.enabled, conditions: conditions
+            )
+            out[rule.entityType, default: []].append(resolved)
+        }
+        return out
     }
 
     /// edge 投影:一次 Edge fetch(按两端分组)+ 复用预建 entityById(取对端 targetField/name)。
