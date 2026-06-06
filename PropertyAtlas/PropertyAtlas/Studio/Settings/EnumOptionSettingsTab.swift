@@ -25,6 +25,7 @@ struct EnumOptionSettingsTab: View {
                     Picker("范围", selection: $scope) {
                         ForEach(scopes, id: \.self) { Text($0).tag($0) }
                     }.labelsHidden().tint(Studio.cool)
+                        .lineLimit(1).fixedSize(horizontal: true, vertical: false)
                 }
                 RowDivider()
                 VStack(alignment: .leading, spacing: 8) {

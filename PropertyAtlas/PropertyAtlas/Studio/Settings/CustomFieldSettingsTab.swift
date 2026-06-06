@@ -63,6 +63,7 @@ struct CustomFieldSettingsTab: View {
                         ForEach(fieldTypes, id: \.self) { Text($0).tag($0) }
                     }
                     .font(Studio.sans(12)).tint(Studio.cool)
+                    .lineLimit(1).fixedSize(horizontal: true, vertical: false)
                     TextField("单位", text: Binding(get: { d.unit ?? "" }, set: { d.unit = $0.isEmpty ? nil : $0
                         d.updatedAt = Date()
                     }))

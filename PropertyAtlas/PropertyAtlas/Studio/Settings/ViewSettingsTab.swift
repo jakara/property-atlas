@@ -59,6 +59,7 @@ struct ViewSettingsTab: View {
                             Text("无").tag(UUID?.none)
                             ForEach(cameraPresets.filter { $0.datasetId == mv.datasetId && !$0.deleted }, id: \.id) { Text($0.name).tag($0.id as UUID?) }
                         }.labelsHidden().tint(Studio.cool)
+                            .lineLimit(1).fixedSize(horizontal: true, vertical: false)
                     }
                     RowDivider()
                     SettingsRow(title: "选中聚光") {
@@ -89,6 +90,7 @@ struct ViewSettingsTab: View {
             Picker("", selection: activeBinding) {
                 ForEach(viewContext.allMapViews, id: \.id) { Text($0.name).tag($0.id as UUID?) }
             }.labelsHidden().tint(Studio.cool)
+                .lineLimit(1).fixedSize(horizontal: true, vertical: false)
             Spacer()
             Button { addView() } label: { Image(systemName: "plus") }
                 .buttonStyle(.tbtn(.ghost))

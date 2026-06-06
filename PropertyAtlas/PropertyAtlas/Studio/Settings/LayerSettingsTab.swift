@@ -42,6 +42,7 @@ struct LayerSettingsTab: View {
                             Text("无").tag(UUID?.none)
                             ForEach(dsThemes, id: \.id) { Text($0.name).tag($0.id as UUID?) }
                         }.labelsHidden().tint(Studio.cool)
+                            .lineLimit(1).fixedSize(horizontal: true, vertical: false)
                     }
                 }
                 ColorHexField(title: "图例色", hex: Binding(get: { l.colorHex ?? "" }, set: { l.colorHex = $0.isEmpty ? nil : ColorHexField.normalize($0)
