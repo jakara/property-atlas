@@ -241,6 +241,18 @@ struct StudioRootView: View {
                 .transition(.move(edge: .leading).combined(with: .opacity))
             }
 
+            // 指南针:左下角,随地图方向扭转,双击恢复正北。
+            if !exportMode {
+                VStack {
+                    Spacer()
+                    HStack {
+                        CompassView(heading: camera.heading, onResetNorth: resetNorth)
+                            .padding(.leading, 16).padding(.bottom, 22)
+                        Spacer()
+                    }
+                }
+            }
+
             // 设置抽屉:右侧浮层,宽=屏×0.382,上下占满,浮于一切之上。
             // 点 scrim / 完成 关闭。出图模式下隐藏(与其它 chrome 一致)。
             if !exportMode, showSettings, let ctx = viewContext {
@@ -325,6 +337,11 @@ struct StudioRootView: View {
                 reopenSettingsOnDeselect = false
                 showSettings = true
             }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .studioPresetSelected)) { note in
+            // Studio 菜单「跳到 …」机位 → 飞到该预设相机。
+            guard let preset = note.object as? StudioCameraPreset else { return }
+            camera = preset.camera
         }
     }
 
@@ -728,6 +745,16 @@ struct StudioRootView: View {
 
     private func flyTo(_ coord: CLLocationCoordinate2D) {
         camera = MKMapCamera(lookingAtCenter: coord, fromDistance: 2000, pitch: 0, heading: 0)
+    }
+
+    /// 指南针双击:保持中心/距离/俯仰,heading 归零(正北朝上)。
+    private func resetNorth() {
+        camera = MKMapCamera(
+            lookingAtCenter: camera.centerCoordinate,
+            fromDistance: camera.centerCoordinateDistance,
+            pitch: camera.pitch,
+            heading: 0
+        )
     }
 
     /// 双击地图空白:逆地理编码坐标 → 复用外部地点详情卡(ExternalPlaceCard)。
