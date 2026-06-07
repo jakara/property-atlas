@@ -11,6 +11,8 @@ struct StudioToolbar: View {
     @Binding var showSafeFrame: Bool
     @Binding var showSearch: Bool
     @Binding var mapStyle: StudioMapStyle
+    @Binding var poiEnabled: Bool
+    @Binding var poiCategories: Set<StudioPOIOption>
 
     var body: some View {
         HStack(spacing: 4) {
@@ -43,6 +45,15 @@ struct StudioToolbar: View {
                         mapStyle = style
                     } label: {
                         Label(style.label, systemImage: style == mapStyle ? "checkmark" : style.icon)
+                    }
+                }
+                Divider()
+                Toggle("显示 Apple 地点", isOn: $poiEnabled)
+                if poiEnabled {
+                    Menu("地点类别(空=全部)") {
+                        ForEach(StudioPOIOption.allCases) { opt in
+                            Toggle(opt.label, isOn: categoryBinding(opt))
+                        }
                     }
                 }
             } label: {
@@ -105,6 +116,13 @@ struct StudioToolbar: View {
         .padding(6)
         .glassSurface(Studio.glass, radius: Studio.rPanel, elevation: .float)
         .environment(\.colorScheme, .dark)
+    }
+
+    private func categoryBinding(_ opt: StudioPOIOption) -> Binding<Bool> {
+        Binding(
+            get: { poiCategories.contains(opt) },
+            set: { on in if on { poiCategories.insert(opt) } else { poiCategories.remove(opt) } }
+        )
     }
 
     private var sep: some View {

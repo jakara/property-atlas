@@ -12,6 +12,8 @@ struct MapContainerView: View {
     var onDoubleTapCoordinate: ((CLLocationCoordinate2D) -> Void)?
     var onSelectMapFeature: ((MKMapFeatureAnnotation) -> Void)?
     var mapStyle: StudioMapStyle = .mutedLight
+    var poiFilter: MKPointOfInterestFilter = .excludingAll
+    var poiSignature: String = ""
 
     init(
         camera: Binding<MKMapCamera>? = nil,
@@ -23,7 +25,9 @@ struct MapContainerView: View {
         onLongPressCoordinate: ((CLLocationCoordinate2D) -> Void)? = nil,
         onDoubleTapCoordinate: ((CLLocationCoordinate2D) -> Void)? = nil,
         onSelectMapFeature: ((MKMapFeatureAnnotation) -> Void)? = nil,
-        mapStyle: StudioMapStyle = .mutedLight
+        mapStyle: StudioMapStyle = .mutedLight,
+        poiFilter: MKPointOfInterestFilter = .excludingAll,
+        poiSignature: String = ""
     ) {
         if let camera {
             self._camera = camera
@@ -46,6 +50,8 @@ struct MapContainerView: View {
         self.onDoubleTapCoordinate = onDoubleTapCoordinate
         self.onSelectMapFeature = onSelectMapFeature
         self.mapStyle = mapStyle
+        self.poiFilter = poiFilter
+        self.poiSignature = poiSignature
     }
 
     var body: some View {
@@ -59,7 +65,9 @@ struct MapContainerView: View {
             onLongPressCoordinate: onLongPressCoordinate,
             onDoubleTapCoordinate: onDoubleTapCoordinate,
             onSelectMapFeature: onSelectMapFeature,
-            mapStyle: mapStyle
+            mapStyle: mapStyle,
+            poiFilter: poiFilter,
+            poiSignature: poiSignature
         )
     }
 }

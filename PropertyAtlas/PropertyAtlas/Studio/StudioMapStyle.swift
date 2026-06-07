@@ -29,21 +29,24 @@ enum StudioMapStyle: String, CaseIterable, Identifiable {
         }
     }
 
-    /// 现代 MKMapConfiguration(iOS 17)。标准类去 POI 标注(与数据叠加不打架)。
-    var configuration: MKMapConfiguration {
+    /// 现代 MKMapConfiguration(iOS 17)。POI 由 poiFilter 控制(默认 .excludingAll 不显示,
+    /// 与自家数据叠加不打架)。纯影像(卫星)不接受 POI filter。
+    func configuration(poiFilter: MKPointOfInterestFilter = .excludingAll) -> MKMapConfiguration {
         switch self {
         case .mutedLight, .mutedDark:
             let config = MKStandardMapConfiguration(elevationStyle: .flat, emphasisStyle: .muted)
-            config.pointOfInterestFilter = .excludingAll
+            config.pointOfInterestFilter = poiFilter
             return config
         case .standardFull:
             let config = MKStandardMapConfiguration(elevationStyle: .flat, emphasisStyle: .default)
-            config.pointOfInterestFilter = .excludingAll
+            config.pointOfInterestFilter = poiFilter
             return config
         case .satellite:
             return MKImageryMapConfiguration(elevationStyle: .flat)
         case .hybrid:
-            return MKHybridMapConfiguration(elevationStyle: .flat)
+            let config = MKHybridMapConfiguration(elevationStyle: .flat)
+            config.pointOfInterestFilter = poiFilter
+            return config
         }
     }
 

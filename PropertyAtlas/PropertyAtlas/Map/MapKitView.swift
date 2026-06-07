@@ -14,6 +14,10 @@ struct MapKitView: UIViewRepresentable {
     /// 点击系统底图 POI(卫星/混合/标准全彩)→ 上层用 feature 立即弹卡 + 异步取 MKMapItem 详情。
     var onSelectMapFeature: ((MKMapFeatureAnnotation) -> Void)?
     var mapStyle: StudioMapStyle = .mutedLight
+    /// 系统底图 POI 过滤(默认全不显示)。
+    var poiFilter: MKPointOfInterestFilter = .excludingAll
+    /// POI 设置签名(style+开关+类别),变化即重建配置。
+    var poiSignature: String = ""
 
     func makeCoordinator() -> Coordinator {
         Coordinator()
@@ -22,9 +26,10 @@ struct MapKitView: UIViewRepresentable {
     func makeUIView(context: Context) -> MKMapView {
         let v = MKMapView()
         v.delegate = context.coordinator
-        v.preferredConfiguration = mapStyle.configuration
+        v.preferredConfiguration = mapStyle.configuration(poiFilter: poiFilter)
         v.overrideUserInterfaceStyle = mapStyle.interfaceStyle
         context.coordinator.lastMapStyle = mapStyle
+        context.coordinator.lastPOISignature = poiSignature
         v.showsBuildings = false
         v.showsCompass = false
         v.showsScale = false
@@ -64,9 +69,10 @@ struct MapKitView: UIViewRepresentable {
         context.coordinator.rendererFor = rendererFor
         context.coordinator.cameraBinding = $camera
         context.coordinator.suppressSystemDoubleTapZoom(on: v)
-        if context.coordinator.lastMapStyle != mapStyle {
+        if context.coordinator.lastMapStyle != mapStyle || context.coordinator.lastPOISignature != poiSignature {
             context.coordinator.lastMapStyle = mapStyle
-            v.preferredConfiguration = mapStyle.configuration
+            context.coordinator.lastPOISignature = poiSignature
+            v.preferredConfiguration = mapStyle.configuration(poiFilter: poiFilter)
             v.overrideUserInterfaceStyle = mapStyle.interfaceStyle
         }
         // Only push camera if it actually changed (preset 跳转); 否则用户拖动/缩放会被覆盖
@@ -105,6 +111,7 @@ struct MapKitView: UIViewRepresentable {
         var onSelectMapFeature: ((MKMapFeatureAnnotation) -> Void)?
         weak var myDoubleTap: UITapGestureRecognizer?
         var lastMapStyle: StudioMapStyle?
+        var lastPOISignature: String?
         var isRefreshingAnnotations = false
         var lastAnnotationSig: Int?
         private var regionSettle: DispatchWorkItem?

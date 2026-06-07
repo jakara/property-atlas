@@ -91,6 +91,47 @@ struct StudioRootView: View {
         Binding(get: { mapStyle }, set: { mapStyleRaw = $0.rawValue })
     }
 
+    // POI 设置:开了 POI 的样式集 + 选中的类别(全局持久,逗号分隔 rawValue)。
+    @AppStorage("studioPOIStyles") private var poiStylesRaw = ""
+    @AppStorage("studioPOICats") private var poiCatsRaw = ""
+
+    private var poiEnabledForCurrentStyle: Bool {
+        poiStylesRaw.split(separator: ",").map(String.init).contains(mapStyle.rawValue)
+    }
+
+    private var selectedPOIOptions: Set<StudioPOIOption> {
+        Set(poiCatsRaw.split(separator: ",").compactMap { StudioPOIOption(rawValue: String($0)) })
+    }
+
+    /// 当前样式未开 POI → 全不显示;开了但没选类别 → 全部;选了 → 仅这些类别。
+    private var poiFilter: MKPointOfInterestFilter {
+        guard poiEnabledForCurrentStyle else { return .excludingAll }
+        let cats = selectedPOIOptions
+        return cats.isEmpty ? .includingAll : MKPointOfInterestFilter(including: cats.map(\.category))
+    }
+
+    private var poiSignature: String {
+        "\(mapStyle.rawValue)|\(poiStylesRaw)|\(poiCatsRaw)"
+    }
+
+    private var poiEnabledBinding: Binding<Bool> {
+        Binding(
+            get: { poiEnabledForCurrentStyle },
+            set: { on in
+                var set = Set(poiStylesRaw.split(separator: ",").map(String.init))
+                if on { set.insert(mapStyle.rawValue) } else { set.remove(mapStyle.rawValue) }
+                poiStylesRaw = set.sorted().joined(separator: ",")
+            }
+        )
+    }
+
+    private var poiCategoriesBinding: Binding<Set<StudioPOIOption>> {
+        Binding(
+            get: { selectedPOIOptions },
+            set: { poiCatsRaw = $0.map(\.rawValue).sorted().joined(separator: ",") }
+        )
+    }
+
     @State private var exportMode = false
     @State private var showSafeFrame = false
     @State private var cache = StudioRenderCache()
@@ -181,7 +222,9 @@ struct StudioRootView: View {
                         }
                     }
                 },
-                mapStyle: mapStyle
+                mapStyle: mapStyle,
+                poiFilter: poiFilter,
+                poiSignature: poiSignature
             )
             .ignoresSafeArea()
 
@@ -190,6 +233,8 @@ struct StudioRootView: View {
                     aspect: $aspect, viewContext: ctx, showSettings: $showSettings,
                     exportMode: $exportMode, showSafeFrame: $showSafeFrame, showSearch: $showSearch,
                     mapStyle: mapStyleBinding,
+                    poiEnabled: poiEnabledBinding,
+                    poiCategories: poiCategoriesBinding,
                     hideWatermark: !exportMode && (appState.selectedRef != nil || showPlaceDetail)
                 )
             }
