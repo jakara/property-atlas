@@ -11,8 +11,8 @@ struct MapKitView: UIViewRepresentable {
     var onSchoolSelect: ((UUID?) -> Void)?
     var onLongPressCoordinate: ((CLLocationCoordinate2D) -> Void)?
     var onDoubleTapCoordinate: ((CLLocationCoordinate2D) -> Void)?
-    /// 点击系统底图 POI(卫星/混合/标准全彩)→ 取 MKMapItem 详情 → 外部地点详情卡。
-    var onSelectMapItem: ((MKMapItem) -> Void)?
+    /// 点击系统底图 POI(卫星/混合/标准全彩)→ 上层用 feature 立即弹卡 + 异步取 MKMapItem 详情。
+    var onSelectMapFeature: ((MKMapFeatureAnnotation) -> Void)?
     var mapStyle: StudioMapStyle = .mutedLight
 
     func makeCoordinator() -> Coordinator {
@@ -48,7 +48,7 @@ struct MapKitView: UIViewRepresentable {
         context.coordinator.onSchoolSelect = onSchoolSelect
         context.coordinator.onLongPressCoordinate = onLongPressCoordinate
         context.coordinator.onDoubleTapCoordinate = onDoubleTapCoordinate
-        context.coordinator.onSelectMapItem = onSelectMapItem
+        context.coordinator.onSelectMapFeature = onSelectMapFeature
         context.coordinator.rendererFor = rendererFor
         context.coordinator.cameraBinding = $camera
         context.coordinator.lastAppliedCamera = camera.copy() as? MKMapCamera
@@ -60,7 +60,7 @@ struct MapKitView: UIViewRepresentable {
         context.coordinator.onSchoolSelect = onSchoolSelect
         context.coordinator.onLongPressCoordinate = onLongPressCoordinate
         context.coordinator.onDoubleTapCoordinate = onDoubleTapCoordinate
-        context.coordinator.onSelectMapItem = onSelectMapItem
+        context.coordinator.onSelectMapFeature = onSelectMapFeature
         context.coordinator.rendererFor = rendererFor
         context.coordinator.cameraBinding = $camera
         context.coordinator.suppressSystemDoubleTapZoom(on: v)
@@ -102,7 +102,7 @@ struct MapKitView: UIViewRepresentable {
         weak var mapViewRef: MKMapView?
         var onLongPressCoordinate: ((CLLocationCoordinate2D) -> Void)?
         var onDoubleTapCoordinate: ((CLLocationCoordinate2D) -> Void)?
-        var onSelectMapItem: ((MKMapItem) -> Void)?
+        var onSelectMapFeature: ((MKMapFeatureAnnotation) -> Void)?
         weak var myDoubleTap: UITapGestureRecognizer?
         var lastMapStyle: StudioMapStyle?
         var isRefreshingAnnotations = false
@@ -152,12 +152,9 @@ struct MapKitView: UIViewRepresentable {
         }
 
         func mapView(_ mv: MKMapView, didSelect view: MKAnnotationView) {
-            // 系统底图 POI:取 MKMapItem 详情后冒泡;立即取消选中(不留高亮)。
+            // 系统底图 POI:冒泡 feature(上层立即弹卡 + 异步 enrich);立即取消选中,不留高亮。
             if let feature = view.annotation as? MKMapFeatureAnnotation {
-                let request = MKMapItemRequest(mapFeatureAnnotation: feature)
-                request.getMapItem { [weak self] item, _ in
-                    if let item { self?.onSelectMapItem?(item) }
-                }
+                onSelectMapFeature?(feature)
                 mv.deselectAnnotation(feature, animated: false)
                 return
             }

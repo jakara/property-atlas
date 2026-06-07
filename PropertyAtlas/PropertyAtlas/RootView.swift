@@ -159,14 +159,27 @@ struct StudioRootView: View {
                 onDoubleTapCoordinate: { coord in
                     Task { await lookupPlace(at: coord) }
                 },
-                onSelectMapItem: { item in
+                onSelectMapFeature: { feature in
                     // 系统底图 POI(卫星/混合)点击 → 复用外部地点详情卡。
+                    // 先用 feature 自带 title/坐标立即弹卡(大陆高德数据 getMapItem 常返回 nil),
+                    // 再异步主线程取 MKMapItem 补全电话/网址/分类。
                     reopenSettingsOnDeselect = false
                     appState.clearSelection()
-                    let hit = ExternalPlaceSearch.placeHit(from: item)
-                    searchPlace = hit
-                    searchMarker = SearchMarker(coordinate: hit.coordinate, name: hit.name)
+                    let coord = feature.coordinate
+                    let name = feature.title ?? "地点"
+                    searchPlace = ExternalPlaceSearch.PlaceHit(
+                        name: name, subtitle: "", coordinate: coord,
+                        category: nil, phone: nil, url: nil, fullAddress: nil
+                    )
+                    searchMarker = SearchMarker(coordinate: coord, name: name)
                     showPlaceDetail = true
+                    let request = MKMapItemRequest(mapFeatureAnnotation: feature)
+                    request.getMapItem { item, _ in
+                        guard let item else { return }
+                        DispatchQueue.main.async {
+                            searchPlace = ExternalPlaceSearch.placeHit(from: item)
+                        }
+                    }
                 },
                 mapStyle: mapStyle
             )
