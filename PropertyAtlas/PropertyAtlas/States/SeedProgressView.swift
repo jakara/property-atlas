@@ -37,7 +37,7 @@ struct SeedProgressView: View {
                 .foregroundStyle(Studio.amber).padding(.top, 24).padding(.bottom, 10)
             Text("正在准备地图数据")
                 .font(.system(size: 28, weight: .bold)).foregroundStyle(Color(hex: 0xF4EFE4))
-            Text("首次启动会把天津的小区、学校、片区导入本机数据库，稍候片刻。")
+            Text("首次启动会把天津的小区、学校、区域导入本机数据库，稍候片刻。")
                 .font(Studio.sans(14)).foregroundStyle(Studio.on2)
                 .multilineTextAlignment(.center).lineSpacing(3)
                 .frame(maxWidth: 380).padding(.top, 8)

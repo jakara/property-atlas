@@ -3,7 +3,7 @@ import CoreLocation
 import SwiftData
 import SwiftUI
 
-/// 图层成员浏览:类型子tab(小区/学校/POI/片区)+ 搜索框 + 列表,限定本图层本类型。
+/// 图层成员浏览:类型子tab(小区/学校/POI/区域)+ 搜索框 + 列表,限定本图层本类型。
 /// 复用 `EntitySearch`(库内搜索纯逻辑);空 query 列全部,非空走搜索。
 /// 行点击 → onSelect(详情),行尾铅笔 → onEdit(编辑);均带坐标供 flyTo。
 struct LayerMembersView: View {
@@ -26,7 +26,7 @@ struct LayerMembersView: View {
     @State private var query = ""
 
     private let kinds: [(value: EntityKind, label: String)] = [
-        (.compound, "小区"), (.school, "学校"), (.poi, "POI"), (.area, "片区"),
+        (.compound, "小区"), (.school, "学校"), (.poi, "POI"), (.area, "区域"),
     ]
 
     var body: some View {

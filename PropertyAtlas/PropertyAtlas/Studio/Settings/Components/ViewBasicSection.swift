@@ -13,7 +13,7 @@ struct ViewBasicSection: View {
     @Query private var layers: [Layer]
     @State private var qrPickerItem: PhotosPickerItem?
 
-    private let visTypes = [("compound", "小区"), ("school", "学校"), ("poi", "POI"), ("area", "片区")]
+    private let visTypes = [("compound", "小区"), ("school", "学校"), ("poi", "POI"), ("area", "区域")]
     private let defaultVis = #"{"compound":true,"school":true,"poi":true,"area":true}"#
 
     var body: some View {

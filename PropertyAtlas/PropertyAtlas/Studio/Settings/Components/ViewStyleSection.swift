@@ -1,7 +1,7 @@
 #if targetEnvironment(macCatalyst)
 import SwiftUI
 
-/// 视图 tab 底部「样式」区:实体子tab(小区/学校/POI/片区),
+/// 视图 tab 底部「样式」区:实体子tab(小区/学校/POI/区域),
 /// 选中实体下并列「默认样式」+「条件样式」。
 /// 两子组件仅在 onAppear 取数,故内容按 view×entity 加 .id 重挂以刷新。
 struct ViewStyleSection: View {
@@ -12,7 +12,7 @@ struct ViewStyleSection: View {
         (value: "compound", label: "小区"),
         (value: "school", label: "学校"),
         (value: "poi", label: "POI"),
-        (value: "area", label: "片区"),
+        (value: "area", label: "区域"),
     ]
 
     var body: some View {

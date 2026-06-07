@@ -35,7 +35,7 @@ struct StudioSearchPanel: View {
         VStack(alignment: .leading, spacing: 12) {
             header
             GlassSegmented(options: [(Scope.local, "库内"), (Scope.external, "外部")], selection: $scope)
-            TextField(scope == .local ? "搜索小区/学校/POI/片区" : "搜索地点(需联网)", text: $query)
+            TextField(scope == .local ? "搜索小区/学校/POI/区域" : "搜索地点(需联网)", text: $query)
                 .glassField()
             results
         }

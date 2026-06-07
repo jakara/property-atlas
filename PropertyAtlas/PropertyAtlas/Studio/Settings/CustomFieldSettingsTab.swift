@@ -17,7 +17,7 @@ struct CustomFieldSettingsTab: View {
         case "compound": "小区"
         case "school": "学校"
         case "poi": "POI"
-        case "area": "片区"
+        case "area": "区域"
         default: type
         }
     }

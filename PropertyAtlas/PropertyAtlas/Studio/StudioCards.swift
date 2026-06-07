@@ -110,7 +110,7 @@ struct EntityBadge: View {
         let (bg, fg, sym, label): (Color, Color, String, String) = switch kind {
         case .compound: (Studio.coolSoft, Studio.cool, "building.2", "小区")
         case .school: (Studio.amberSoft, Studio.amber, "graduationcap", "学校")
-        case .zone: (Color(hex: 0xA39C90, opacity: 0.2), Color(hex: 0xC7C0B4), "map", "片区")
+        case .zone: (Color(hex: 0xA39C90, opacity: 0.2), Color(hex: 0xC7C0B4), "map", "区域")
         case .poi: (Color(hex: 0x86B08A, opacity: 0.16), Studio.ok, "mappin", "POI")
         }
         return HStack(spacing: 6) {

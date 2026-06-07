@@ -42,7 +42,7 @@ struct CreateEntitySheet: View {
 
             Text("类型").font(Studio.sans(11, .medium)).foregroundStyle(Studio.on2)
             GlassSegmented(
-                options: [(.compound, "小区"), (.school, "学校"), (.poi, "POI"), (.area, "片区")],
+                options: [(.compound, "小区"), (.school, "学校"), (.poi, "POI"), (.area, "区域")],
                 selection: $kind
             )
 
