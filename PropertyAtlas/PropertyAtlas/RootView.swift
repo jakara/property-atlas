@@ -82,6 +82,8 @@ struct StudioRootView: View {
     @State private var pendingCoordinate: CLLocationCoordinate2D?
     @State private var showCreateMenu = false
     @State private var showSettings = false
+    /// 从设置页导航到实体详情时置位;详情关闭(selectedRef→nil)后据此重新唤起设置页。
+    @State private var reopenSettingsOnDeselect = false
     @State private var exportMode = false
     @State private var showSafeFrame = false
     @State private var cache = StudioRenderCache()
@@ -129,6 +131,8 @@ struct StudioRootView: View {
                 },
                 onRegionChange: { visibleRegion = $0 },
                 onSchoolSelect: { id in
+                    // 地图上直接选 pin → 不属于"从设置导航",撤销重开设置标记。
+                    reopenSettingsOnDeselect = false
                     if id == SearchMarkerFactory.markerId {
                         appState.clearSelection()
                         showPlaceDetail = true
@@ -193,27 +197,30 @@ struct StudioRootView: View {
             }
 
             if !exportMode {
-                HStack {
-                    Spacer()
-                    Group {
-                        if showPlaceDetail, let place = searchPlace {
-                            ExternalPlaceCard(
-                                place: place,
-                                onAddPOI: {
-                                    pendingCoordinate = place.coordinate
-                                    createPrefillName = place.name
-                                    showPlaceDetail = false
-                                    showCreateMenu = true
-                                },
-                                onClose: { showPlaceDetail = false }
-                            )
-                        } else {
-                            RightDrawer(appState: appState, datasetId: dsId)
+                GeometryReader { geo in
+                    HStack {
+                        Spacer()
+                        Group {
+                            if showPlaceDetail, let place = searchPlace {
+                                ExternalPlaceCard(
+                                    place: place,
+                                    onAddPOI: {
+                                        pendingCoordinate = place.coordinate
+                                        createPrefillName = place.name
+                                        showPlaceDetail = false
+                                        showCreateMenu = true
+                                    },
+                                    onClose: { showPlaceDetail = false }
+                                )
+                            } else {
+                                RightDrawer(appState: appState, datasetId: dsId)
+                            }
                         }
+                        .frame(width: geo.size.width * 0.382)
+                        .padding(.top, 80).padding(.trailing, 16).padding(.bottom, 16)
                     }
-                    .padding(.top, 80).padding(.trailing, 16).padding(.bottom, 16)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
                 }
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
                 .animation(.easeInOut(duration: 0.2), value: appState.selectedRef)
                 .transition(.move(edge: .trailing).combined(with: .opacity))
             }
@@ -253,12 +260,14 @@ struct StudioRootView: View {
                             onEntitySelect: { ref, coord, hasCoord in
                                 appState.select(ref)
                                 if hasCoord, let coord { flyTo(coord) }
+                                reopenSettingsOnDeselect = true
                                 showSettings = false
                             },
                             onEntityEdit: { ref, coord, hasCoord in
                                 appState.select(ref)
                                 appState.beginEditing()
                                 if hasCoord, let coord { flyTo(coord) }
+                                reopenSettingsOnDeselect = true
                                 showSettings = false
                             }
                         )
@@ -310,6 +319,13 @@ struct StudioRootView: View {
         }
         .onAppear { ensureViewContext() }
         .onChange(of: datasets.first?.id) { _, _ in ensureViewContext() }
+        .onChange(of: appState.selectedRef) { _, newValue in
+            // 从设置导航来的详情关闭(esc/×)→ 重新唤起设置页。
+            if newValue == nil, reopenSettingsOnDeselect {
+                reopenSettingsOnDeselect = false
+                showSettings = true
+            }
+        }
     }
 
     // MARK: - 候选
