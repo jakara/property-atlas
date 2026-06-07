@@ -1,12 +1,29 @@
 #if targetEnvironment(macCatalyst)
 import SwiftUI
+import UIKit
 
-/// Bottom-right capsule badge — part of the exported picture (`.watermark`).
-/// Renders `@handle · PropertyAtlas` with an amber dot mark.
+/// Bottom-right badge — part of the exported picture (`.watermark`)。出图/非出图均展示。
+/// 公众号二维码(可选)在上,胶囊 `@handle · PropertyAtlas` 在下。
 struct StudioWatermark: View {
     let text: String
+    var qrData: Data?
 
     var body: some View {
+        VStack(alignment: .trailing, spacing: 8) {
+            if let qrData, let image = UIImage(data: qrData) {
+                Image(uiImage: image)
+                    .resizable().interpolation(.none).scaledToFit()
+                    .frame(width: 84, height: 84)
+                    .padding(6)
+                    .background(.white, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+                    .overlay { RoundedRectangle(cornerRadius: 10, style: .continuous).strokeBorder(Studio.glassRim, lineWidth: 0.5) }
+                    .shadow(color: .black.opacity(0.22), radius: 8, y: 4)
+            }
+            capsule
+        }
+    }
+
+    private var capsule: some View {
         HStack(spacing: 8) {
             ZStack {
                 Circle().fill(Studio.amber)

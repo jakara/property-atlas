@@ -28,17 +28,20 @@ enum ExternalPlaceSearch {
         request.naturalLanguageQuery = trimmed
         request.region = region ?? fallbackRegion
         let response = try await MKLocalSearch(request: request).start()
-        return response.mapItems.map { item in
-            PlaceHit(
-                name: item.name ?? "未命名",
-                subtitle: subtitle(item.placemark),
-                coordinate: item.placemark.coordinate,
-                category: categoryLabel(item.pointOfInterestCategory),
-                phone: item.phoneNumber,
-                url: item.url,
-                fullAddress: item.placemark.title ?? subtitle(item.placemark)
-            )
-        }
+        return response.mapItems.map(placeHit(from:))
+    }
+
+    /// MKMapItem → PlaceHit(点击系统底图 POI / 搜索结果共用)。
+    static func placeHit(from item: MKMapItem) -> PlaceHit {
+        PlaceHit(
+            name: item.name ?? "未命名",
+            subtitle: subtitle(item.placemark),
+            coordinate: item.placemark.coordinate,
+            category: categoryLabel(item.pointOfInterestCategory),
+            phone: item.phoneNumber,
+            url: item.url,
+            fullAddress: item.placemark.title ?? subtitle(item.placemark)
+        )
     }
 
     /// 反查坐标处地点(双击地图空白)。CLGeocoder 逆地理编码 → PlaceHit。无结果返回 nil。

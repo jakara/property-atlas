@@ -36,11 +36,13 @@ struct StudioToolbar: View {
             }
             .menuStyle(.borderlessButton).fixedSize()
 
-            // map style
+            // map style — 扁平按钮(同视图切换),点一下直接选,当前项打勾
             Menu {
-                Picker("底图", selection: $mapStyle) {
-                    ForEach(StudioMapStyle.allCases) { style in
-                        Label(style.label, systemImage: style.icon).tag(style)
+                ForEach(StudioMapStyle.allCases) { style in
+                    Button {
+                        mapStyle = style
+                    } label: {
+                        Label(style.label, systemImage: style == mapStyle ? "checkmark" : style.icon)
                     }
                 }
             } label: {

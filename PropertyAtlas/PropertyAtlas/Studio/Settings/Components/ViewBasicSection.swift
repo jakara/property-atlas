@@ -1,6 +1,8 @@
 #if targetEnvironment(macCatalyst)
+import PhotosUI
 import SwiftData
 import SwiftUI
+import UIKit
 
 /// 视图设置「基本」组:名称/相机/图例/聚光/可见类型/出图文案/启用图层。
 /// field 双列布局,紧凑减少纵向滚动。
@@ -9,6 +11,7 @@ struct ViewBasicSection: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var cameraPresets: [CameraPreset]
     @Query private var layers: [Layer]
+    @State private var qrPickerItem: PhotosPickerItem?
 
     private let visTypes = [("compound", "小区"), ("school", "学校"), ("poi", "POI"), ("area", "片区")]
     private let defaultVis = #"{"compound":true,"school":true,"poi":true,"area":true}"#
@@ -32,6 +35,7 @@ struct ViewBasicSection: View {
                         { field("副标题") { TextField("副标题", text: optBinding(\.copySubtitle)).glassField() } }
                     )
                     field("水印") { TextField("水印", text: optBinding(\.copyWatermark)).glassField() }
+                    field("公众号二维码") { qrPicker }
                 }
                 .padding(.horizontal, 13).padding(.vertical, 12)
             }
@@ -64,6 +68,39 @@ struct ViewBasicSection: View {
             Toggle("", isOn: value).labelsHidden().tint(Studio.cool)
         }
         .frame(height: 30)
+    }
+
+    /// 公众号二维码:相册/文件选图 → 存进 mv.watermarkQRData;已选展示缩略图 + 清除。
+    private var qrPicker: some View {
+        HStack(spacing: 10) {
+            if let data = mv.watermarkQRData, let image = UIImage(data: data) {
+                Image(uiImage: image)
+                    .resizable().interpolation(.none).scaledToFit()
+                    .frame(width: 44, height: 44)
+                    .background(.white, in: RoundedRectangle(cornerRadius: 6))
+            }
+            PhotosPicker(selection: $qrPickerItem, matching: .images) {
+                Text(mv.watermarkQRData == nil ? "选择图片" : "更换")
+                    .font(Studio.sans(12, .medium)).foregroundStyle(Studio.cool)
+            }
+            if mv.watermarkQRData != nil {
+                Button("清除") {
+                    mv.watermarkQRData = nil
+                    mv.updatedAt = Date()
+                }
+                .font(Studio.sans(12)).foregroundStyle(Studio.bad)
+            }
+            Spacer(minLength: 0)
+        }
+        .onChange(of: qrPickerItem) { _, item in
+            guard let item else { return }
+            Task {
+                if let data = try? await item.loadTransferable(type: Data.self) {
+                    mv.watermarkQRData = data
+                    mv.updatedAt = Date()
+                }
+            }
+        }
     }
 
     private var cameraPicker: some View {

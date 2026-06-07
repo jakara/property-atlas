@@ -10,6 +10,7 @@ struct MapContainerView: View {
     var onSchoolSelect: ((UUID?) -> Void)?
     var onLongPressCoordinate: ((CLLocationCoordinate2D) -> Void)?
     var onDoubleTapCoordinate: ((CLLocationCoordinate2D) -> Void)?
+    var onSelectMapItem: ((MKMapItem) -> Void)?
     var mapStyle: StudioMapStyle = .mutedLight
 
     init(
@@ -21,6 +22,7 @@ struct MapContainerView: View {
         onSchoolSelect: ((UUID?) -> Void)? = nil,
         onLongPressCoordinate: ((CLLocationCoordinate2D) -> Void)? = nil,
         onDoubleTapCoordinate: ((CLLocationCoordinate2D) -> Void)? = nil,
+        onSelectMapItem: ((MKMapItem) -> Void)? = nil,
         mapStyle: StudioMapStyle = .mutedLight
     ) {
         if let camera {
@@ -42,6 +44,7 @@ struct MapContainerView: View {
         self.onSchoolSelect = onSchoolSelect
         self.onLongPressCoordinate = onLongPressCoordinate
         self.onDoubleTapCoordinate = onDoubleTapCoordinate
+        self.onSelectMapItem = onSelectMapItem
         self.mapStyle = mapStyle
     }
 
@@ -55,6 +58,7 @@ struct MapContainerView: View {
             onSchoolSelect: onSchoolSelect,
             onLongPressCoordinate: onLongPressCoordinate,
             onDoubleTapCoordinate: onDoubleTapCoordinate,
+            onSelectMapItem: onSelectMapItem,
             mapStyle: mapStyle
         )
     }

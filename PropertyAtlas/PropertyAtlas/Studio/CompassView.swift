@@ -14,9 +14,9 @@ struct CompassView: View {
             Circle().strokeBorder(Studio.glassLine, lineWidth: 1)
             needle
         }
-        .frame(width: 44, height: 44)
+        .frame(width: 88, height: 88)
         .overlay { Circle().strokeBorder(Studio.glassEdge, lineWidth: 0.5) }
-        .shadow(color: .black.opacity(0.3), radius: 6, y: 3)
+        .shadow(color: .black.opacity(0.3), radius: 8, y: 4)
         .contentShape(Circle())
         .onTapGesture(count: 2) { onResetNorth() }
         .environment(\.colorScheme, .dark)
@@ -27,12 +27,12 @@ struct CompassView: View {
     private var needle: some View {
         ZStack {
             Image(systemName: "location.north.fill")
-                .font(.system(size: 16, weight: .bold))
+                .font(.system(size: 32, weight: .bold))
                 .foregroundStyle(Studio.bad)
             Text("N")
-                .font(Studio.sans(8, .bold))
+                .font(Studio.sans(15, .bold))
                 .foregroundStyle(Studio.on2)
-                .offset(y: -15)
+                .offset(y: -31)
         }
         .rotationEffect(.degrees(-heading))
     }

@@ -8,6 +8,8 @@ struct LeftDrawerView: View {
     let currentZoom: Double
     @Bindable var filterState: DimensionFilterState
     @Bindable var layerState: LayerState
+    /// 上层按屏高算出的上限(顶到指南针上方);内容撑不满则缩到 fit。
+    var maxHeight: CGFloat = 640
     @State private var contentHeight: CGFloat = 0
 
     var body: some View {
@@ -26,7 +28,7 @@ struct LeftDrawerView: View {
         }
         .scrollIndicators(.hidden)
         .frame(width: 244)
-        .frame(height: min(contentHeight, 640))
+        .frame(height: min(contentHeight, maxHeight))
         .onPreferenceChange(DrawerContentHeightKey.self) { contentHeight = $0 }
         .glassSurface(Studio.glass, radius: Studio.rPanel, elevation: .float)
         .environment(\.colorScheme, .dark)

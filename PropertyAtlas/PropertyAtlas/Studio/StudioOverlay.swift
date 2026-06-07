@@ -2,9 +2,6 @@
 import SwiftUI
 
 struct StudioOverlay: View {
-    @Binding var title: String
-    @Binding var subtitle: String
-    @Binding var watermark: String
     @Binding var aspect: CanvasAspect
     @Bindable var viewContext: MapViewContext
     @Binding var showSettings: Bool
@@ -12,6 +9,12 @@ struct StudioOverlay: View {
     @Binding var showSafeFrame: Bool
     @Binding var showSearch: Bool
     @Binding var mapStyle: StudioMapStyle
+    /// 非出图模式下右抽屉打开时隐藏水印,避免与抽屉重叠。
+    let hideWatermark: Bool
+
+    private var mv: MapView? {
+        viewContext.activeMapView
+    }
 
     var body: some View {
         ZStack {
@@ -21,25 +24,32 @@ struct StudioOverlay: View {
                     .transition(.opacity)
             }
 
-            // title card — top-leading, part of the picture
-            VStack {
-                HStack {
-                    StudioTitleCard(title: $title, subtitle: $subtitle)
+            // title card — top-leading, part of the picture。仅出图模式展示。
+            if exportMode {
+                VStack {
+                    HStack {
+                        StudioTitleCard(title: mv?.copyTitle ?? "", subtitle: mv?.copySubtitle ?? "")
+                        Spacer()
+                    }
                     Spacer()
                 }
-                Spacer()
+                .padding(.top, 40).padding(.leading, 24)
             }
-            .padding(.top, 40).padding(.leading, 24)
 
-            // watermark — bottom-trailing, part of the picture
-            VStack {
-                Spacer()
-                HStack {
+            // watermark + 二维码 — bottom-trailing,出图/非出图均展示;抽屉打开时隐藏。
+            if !hideWatermark {
+                VStack {
                     Spacer()
-                    StudioWatermark(text: watermark)
+                    HStack {
+                        Spacer()
+                        StudioWatermark(
+                            text: mv?.copyWatermark ?? "@公众号名 · PropertyAtlas",
+                            qrData: mv?.watermarkQRData
+                        )
+                    }
                 }
+                .padding(16)
             }
-            .padding(16)
 
             // floating dock — hidden in 出图模式
             if !exportMode {

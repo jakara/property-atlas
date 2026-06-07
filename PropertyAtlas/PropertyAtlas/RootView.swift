@@ -69,9 +69,6 @@ struct StudioRootView: View {
     @State private var filterState = DimensionFilterState()
     @State private var layerState = LayerState()
     @State private var viewContext: MapViewContext?
-    @State private var title: String = ""
-    @State private var subtitle: String = ""
-    @State private var watermark: String = "@公众号名 · PropertyAtlas"
     @State private var aspect: CanvasAspect = .ratio16x9
     @State private var camera: MKMapCamera = .init(
         lookingAtCenter: CLLocationCoordinate2D(latitude: 39.125, longitude: 117.205),
@@ -162,16 +159,25 @@ struct StudioRootView: View {
                 onDoubleTapCoordinate: { coord in
                     Task { await lookupPlace(at: coord) }
                 },
+                onSelectMapItem: { item in
+                    // 系统底图 POI(卫星/混合)点击 → 复用外部地点详情卡。
+                    reopenSettingsOnDeselect = false
+                    appState.clearSelection()
+                    let hit = ExternalPlaceSearch.placeHit(from: item)
+                    searchPlace = hit
+                    searchMarker = SearchMarker(coordinate: hit.coordinate, name: hit.name)
+                    showPlaceDetail = true
+                },
                 mapStyle: mapStyle
             )
             .ignoresSafeArea()
 
             if let ctx = viewContext {
                 StudioOverlay(
-                    title: $title, subtitle: $subtitle, watermark: $watermark,
                     aspect: $aspect, viewContext: ctx, showSettings: $showSettings,
                     exportMode: $exportMode, showSafeFrame: $showSafeFrame, showSearch: $showSearch,
-                    mapStyle: mapStyleBinding
+                    mapStyle: mapStyleBinding,
+                    hideWatermark: !exportMode && (appState.selectedRef != nil || showPlaceDetail)
                 )
             }
 
@@ -238,18 +244,22 @@ struct StudioRootView: View {
             }
 
             if !exportMode {
-                HStack {
-                    LeftDrawerView(
-                        legendSections: legendSections,
-                        layers: layersForDataset(dsId),
-                        currentZoom: zoom,
-                        filterState: filterState,
-                        layerState: layerState
-                    )
-                    .padding(.top, 80).padding(.leading, 16)
-                    Spacer()
+                GeometryReader { geo in
+                    HStack {
+                        LeftDrawerView(
+                            legendSections: legendSections,
+                            layers: layersForDataset(dsId),
+                            currentZoom: zoom,
+                            filterState: filterState,
+                            layerState: layerState,
+                            // 顶到指南针上方:屏高 − 顶距80 − 指南针区(88+22)− 间隙16。
+                            maxHeight: max(200, geo.size.height - 80 - 126)
+                        )
+                        .padding(.top, 80).padding(.leading, 16)
+                        Spacer()
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
                 }
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
                 .transition(.move(edge: .leading).combined(with: .opacity))
             }
 
@@ -894,8 +904,6 @@ struct StudioRootView: View {
     private func ensureViewContext() {
         guard viewContext == nil, let ds = datasets.first(where: { !$0.deleted }) else { return }
         viewContext = MapViewContext(dataset: ds, modelContext: modelContext)
-        title = viewContext?.activeMapView?.copyTitle ?? ""
-        subtitle = viewContext?.activeMapView?.copySubtitle ?? ""
     }
 
     /// 隐藏标题文字 + 去掉 titlebar 的工具栏/分隔线材质(渐变半透明)→ 纯透明,省 GPU 混合。

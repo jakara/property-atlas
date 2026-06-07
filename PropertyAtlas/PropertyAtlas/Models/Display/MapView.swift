@@ -21,6 +21,8 @@ final class MapView {
     var copyTitle: String?
     var copySubtitle: String?
     var copyWatermark: String?
+    /// 出图/非出图 都展示的公众号二维码图(用户从相册/文件选)。
+    var watermarkQRData: Data?
     var spotlightOnSelect: Bool = true
     var sortOrder: Int = 0
     var isActive: Bool = false

@@ -11,6 +11,8 @@ struct MapKitView: UIViewRepresentable {
     var onSchoolSelect: ((UUID?) -> Void)?
     var onLongPressCoordinate: ((CLLocationCoordinate2D) -> Void)?
     var onDoubleTapCoordinate: ((CLLocationCoordinate2D) -> Void)?
+    /// 点击系统底图 POI(卫星/混合/标准全彩)→ 取 MKMapItem 详情 → 外部地点详情卡。
+    var onSelectMapItem: ((MKMapItem) -> Void)?
     var mapStyle: StudioMapStyle = .mutedLight
 
     func makeCoordinator() -> Coordinator {
@@ -26,6 +28,7 @@ struct MapKitView: UIViewRepresentable {
         v.showsBuildings = false
         v.showsCompass = false
         v.showsScale = false
+        v.selectableMapFeatures = [.pointsOfInterest]
         v.setCamera(camera, animated: false)
         configure(v)
         let longPress = UILongPressGestureRecognizer(
@@ -45,6 +48,7 @@ struct MapKitView: UIViewRepresentable {
         context.coordinator.onSchoolSelect = onSchoolSelect
         context.coordinator.onLongPressCoordinate = onLongPressCoordinate
         context.coordinator.onDoubleTapCoordinate = onDoubleTapCoordinate
+        context.coordinator.onSelectMapItem = onSelectMapItem
         context.coordinator.rendererFor = rendererFor
         context.coordinator.cameraBinding = $camera
         context.coordinator.lastAppliedCamera = camera.copy() as? MKMapCamera
@@ -56,6 +60,7 @@ struct MapKitView: UIViewRepresentable {
         context.coordinator.onSchoolSelect = onSchoolSelect
         context.coordinator.onLongPressCoordinate = onLongPressCoordinate
         context.coordinator.onDoubleTapCoordinate = onDoubleTapCoordinate
+        context.coordinator.onSelectMapItem = onSelectMapItem
         context.coordinator.rendererFor = rendererFor
         context.coordinator.cameraBinding = $camera
         context.coordinator.suppressSystemDoubleTapZoom(on: v)
@@ -97,6 +102,7 @@ struct MapKitView: UIViewRepresentable {
         weak var mapViewRef: MKMapView?
         var onLongPressCoordinate: ((CLLocationCoordinate2D) -> Void)?
         var onDoubleTapCoordinate: ((CLLocationCoordinate2D) -> Void)?
+        var onSelectMapItem: ((MKMapItem) -> Void)?
         weak var myDoubleTap: UITapGestureRecognizer?
         var lastMapStyle: StudioMapStyle?
         var isRefreshingAnnotations = false
@@ -145,13 +151,24 @@ struct MapKitView: UIViewRepresentable {
             true
         }
 
-        #if targetEnvironment(macCatalyst)
         func mapView(_ mv: MKMapView, didSelect view: MKAnnotationView) {
+            // 系统底图 POI:取 MKMapItem 详情后冒泡;立即取消选中(不留高亮)。
+            if let feature = view.annotation as? MKMapFeatureAnnotation {
+                let request = MKMapItemRequest(mapFeatureAnnotation: feature)
+                request.getMapItem { [weak self] item, _ in
+                    if let item { self?.onSelectMapItem?(item) }
+                }
+                mv.deselectAnnotation(feature, animated: false)
+                return
+            }
+            #if targetEnvironment(macCatalyst)
             if let pin = view.annotation as? PinAnnotation {
                 onSchoolSelect?(pin.entityId)
             }
+            #endif
         }
 
+        #if targetEnvironment(macCatalyst)
         func mapView(_ mv: MKMapView, didDeselect view: MKAnnotationView) {
             // Ignore deselect caused by our own annotation refresh (remove/re-add);
             // only a genuine user deselect should clear app selection.
