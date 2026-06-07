@@ -47,6 +47,7 @@ struct StudioToolbar: View {
                 DockLabel(icon: "gearshape", iconOnly: true)
             }
             .buttonStyle(.plain)
+            .keyboardShortcut(",", modifiers: .command)
 
             sep
 

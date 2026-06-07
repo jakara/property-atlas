@@ -26,7 +26,12 @@ struct SettingsSheet: View {
     let onClose: () -> Void
     let onEntitySelect: (EntityRef, CLLocationCoordinate2D?, Bool) -> Void
     let onEntityEdit: (EntityRef, CLLocationCoordinate2D?, Bool) -> Void
-    @State private var tab: SettingsTab = .view
+    /// 记录上次活动 tab,关闭后下次打开还原。
+    @AppStorage("studioSettingsTab") private var storedTab: String = SettingsTab.view.rawValue
+
+    private var tab: SettingsTab {
+        SettingsTab(rawValue: storedTab) ?? .view
+    }
 
     var body: some View {
         VStack(spacing: 14) {
@@ -73,7 +78,7 @@ struct SettingsSheet: View {
         HStack(spacing: 3) {
             ForEach(SettingsTab.allCases) { t in
                 let on = tab == t
-                Button { tab = t } label: {
+                Button { storedTab = t.rawValue } label: {
                     VStack(spacing: 3) {
                         Image(systemName: t.icon).font(.system(size: 17, weight: .regular))
                             .foregroundStyle(on ? Studio.cool : (on ? Studio.on : Studio.on3))
