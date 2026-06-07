@@ -14,14 +14,38 @@ struct LayerSettingsTab: View {
         layers.filter { $0.datasetId == datasetId && !$0.deleted }.sorted { $0.zIndex < $1.zIndex }
     }
 
+    @State private var selectedLayerId: UUID?
+
+    private var selectedLayer: Layer? {
+        dsLayers.first { $0.id == selectedLayerId } ?? dsLayers.first
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            SectionLabel(text: "图层（按 zIndex 排序）", trailing: "\(dsLayers.count)")
-            ForEach(dsLayers, id: \.id) { layer in layerCard(layer) }
-            AddRow("新建图层") { addLayer() }
+            HStack(spacing: 8) {
+                Text("图层").font(Studio.sans(11)).foregroundStyle(Studio.on2)
+                Picker("", selection: layerPickerBinding) {
+                    ForEach(dsLayers, id: \.id) { Text($0.name).tag($0.id as UUID?) }
+                }
+                .labelsHidden().tint(Studio.cool)
+                .lineLimit(1).fixedSize(horizontal: true, vertical: false)
+                Spacer()
+                Button { addLayer() } label: { Image(systemName: "plus") }
+                    .buttonStyle(.tbtn(.ghost))
+            }
+            if let layer = selectedLayer {
+                layerCard(layer)
+            } else {
+                Text("无图层").font(Studio.sans(13)).foregroundStyle(Studio.on2)
+            }
         }
         .environment(\.colorScheme, .dark)
         .tint(Studio.cool)
+        .onAppear { if selectedLayerId == nil { selectedLayerId = dsLayers.first?.id } }
+    }
+
+    private var layerPickerBinding: Binding<UUID?> {
+        Binding(get: { selectedLayer?.id }, set: { selectedLayerId = $0 })
     }
 
     private func layerCard(_ l: Layer) -> some View {
