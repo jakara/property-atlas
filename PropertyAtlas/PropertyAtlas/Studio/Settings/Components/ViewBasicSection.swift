@@ -39,8 +39,72 @@ struct ViewBasicSection: View {
                 }
                 .padding(.horizontal, 13).padding(.vertical, 12)
             }
+            basemapCard
             SettingsCard("启用图层") { layerToggles }
         }
+    }
+
+    /// 底图样式 / 画幅 / Apple 地点 —— 与工具栏下拉绑同一 MapView 字段(联动)。
+    private var basemapCard: some View {
+        SettingsCard("底图 / 出图") {
+            VStack(alignment: .leading, spacing: 12) {
+                twoCol(
+                    { field("底图样式") { mapStylePicker } },
+                    { field("画幅") { aspectPicker } }
+                )
+                toggleRow("显示 Apple 地点", poiEnabledBinding)
+                if mv.poiEnabled {
+                    field("地点类别(空=全部)") { poiChips }
+                }
+            }
+            .padding(.horizontal, 13).padding(.vertical, 12)
+        }
+    }
+
+    private var mapStylePicker: some View {
+        Picker("", selection: Binding(
+            get: { StudioMapStyle(rawValue: mv.studioMapStyleRaw) ?? .mutedLight },
+            set: { mv.studioMapStyleRaw = $0.rawValue
+                mv.updatedAt = Date()
+            }
+        )) {
+            ForEach(StudioMapStyle.allCases) { Text($0.label).tag($0) }
+        }.labelsHidden().tint(Studio.cool).lineLimit(1)
+    }
+
+    private var aspectPicker: some View {
+        Picker("", selection: Binding(
+            get: { CanvasAspect(rawValue: mv.canvasAspectRaw) ?? .ratio16x9 },
+            set: { mv.canvasAspectRaw = $0.rawValue
+                mv.updatedAt = Date()
+            }
+        )) {
+            ForEach(CanvasAspect.allCases) { Text($0.rawValue).tag($0) }
+        }.labelsHidden().tint(Studio.cool).lineLimit(1)
+    }
+
+    private var poiEnabledBinding: Binding<Bool> {
+        Binding(get: { mv.poiEnabled }, set: { mv.poiEnabled = $0
+            mv.updatedAt = Date()
+        })
+    }
+
+    private var poiChips: some View {
+        let sel = Set(mv.poiCategoriesRaw.split(separator: ",").map(String.init))
+        return LazyVGrid(
+            columns: Array(repeating: GridItem(.flexible(), alignment: .leading), count: 3), spacing: 6
+        ) {
+            ForEach(StudioPOIOption.allCases) { opt in
+                StudioChip(opt.label, isOn: sel.contains(opt.rawValue)) { togglePOI(opt) }
+            }
+        }
+    }
+
+    private func togglePOI(_ opt: StudioPOIOption) {
+        var set = Set(mv.poiCategoriesRaw.split(separator: ",").map(String.init))
+        if set.contains(opt.rawValue) { set.remove(opt.rawValue) } else { set.insert(opt.rawValue) }
+        mv.poiCategoriesRaw = set.sorted().joined(separator: ",")
+        mv.updatedAt = Date()
     }
 
     // MARK: - Layout helpers

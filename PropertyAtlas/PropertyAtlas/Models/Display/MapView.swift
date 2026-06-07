@@ -23,6 +23,14 @@ final class MapView {
     var copyWatermark: String?
     /// 出图/非出图 都展示的公众号二维码图(用户从相册/文件选)。
     var watermarkQRData: Data?
+    /// 底图样式(StudioMapStyle rawValue):静音浅/深、标准、卫星、混合。
+    var studioMapStyleRaw: String = "mutedLight"
+    /// 是否显示系统底图 Apple 地点(POI)。
+    var poiEnabled: Bool = false
+    /// 选中的 POI 类别(StudioPOIOption rawValue,逗号分隔;空=全部)。
+    var poiCategoriesRaw: String = ""
+    /// 出图画幅(CanvasAspect rawValue)。
+    var canvasAspectRaw: String = "16:9"
     var spotlightOnSelect: Bool = true
     var sortOrder: Int = 0
     var isActive: Bool = false

@@ -69,7 +69,6 @@ struct StudioRootView: View {
     @State private var filterState = DimensionFilterState()
     @State private var layerState = LayerState()
     @State private var viewContext: MapViewContext?
-    @State private var aspect: CanvasAspect = .ratio16x9
     @State private var camera: MKMapCamera = .init(
         lookingAtCenter: CLLocationCoordinate2D(latitude: 39.125, longitude: 117.205),
         fromDistance: 12000, pitch: 0, heading: 0
@@ -81,54 +80,63 @@ struct StudioRootView: View {
     @State private var showSettings = false
     /// 从设置页导航到实体详情时置位;详情关闭(selectedRef→nil)后据此重新唤起设置页。
     @State private var reopenSettingsOnDeselect = false
-    @AppStorage("studioMapStyle") private var mapStyleRaw: String = StudioMapStyle.mutedLight.rawValue
+
+    /// 视图配置(底图样式 / 画幅 / Apple 地点)持有在 active MapView 上 → 工具栏与设置「基本」tab 联动。
+    private var activeMV: MapView? {
+        viewContext?.activeMapView
+    }
+
+    private func touchMV() {
+        activeMV?.updatedAt = Date()
+    }
 
     private var mapStyle: StudioMapStyle {
-        StudioMapStyle(rawValue: mapStyleRaw) ?? .mutedLight
+        StudioMapStyle(rawValue: activeMV?.studioMapStyleRaw ?? "") ?? .mutedLight
     }
 
     private var mapStyleBinding: Binding<StudioMapStyle> {
-        Binding(get: { mapStyle }, set: { mapStyleRaw = $0.rawValue })
+        Binding(get: { mapStyle }, set: { activeMV?.studioMapStyleRaw = $0.rawValue
+            touchMV()
+        })
     }
 
-    // POI 设置:开了 POI 的样式集 + 选中的类别(全局持久,逗号分隔 rawValue)。
-    @AppStorage("studioPOIStyles") private var poiStylesRaw = ""
-    @AppStorage("studioPOICats") private var poiCatsRaw = ""
+    private var aspect: CanvasAspect {
+        CanvasAspect(rawValue: activeMV?.canvasAspectRaw ?? "") ?? .ratio16x9
+    }
 
-    private var poiEnabledForCurrentStyle: Bool {
-        poiStylesRaw.split(separator: ",").map(String.init).contains(mapStyle.rawValue)
+    private var aspectBinding: Binding<CanvasAspect> {
+        Binding(get: { aspect }, set: { activeMV?.canvasAspectRaw = $0.rawValue
+            touchMV()
+        })
     }
 
     private var selectedPOIOptions: Set<StudioPOIOption> {
-        Set(poiCatsRaw.split(separator: ",").compactMap { StudioPOIOption(rawValue: String($0)) })
+        Set((activeMV?.poiCategoriesRaw ?? "").split(separator: ",").compactMap { StudioPOIOption(rawValue: String($0)) })
     }
 
-    /// 当前样式未开 POI → 全不显示;开了但没选类别 → 全部;选了 → 仅这些类别。
+    /// 未开 POI → 全不显示;开了但没选类别 → 全部;选了 → 仅这些类别。
     private var poiFilter: MKPointOfInterestFilter {
-        guard poiEnabledForCurrentStyle else { return .excludingAll }
+        guard activeMV?.poiEnabled ?? false else { return .excludingAll }
         let cats = selectedPOIOptions
         return cats.isEmpty ? .includingAll : MKPointOfInterestFilter(including: cats.map(\.category))
     }
 
     private var poiSignature: String {
-        "\(mapStyle.rawValue)|\(poiStylesRaw)|\(poiCatsRaw)"
+        "\(mapStyle.rawValue)|\(activeMV?.poiEnabled ?? false)|\(activeMV?.poiCategoriesRaw ?? "")"
     }
 
     private var poiEnabledBinding: Binding<Bool> {
-        Binding(
-            get: { poiEnabledForCurrentStyle },
-            set: { on in
-                var set = Set(poiStylesRaw.split(separator: ",").map(String.init))
-                if on { set.insert(mapStyle.rawValue) } else { set.remove(mapStyle.rawValue) }
-                poiStylesRaw = set.sorted().joined(separator: ",")
-            }
-        )
+        Binding(get: { activeMV?.poiEnabled ?? false }, set: { activeMV?.poiEnabled = $0
+            touchMV()
+        })
     }
 
     private var poiCategoriesBinding: Binding<Set<StudioPOIOption>> {
         Binding(
             get: { selectedPOIOptions },
-            set: { poiCatsRaw = $0.map(\.rawValue).sorted().joined(separator: ",") }
+            set: { activeMV?.poiCategoriesRaw = $0.map(\.rawValue).sorted().joined(separator: ",")
+                touchMV()
+            }
         )
     }
 
@@ -230,7 +238,7 @@ struct StudioRootView: View {
 
             if let ctx = viewContext {
                 StudioOverlay(
-                    aspect: $aspect, viewContext: ctx, showSettings: $showSettings,
+                    aspect: aspectBinding, viewContext: ctx, showSettings: $showSettings,
                     exportMode: $exportMode, showSafeFrame: $showSafeFrame, showSearch: $showSearch,
                     mapStyle: mapStyleBinding,
                     poiEnabled: poiEnabledBinding,
