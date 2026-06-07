@@ -76,6 +76,8 @@ struct StudioRootView: View {
     @State private var visibleRegion: MKCoordinateRegion?
     @State private var appState = AppState()
     @State private var pendingCoordinate: CLLocationCoordinate2D?
+    /// 地点详情卡的锚点(屏幕坐标,双击/选 POI 时记录)→ 卡浮在鼠标下方。
+    @State private var placePoint: CGPoint?
     @State private var showCreateMenu = false
     @State private var showSettings = false
     /// 从设置页导航到实体详情时置位;详情关闭(selectedRef→nil)后据此重新唤起设置页。
@@ -205,15 +207,17 @@ struct StudioRootView: View {
                     pendingCoordinate = coord
                     showCreateMenu = true
                 },
-                onDoubleTapCoordinate: { coord in
+                onDoubleTapCoordinate: { pt, coord in
+                    placePoint = pt
                     Task { await lookupPlace(at: coord) }
                 },
-                onSelectMapFeature: { feature in
-                    // 系统底图 POI(卫星/混合)点击 → 复用外部地点详情卡。
+                onSelectMapFeature: { pt, feature in
+                    // 系统底图 POI(卫星/混合)点击 → 复用外部地点详情卡(浮在点击处)。
                     // 先用 feature 自带 title/坐标立即弹卡(大陆高德数据 getMapItem 常返回 nil),
                     // 再异步主线程取 MKMapItem 补全电话/网址/分类。
                     reopenSettingsOnDeselect = false
                     appState.clearSelection()
+                    placePoint = pt
                     let coord = feature.coordinate
                     let name = feature.title ?? "地点"
                     searchPlace = ExternalPlaceSearch.PlaceHit(
@@ -285,17 +289,8 @@ struct StudioRootView: View {
                     HStack {
                         Spacer()
                         Group {
-                            if showPlaceDetail, let place = searchPlace {
-                                ExternalPlaceCard(
-                                    place: place,
-                                    onAddPOI: {
-                                        pendingCoordinate = place.coordinate
-                                        createPrefillName = place.name
-                                        showPlaceDetail = false
-                                        showCreateMenu = true
-                                    },
-                                    onClose: { showPlaceDetail = false }
-                                )
+                            if showCreateMenu {
+                                createDrawer(dsId: dsId)
                             } else {
                                 RightDrawer(appState: appState, datasetId: dsId)
                             }
@@ -307,6 +302,29 @@ struct StudioRootView: View {
                 }
                 .animation(.easeInOut(duration: 0.2), value: appState.selectedRef)
                 .transition(.move(edge: .trailing).combined(with: .opacity))
+            }
+
+            // 地点详情卡:浮在鼠标(双击点 / POI 点击点)下方,离近。
+            if !exportMode, showPlaceDetail, let place = searchPlace, let pt = placePoint {
+                GeometryReader { geo in
+                    let cardW: CGFloat = 300
+                    let x = min(max(pt.x, 16), geo.size.width - cardW - 16)
+                    let y = min(pt.y + 14, geo.size.height - 120)
+                    ExternalPlaceCard(
+                        place: place,
+                        onAddPOI: {
+                            pendingCoordinate = place.coordinate
+                            createPrefillName = place.name
+                            showPlaceDetail = false
+                            showCreateMenu = true
+                        },
+                        onClose: { showPlaceDetail = false }
+                    )
+                    .frame(width: cardW)
+                    .offset(x: x, y: y)
+                }
+                .transition(.opacity)
+                .zIndex(20)
             }
 
             if !exportMode {
@@ -392,30 +410,6 @@ struct StudioRootView: View {
             searchPlace = nil
             showPlaceDetail = false
             showSearch = false
-        }
-        .sheet(isPresented: $showCreateMenu, onDismiss: { createPrefillName = nil }) {
-            if let dsId = viewContext?.datasetIdValue {
-                let layers = layersForDataset(dsId)
-                let defaultId = layers.first(where: { $0.isDefault })?.id
-                // 列全部图层(非仅已启用);未在当前视图启用的标注提示——选中后需到视图设置启用才会显示
-                let pickable = layers.map {
-                    (id: $0.id, name: layerState.isEnabled($0.id) ? $0.name : "\($0.name)(未启用)")
-                }
-                CreateEntitySheet(
-                    enabledLayers: pickable,
-                    defaultLayerId: defaultId,
-                    prefillName: createPrefillName,
-                    defaultKind: createPrefillName != nil ? .poi : .compound,
-                    onCreate: { kind, layerId, name in
-                        showCreateMenu = false
-                        createPin(kind, layerId: layerId, name: name)
-                    },
-                    onCancel: { showCreateMenu = false
-                        createPrefillName = nil
-                    }
-                )
-                .presentationDetents([.medium])
-            }
         }
         .onAppear { ensureViewContext()
             configureTitlebar()
@@ -864,6 +858,30 @@ struct StudioRootView: View {
         }
     }
 
+    /// 新建实体抽屉(右侧,与实体详情一致)。原为居中 .sheet,现做成抽屉。
+    @ViewBuilder
+    private func createDrawer(dsId: UUID) -> some View {
+        let layers = layersForDataset(dsId)
+        let defaultId = layers.first(where: { $0.isDefault })?.id
+        // 列全部图层(非仅已启用);未在当前视图启用的标注提示——选中后需到视图设置启用才会显示
+        let pickable = layers.map {
+            (id: $0.id, name: layerState.isEnabled($0.id) ? $0.name : "\($0.name)(未启用)")
+        }
+        CreateEntitySheet(
+            enabledLayers: pickable,
+            defaultLayerId: defaultId,
+            prefillName: createPrefillName,
+            defaultKind: createPrefillName != nil ? .poi : .compound,
+            onCreate: { kind, layerId, name in
+                showCreateMenu = false
+                createPin(kind, layerId: layerId, name: name)
+            },
+            onCancel: { showCreateMenu = false
+                createPrefillName = nil
+            }
+        )
+    }
+
     private func createPin(_ kind: EntityKind, layerId: UUID?, name: String = "") {
         guard let coord = pendingCoordinate, let dsId = viewContext?.datasetIdValue else { return }
         let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -992,6 +1010,7 @@ struct StudioRootView: View {
         guard let appClass = NSClassFromString("NSApplication") as? NSObject.Type,
               let sharedApp = appClass.value(forKey: "sharedApplication") as? NSObject,
               let windows = sharedApp.value(forKey: "windows") as? [NSObject] else { return }
+        let clearColor = (NSClassFromString("NSColor") as? NSObject.Type)?.value(forKey: "clearColor")
         for window in windows {
             if window.responds(to: NSSelectorFromString("setTitlebarAppearsTransparent:")) {
                 window.setValue(true, forKey: "titlebarAppearsTransparent")
@@ -1001,6 +1020,9 @@ struct StudioRootView: View {
             }
             if window.responds(to: NSSelectorFromString("setOpaque:")) {
                 window.setValue(false, forKey: "opaque")
+            }
+            if let clearColor, window.responds(to: NSSelectorFromString("setBackgroundColor:")) {
+                window.setValue(clearColor, forKey: "backgroundColor")
             }
         }
     }

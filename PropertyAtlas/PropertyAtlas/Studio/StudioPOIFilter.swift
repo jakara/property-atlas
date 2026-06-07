@@ -13,6 +13,12 @@ enum StudioPOIOption: String, CaseIterable, Identifiable {
         rawValue
     }
 
+    /// 工具栏「地点」下拉只列常用项;设置页列全部。
+    static let common: [StudioPOIOption] = [
+        .school, .hospital, .publicTransport, .restaurant, .cafe,
+        .store, .park, .bank, .gasStation, .pharmacy,
+    ]
+
     // swiftlint:disable:next cyclomatic_complexity
     var label: String {
         switch self {

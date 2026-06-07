@@ -15,8 +15,27 @@ struct CreateEntitySheet: View {
     @State private var name: String = ""
 
     var body: some View {
+        ScrollView {
+            content.padding(18)
+        }
+        .scrollIndicators(.hidden)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .frame(maxHeight: 560)
+        .glassSurface(Studio.glassStrong, radius: Studio.rSheet, elevation: .pop)
+        .environment(\.colorScheme, .dark)
+        .tint(Studio.cool)
+        .onAppear {
+            kind = defaultKind
+            name = prefillName ?? ""
+        }
+    }
+
+    private var content: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("新建实体").font(Studio.sans(17, .bold)).foregroundStyle(Studio.on)
+            HStack {
+                Text("新建实体").font(Studio.sans(17, .bold)).foregroundStyle(Studio.on)
+                Spacer()
+            }
 
             Text("名称").font(Studio.sans(11, .medium)).foregroundStyle(Studio.on2)
             TextField("未命名", text: $name).glassField()
@@ -60,16 +79,6 @@ struct CreateEntitySheet: View {
                     onCreate(kind, layerId ?? defaultLayerId, name)
                 }.buttonStyle(.tbtn(.primary))
             }
-        }
-        .padding(18)
-        .frame(width: 320)
-        .background(Studio.glassStrong).background(.ultraThinMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: Studio.rPanel, style: .continuous))
-        .environment(\.colorScheme, .dark)
-        .tint(Studio.cool)
-        .onAppear {
-            kind = defaultKind
-            name = prefillName ?? ""
         }
     }
 }

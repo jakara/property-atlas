@@ -59,9 +59,10 @@ struct StudioToolbar: View {
                 Toggle("显示 Apple 地点", isOn: $poiEnabled)
                 if poiEnabled {
                     Divider()
-                    ForEach(StudioPOIOption.allCases) { opt in
+                    ForEach(StudioPOIOption.common) { opt in
                         Toggle(opt.label, isOn: categoryBinding(opt))
                     }
+                    Text("更多类别在设置页").font(.caption)
                 }
             } label: {
                 DockLabel(icon: "mappin.and.ellipse", text: "地点", caret: true)

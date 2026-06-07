@@ -10,9 +10,10 @@ struct MapKitView: UIViewRepresentable {
     var onRegionChange: ((MKCoordinateRegion) -> Void)?
     var onSchoolSelect: ((UUID?) -> Void)?
     var onLongPressCoordinate: ((CLLocationCoordinate2D) -> Void)?
-    var onDoubleTapCoordinate: ((CLLocationCoordinate2D) -> Void)?
-    /// 点击系统底图 POI(卫星/混合/标准全彩)→ 上层用 feature 立即弹卡 + 异步取 MKMapItem 详情。
-    var onSelectMapFeature: ((MKMapFeatureAnnotation) -> Void)?
+    /// 双击地图空白:回传屏幕点(用于在鼠标下方弹卡)+ 坐标。
+    var onDoubleTapCoordinate: ((CGPoint, CLLocationCoordinate2D) -> Void)?
+    /// 点击系统底图 POI(卫星/混合/标准全彩)→ 回传屏幕点 + feature(上层弹卡 + 异步取详情)。
+    var onSelectMapFeature: ((CGPoint, MKMapFeatureAnnotation) -> Void)?
     var mapStyle: StudioMapStyle = .mutedLight
     /// 系统底图 POI 过滤(默认全不显示)。
     var poiFilter: MKPointOfInterestFilter = .excludingAll
@@ -107,8 +108,8 @@ struct MapKitView: UIViewRepresentable {
         var lastAppliedCamera: MKMapCamera?
         weak var mapViewRef: MKMapView?
         var onLongPressCoordinate: ((CLLocationCoordinate2D) -> Void)?
-        var onDoubleTapCoordinate: ((CLLocationCoordinate2D) -> Void)?
-        var onSelectMapFeature: ((MKMapFeatureAnnotation) -> Void)?
+        var onDoubleTapCoordinate: ((CGPoint, CLLocationCoordinate2D) -> Void)?
+        var onSelectMapFeature: ((CGPoint, MKMapFeatureAnnotation) -> Void)?
         weak var myDoubleTap: UITapGestureRecognizer?
         var lastMapStyle: StudioMapStyle?
         var lastPOISignature: String?
@@ -130,7 +131,13 @@ struct MapKitView: UIViewRepresentable {
             guard g.state == .ended, let mv = mapViewRef else { return }
             let pt = g.location(in: mv)
             let coord = mv.convert(pt, toCoordinateFrom: mv)
-            onDoubleTapCoordinate?(coord)
+            onDoubleTapCoordinate?(pt, coord)
+        }
+
+        /// 顶部标题栏区(~30pt)不接管双击 → 留给系统「双击最大化」窗口。
+        func gestureRecognizer(_ g: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+            guard g === myDoubleTap, let mv = mapViewRef else { return true }
+            return touch.location(in: mv).y > 30
         }
 
         /// 让系统自带的「双击缩放」手势等待我们的双击失败 → 双击只触发坐标查询,不缩放。
@@ -161,7 +168,8 @@ struct MapKitView: UIViewRepresentable {
         func mapView(_ mv: MKMapView, didSelect view: MKAnnotationView) {
             // 系统底图 POI:冒泡 feature(上层立即弹卡 + 异步 enrich);立即取消选中,不留高亮。
             if let feature = view.annotation as? MKMapFeatureAnnotation {
-                onSelectMapFeature?(feature)
+                let pt = mv.convert(feature.coordinate, toPointTo: mv)
+                onSelectMapFeature?(pt, feature)
                 mv.deselectAnnotation(feature, animated: false)
                 return
             }

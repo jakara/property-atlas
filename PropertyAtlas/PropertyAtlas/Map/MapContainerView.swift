@@ -9,8 +9,8 @@ struct MapContainerView: View {
     var onRegionChange: ((MKCoordinateRegion) -> Void)?
     var onSchoolSelect: ((UUID?) -> Void)?
     var onLongPressCoordinate: ((CLLocationCoordinate2D) -> Void)?
-    var onDoubleTapCoordinate: ((CLLocationCoordinate2D) -> Void)?
-    var onSelectMapFeature: ((MKMapFeatureAnnotation) -> Void)?
+    var onDoubleTapCoordinate: ((CGPoint, CLLocationCoordinate2D) -> Void)?
+    var onSelectMapFeature: ((CGPoint, MKMapFeatureAnnotation) -> Void)?
     var mapStyle: StudioMapStyle = .mutedLight
     var poiFilter: MKPointOfInterestFilter = .excludingAll
     var poiSignature: String = ""
@@ -23,8 +23,8 @@ struct MapContainerView: View {
         onRegionChange: ((MKCoordinateRegion) -> Void)? = nil,
         onSchoolSelect: ((UUID?) -> Void)? = nil,
         onLongPressCoordinate: ((CLLocationCoordinate2D) -> Void)? = nil,
-        onDoubleTapCoordinate: ((CLLocationCoordinate2D) -> Void)? = nil,
-        onSelectMapFeature: ((MKMapFeatureAnnotation) -> Void)? = nil,
+        onDoubleTapCoordinate: ((CGPoint, CLLocationCoordinate2D) -> Void)? = nil,
+        onSelectMapFeature: ((CGPoint, MKMapFeatureAnnotation) -> Void)? = nil,
         mapStyle: StudioMapStyle = .mutedLight,
         poiFilter: MKPointOfInterestFilter = .excludingAll,
         poiSignature: String = ""
