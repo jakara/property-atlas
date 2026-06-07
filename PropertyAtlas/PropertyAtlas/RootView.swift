@@ -329,7 +329,9 @@ struct StudioRootView: View {
                 .presentationDetents([.medium])
             }
         }
-        .onAppear { ensureViewContext() }
+        .onAppear { ensureViewContext()
+            configureTitlebar()
+        }
         .onChange(of: datasets.first?.id) { _, _ in ensureViewContext() }
         .onChange(of: appState.selectedRef) { _, newValue in
             // 从设置导航来的详情关闭(esc/×)→ 重新唤起设置页。
@@ -882,6 +884,16 @@ struct StudioRootView: View {
         viewContext = MapViewContext(dataset: ds, modelContext: modelContext)
         title = viewContext?.activeMapView?.copyTitle ?? ""
         subtitle = viewContext?.activeMapView?.copySubtitle ?? ""
+    }
+
+    /// 隐藏标题文字 + 去掉 titlebar 的工具栏/分隔线材质(渐变半透明)→ 纯透明,省 GPU 混合。
+    private func configureTitlebar() {
+        for scene in UIApplication.shared.connectedScenes {
+            guard let windowScene = scene as? UIWindowScene, let titlebar = windowScene.titlebar else { continue }
+            titlebar.titleVisibility = .hidden
+            titlebar.toolbar = nil
+            titlebar.separatorStyle = .none
+        }
     }
 
     private func layersForDataset(_ dsId: UUID) -> [Layer] {
