@@ -10,6 +10,7 @@ struct StudioToolbar: View {
     @Binding var exportMode: Bool
     @Binding var showSafeFrame: Bool
     @Binding var showSearch: Bool
+    @Binding var mapStyle: StudioMapStyle
 
     var body: some View {
         HStack(spacing: 4) {
@@ -32,6 +33,18 @@ struct StudioToolbar: View {
                 }
             } label: {
                 DockLabel(icon: "crop", text: aspect.rawValue, caret: true)
+            }
+            .menuStyle(.borderlessButton).fixedSize()
+
+            // map style
+            Menu {
+                Picker("底图", selection: $mapStyle) {
+                    ForEach(StudioMapStyle.allCases) { style in
+                        Label(style.label, systemImage: style.icon).tag(style)
+                    }
+                }
+            } label: {
+                DockLabel(icon: mapStyle.icon, text: mapStyle.label, caret: true)
             }
             .menuStyle(.borderlessButton).fixedSize()
 

@@ -11,6 +11,7 @@ struct MapKitView: UIViewRepresentable {
     var onSchoolSelect: ((UUID?) -> Void)?
     var onLongPressCoordinate: ((CLLocationCoordinate2D) -> Void)?
     var onDoubleTapCoordinate: ((CLLocationCoordinate2D) -> Void)?
+    var mapStyle: StudioMapStyle = .mutedLight
 
     func makeCoordinator() -> Coordinator {
         Coordinator()
@@ -19,8 +20,9 @@ struct MapKitView: UIViewRepresentable {
     func makeUIView(context: Context) -> MKMapView {
         let v = MKMapView()
         v.delegate = context.coordinator
-        v.mapType = .mutedStandard
-        v.pointOfInterestFilter = .excludingAll
+        v.preferredConfiguration = mapStyle.configuration
+        v.overrideUserInterfaceStyle = mapStyle.interfaceStyle
+        context.coordinator.lastMapStyle = mapStyle
         v.showsBuildings = false
         v.showsCompass = false
         v.showsScale = false
@@ -57,6 +59,11 @@ struct MapKitView: UIViewRepresentable {
         context.coordinator.rendererFor = rendererFor
         context.coordinator.cameraBinding = $camera
         context.coordinator.suppressSystemDoubleTapZoom(on: v)
+        if context.coordinator.lastMapStyle != mapStyle {
+            context.coordinator.lastMapStyle = mapStyle
+            v.preferredConfiguration = mapStyle.configuration
+            v.overrideUserInterfaceStyle = mapStyle.interfaceStyle
+        }
         // Only push camera if it actually changed (preset 跳转); 否则用户拖动/缩放会被覆盖
         if !Coordinator.cameraEquals(context.coordinator.lastAppliedCamera, camera) {
             v.setCamera(camera, animated: true)
@@ -91,6 +98,7 @@ struct MapKitView: UIViewRepresentable {
         var onLongPressCoordinate: ((CLLocationCoordinate2D) -> Void)?
         var onDoubleTapCoordinate: ((CLLocationCoordinate2D) -> Void)?
         weak var myDoubleTap: UITapGestureRecognizer?
+        var lastMapStyle: StudioMapStyle?
         var isRefreshingAnnotations = false
         var lastAnnotationSig: Int?
         private var regionSettle: DispatchWorkItem?

@@ -84,6 +84,16 @@ struct StudioRootView: View {
     @State private var showSettings = false
     /// 从设置页导航到实体详情时置位;详情关闭(selectedRef→nil)后据此重新唤起设置页。
     @State private var reopenSettingsOnDeselect = false
+    @AppStorage("studioMapStyle") private var mapStyleRaw: String = StudioMapStyle.mutedLight.rawValue
+
+    private var mapStyle: StudioMapStyle {
+        StudioMapStyle(rawValue: mapStyleRaw) ?? .mutedLight
+    }
+
+    private var mapStyleBinding: Binding<StudioMapStyle> {
+        Binding(get: { mapStyle }, set: { mapStyleRaw = $0.rawValue })
+    }
+
     @State private var exportMode = false
     @State private var showSafeFrame = false
     @State private var cache = StudioRenderCache()
@@ -151,7 +161,8 @@ struct StudioRootView: View {
                 },
                 onDoubleTapCoordinate: { coord in
                     Task { await lookupPlace(at: coord) }
-                }
+                },
+                mapStyle: mapStyle
             )
             .ignoresSafeArea()
 
@@ -159,7 +170,8 @@ struct StudioRootView: View {
                 StudioOverlay(
                     title: $title, subtitle: $subtitle, watermark: $watermark,
                     aspect: $aspect, viewContext: ctx, showSettings: $showSettings,
-                    exportMode: $exportMode, showSafeFrame: $showSafeFrame, showSearch: $showSearch
+                    exportMode: $exportMode, showSafeFrame: $showSafeFrame, showSearch: $showSearch,
+                    mapStyle: mapStyleBinding
                 )
             }
 
