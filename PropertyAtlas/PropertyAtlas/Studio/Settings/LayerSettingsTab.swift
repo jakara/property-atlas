@@ -1,9 +1,12 @@
 #if targetEnvironment(macCatalyst)
+import CoreLocation
 import SwiftData
 import SwiftUI
 
 struct LayerSettingsTab: View {
     let datasetId: UUID
+    let onSelect: (EntityRef, CLLocationCoordinate2D?, Bool) -> Void
+    let onEdit: (EntityRef, CLLocationCoordinate2D?, Bool) -> Void
     @Environment(\.modelContext) private var modelContext
     @Query private var layers: [Layer]
 
@@ -54,6 +57,9 @@ struct LayerSettingsTab: View {
                         l.updatedAt = Date()
                     })
                 }
+                RowDivider().padding(.top, 2)
+                SectionLabel(text: "成员")
+                LayerMembersView(layerId: l.id, datasetId: datasetId, onSelect: onSelect, onEdit: onEdit)
             }
             .padding(.horizontal, 13).padding(.bottom, 12)
         }

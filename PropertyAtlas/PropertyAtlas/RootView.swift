@@ -244,12 +244,26 @@ struct StudioRootView: View {
                 GeometryReader { geo in
                     HStack(spacing: 0) {
                         Spacer(minLength: 0)
-                        SettingsSheet(viewContext: ctx, onClose: { showSettings = false })
-                            .frame(width: geo.size.width * 0.382)
-                            // 顶 44 让出菜单/标题栏;底 88 清开底部浮动工具栏(dock 在 bottom 22 + 高约 52)
-                            .padding(.top, 44)
-                            .padding(.bottom, 88)
-                            .padding(.trailing, 16)
+                        SettingsSheet(
+                            viewContext: ctx,
+                            onClose: { showSettings = false },
+                            onEntitySelect: { ref, coord, hasCoord in
+                                appState.select(ref)
+                                if hasCoord, let coord { flyTo(coord) }
+                                showSettings = false
+                            },
+                            onEntityEdit: { ref, coord, hasCoord in
+                                appState.select(ref)
+                                appState.beginEditing()
+                                if hasCoord, let coord { flyTo(coord) }
+                                showSettings = false
+                            }
+                        )
+                        .frame(width: geo.size.width * 0.382)
+                        // 顶 44 让出菜单/标题栏;底 88 清开底部浮动工具栏(dock 在 bottom 22 + 高约 52)
+                        .padding(.top, 44)
+                        .padding(.bottom, 88)
+                        .padding(.trailing, 16)
                     }
                 }
                 .ignoresSafeArea()
