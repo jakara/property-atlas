@@ -47,17 +47,22 @@ struct StudioToolbar: View {
                         Label(style.label, systemImage: style == mapStyle ? "checkmark" : style.icon)
                     }
                 }
-                Divider()
+            } label: {
+                DockLabel(icon: mapStyle.icon, text: mapStyle.label, caret: true)
+            }
+            .menuStyle(.borderlessButton).fixedSize()
+
+            // Apple 地点 — 独立下拉(同视图/底图):总开关 + 类别多选
+            Menu {
                 Toggle("显示 Apple 地点", isOn: $poiEnabled)
                 if poiEnabled {
-                    Menu("地点类别(空=全部)") {
-                        ForEach(StudioPOIOption.allCases) { opt in
-                            Toggle(opt.label, isOn: categoryBinding(opt))
-                        }
+                    Divider()
+                    ForEach(StudioPOIOption.allCases) { opt in
+                        Toggle(opt.label, isOn: categoryBinding(opt))
                     }
                 }
             } label: {
-                DockLabel(icon: mapStyle.icon, text: mapStyle.label, caret: true)
+                DockLabel(icon: "mappin.and.ellipse", text: "地点", caret: true)
             }
             .menuStyle(.borderlessButton).fixedSize()
 
