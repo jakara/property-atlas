@@ -26,19 +26,7 @@ struct StudioToolbar: View {
             }
             .menuStyle(.borderlessButton).fixedSize()
 
-            // aspect ratio — 扁平按钮,当前项打勾
-            Menu {
-                ForEach(CanvasAspect.allCases) { a in
-                    Button {
-                        aspect = a
-                    } label: {
-                        Label(a.rawValue, systemImage: a == aspect ? "checkmark" : "crop")
-                    }
-                }
-            } label: {
-                DockLabel(icon: "crop", text: aspect.rawValue, caret: true)
-            }
-            .menuStyle(.borderlessButton).fixedSize()
+            // 画幅切换移到设置页(基本 tab),工具栏不再列。
 
             // map style — 扁平按钮(同视图切换),点一下直接选,当前项打勾
             Menu {

@@ -130,14 +130,24 @@ struct MapKitView: UIViewRepresentable {
         @objc func handleDoubleTap(_ g: UITapGestureRecognizer) {
             guard g.state == .ended, let mv = mapViewRef else { return }
             let pt = g.location(in: mv)
+            // 顶部标题栏区(~30pt):双击 = 系统「最大化」窗口,不查地点。
+            // (内容延伸到标题栏下 fullSizeContentView,故由这里代为触发 NSWindow 缩放。)
+            if pt.y < 30 {
+                zoomKeyWindow()
+                return
+            }
             let coord = mv.convert(pt, toCoordinateFrom: mv)
             onDoubleTapCoordinate?(pt, coord)
         }
 
-        /// 顶部标题栏区(~30pt)不接管双击 → 留给系统「双击最大化」窗口。
-        func gestureRecognizer(_ g: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
-            guard g === myDoubleTap, let mv = mapViewRef else { return true }
-            return touch.location(in: mv).y > 30
+        /// 经 NSApplication 反射调 keyWindow 的 performZoom:(最大化/还原)。
+        private func zoomKeyWindow() {
+            guard let app = (NSClassFromString("NSApplication") as? NSObject.Type)?.value(forKey: "sharedApplication") as? NSObject,
+                  let keyWindow = app.value(forKey: "keyWindow") as? NSObject else { return }
+            let sel = NSSelectorFromString("performZoom:")
+            if keyWindow.responds(to: sel) {
+                keyWindow.perform(sel, with: nil)
+            }
         }
 
         /// 让系统自带的「双击缩放」手势等待我们的双击失败 → 双击只触发坐标查询,不缩放。
