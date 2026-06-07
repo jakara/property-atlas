@@ -5,7 +5,7 @@ import SwiftUI
 
 enum SettingsTab: String, CaseIterable, Identifiable {
     case view = "视图", layer = "图层", enumOption = "枚举"
-    case camera = "相机", customField = "字段"
+    case camera = "相机", customField = "字段", freeDraw = "绘图"
     var id: String {
         rawValue
     }
@@ -17,6 +17,7 @@ enum SettingsTab: String, CaseIterable, Identifiable {
         case .enumOption: "list.bullet"
         case .camera: "camera"
         case .customField: "character.textbox"
+        case .freeDraw: "scribble.variable"
         }
     }
 }
@@ -48,6 +49,7 @@ struct SettingsSheet: View {
                     case .enumOption: EnumOptionSettingsTab(datasetId: viewContext.datasetIdValue)
                     case .camera: CameraSettingsTab(datasetId: viewContext.datasetIdValue)
                     case .customField: CustomFieldSettingsTab(datasetId: viewContext.datasetIdValue)
+                    case .freeDraw: FreeDrawSettingsTab()
                     }
                 }
                 .padding(.horizontal, 18).padding(.bottom, 22)

@@ -13,6 +13,7 @@ struct StudioToolbar: View {
     @Binding var mapStyle: StudioMapStyle
     @Binding var poiEnabled: Bool
     @Binding var poiCategories: Set<StudioPOIOption>
+    @Binding var drawMode: Bool
 
     var body: some View {
         HStack(spacing: 4) {
@@ -63,6 +64,13 @@ struct StudioToolbar: View {
             }
             .buttonStyle(.plain)
             .keyboardShortcut("f", modifiers: .command)
+
+            // 自由绘图开关
+            Button { drawMode.toggle() } label: {
+                DockLabel(icon: "scribble.variable", iconOnly: true)
+                    .foregroundStyle(drawMode ? Studio.cool : Studio.on)
+            }
+            .buttonStyle(.plain)
 
             // settings
             Button { showSettings.wrappedValue = true } label: {

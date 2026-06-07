@@ -78,6 +78,7 @@ struct StudioRootView: View {
     @State private var pendingCoordinate: CLLocationCoordinate2D?
     /// 地点详情卡的锚点(屏幕坐标,双击/选 POI 时记录)→ 卡浮在鼠标下方。
     @State private var placePoint: CGPoint?
+    @State private var drawMode = false
     @State private var showCreateMenu = false
     @State private var showSettings = false
     /// 从设置页导航到实体详情时置位;详情关闭(selectedRef→nil)后据此重新唤起设置页。
@@ -240,6 +241,12 @@ struct StudioRootView: View {
             )
             .ignoresSafeArea()
 
+            // 自由绘图层:盖在地图上方、chrome 下方(无 zIndex → 按顺序在 StudioOverlay 之下,工具栏仍可点)
+            if drawMode {
+                FreeDrawCanvas(active: $drawMode)
+                    .ignoresSafeArea()
+            }
+
             if let ctx = viewContext {
                 StudioOverlay(
                     aspect: aspectBinding, viewContext: ctx, showSettings: $showSettings,
@@ -247,6 +254,7 @@ struct StudioRootView: View {
                     mapStyle: mapStyleBinding,
                     poiEnabled: poiEnabledBinding,
                     poiCategories: poiCategoriesBinding,
+                    drawMode: $drawMode,
                     hideWatermark: !exportMode && (appState.selectedRef != nil || showPlaceDetail)
                 )
             }
