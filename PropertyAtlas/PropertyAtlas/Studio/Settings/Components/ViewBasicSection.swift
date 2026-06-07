@@ -63,7 +63,7 @@ struct ViewBasicSection: View {
 
     private var mapStylePicker: some View {
         Picker("", selection: Binding(
-            get: { StudioMapStyle(rawValue: mv.studioMapStyleRaw) ?? .mutedLight },
+            get: { StudioMapStyle.resolve(mv.studioMapStyleRaw) },
             set: { mv.studioMapStyleRaw = $0.rawValue
                 mv.updatedAt = Date()
             }

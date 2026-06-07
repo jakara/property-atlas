@@ -91,7 +91,7 @@ struct StudioRootView: View {
     }
 
     private var mapStyle: StudioMapStyle {
-        StudioMapStyle(rawValue: activeMV?.studioMapStyleRaw ?? "") ?? .mutedLight
+        StudioMapStyle.resolve(activeMV?.studioMapStyleRaw ?? "")
     }
 
     private var mapStyleBinding: Binding<StudioMapStyle> {
@@ -972,13 +972,36 @@ struct StudioRootView: View {
         viewContext = MapViewContext(dataset: ds, modelContext: modelContext)
     }
 
-    /// 隐藏标题文字 + 去掉 titlebar 的工具栏/分隔线材质(渐变半透明)→ 纯透明,省 GPU 混合。
+    /// 隐藏标题文字 + 去 toolbar/分隔线(公开 API),再经 NSWindow 反射去毛玻璃材质。
     private func configureTitlebar() {
         for scene in UIApplication.shared.connectedScenes {
             guard let windowScene = scene as? UIWindowScene, let titlebar = windowScene.titlebar else { continue }
             titlebar.titleVisibility = .hidden
             titlebar.toolbar = nil
             titlebar.separatorStyle = .none
+        }
+        // NSWindow 首帧可能未就绪,延迟再跑一次。
+        makeNSWindowTitlebarTransparent()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { makeNSWindowTitlebarTransparent() }
+    }
+
+    /// Catalyst 无公开 API 去 titlebar 毛玻璃 → 经 NSApplication 反射设
+    /// titlebarAppearsTransparent + fullSizeContentView(1<<15)+ 透明背景。
+    /// 全程 KVC 真属性 + responds 守卫,防 NSException 崩溃;失败静默(best-effort)。
+    private func makeNSWindowTitlebarTransparent() {
+        guard let appClass = NSClassFromString("NSApplication") as? NSObject.Type,
+              let sharedApp = appClass.value(forKey: "sharedApplication") as? NSObject,
+              let windows = sharedApp.value(forKey: "windows") as? [NSObject] else { return }
+        for window in windows {
+            if window.responds(to: NSSelectorFromString("setTitlebarAppearsTransparent:")) {
+                window.setValue(true, forKey: "titlebarAppearsTransparent")
+            }
+            if let mask = window.value(forKey: "styleMask") as? UInt {
+                window.setValue(mask | (1 << 15), forKey: "styleMask") // .fullSizeContentView
+            }
+            if window.responds(to: NSSelectorFromString("setOpaque:")) {
+                window.setValue(false, forKey: "opaque")
+            }
         }
     }
 
