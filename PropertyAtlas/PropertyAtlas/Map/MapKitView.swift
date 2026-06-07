@@ -280,6 +280,19 @@ struct MapKitView: UIViewRepresentable {
                 v.displayPriority = .required
                 return v
             }
+            // 系统底图 POI:必须返回一个 view,否则 didSelect 不回调 → 详情卡不弹。
+            // 用系统 marker 复刻 feature 自带图标/配色。
+            if let feature = annotation as? MKMapFeatureAnnotation {
+                let id = "mapFeature"
+                let marker = (mv.dequeueReusableAnnotationView(withIdentifier: id) as? MKMarkerAnnotationView)
+                    ?? MKMarkerAnnotationView(annotation: feature, reuseIdentifier: id)
+                marker.annotation = feature
+                if let style = feature.iconStyle {
+                    marker.markerTintColor = style.backgroundColor
+                    marker.glyphImage = style.image
+                }
+                return marker
+            }
             return nil
         }
         #endif
