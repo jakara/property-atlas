@@ -10,6 +10,7 @@ struct MapKitView: UIViewRepresentable {
     var onRegionChange: ((MKCoordinateRegion) -> Void)?
     var onSchoolSelect: ((UUID?) -> Void)?
     var onLongPressCoordinate: ((CLLocationCoordinate2D) -> Void)?
+    var onDoubleTapCoordinate: ((CLLocationCoordinate2D) -> Void)?
 
     func makeCoordinator() -> Coordinator {
         Coordinator()
@@ -29,10 +30,19 @@ struct MapKitView: UIViewRepresentable {
             target: context.coordinator, action: #selector(Coordinator.handleLongPress(_:))
         )
         v.addGestureRecognizer(longPress)
+        let doubleTap = UITapGestureRecognizer(
+            target: context.coordinator, action: #selector(Coordinator.handleDoubleTap(_:))
+        )
+        doubleTap.numberOfTapsRequired = 2
+        doubleTap.delegate = context.coordinator
+        v.addGestureRecognizer(doubleTap)
+        context.coordinator.myDoubleTap = doubleTap
+        context.coordinator.suppressSystemDoubleTapZoom(on: v)
         context.coordinator.mapViewRef = v
         context.coordinator.onRegionChange = onRegionChange
         context.coordinator.onSchoolSelect = onSchoolSelect
         context.coordinator.onLongPressCoordinate = onLongPressCoordinate
+        context.coordinator.onDoubleTapCoordinate = onDoubleTapCoordinate
         context.coordinator.rendererFor = rendererFor
         context.coordinator.cameraBinding = $camera
         context.coordinator.lastAppliedCamera = camera.copy() as? MKMapCamera
@@ -43,8 +53,10 @@ struct MapKitView: UIViewRepresentable {
         context.coordinator.onRegionChange = onRegionChange
         context.coordinator.onSchoolSelect = onSchoolSelect
         context.coordinator.onLongPressCoordinate = onLongPressCoordinate
+        context.coordinator.onDoubleTapCoordinate = onDoubleTapCoordinate
         context.coordinator.rendererFor = rendererFor
         context.coordinator.cameraBinding = $camera
+        context.coordinator.suppressSystemDoubleTapZoom(on: v)
         // Only push camera if it actually changed (preset 跳转); 否则用户拖动/缩放会被覆盖
         if !Coordinator.cameraEquals(context.coordinator.lastAppliedCamera, camera) {
             v.setCamera(camera, animated: true)
@@ -69,7 +81,7 @@ struct MapKitView: UIViewRepresentable {
         }
     }
 
-    final class Coordinator: NSObject, MKMapViewDelegate {
+    final class Coordinator: NSObject, MKMapViewDelegate, UIGestureRecognizerDelegate {
         var onRegionChange: ((MKCoordinateRegion) -> Void)?
         var onSchoolSelect: ((UUID?) -> Void)?
         var rendererFor: ((MKOverlay) -> MKOverlayRenderer?)?
@@ -77,6 +89,8 @@ struct MapKitView: UIViewRepresentable {
         var lastAppliedCamera: MKMapCamera?
         weak var mapViewRef: MKMapView?
         var onLongPressCoordinate: ((CLLocationCoordinate2D) -> Void)?
+        var onDoubleTapCoordinate: ((CLLocationCoordinate2D) -> Void)?
+        weak var myDoubleTap: UITapGestureRecognizer?
         var isRefreshingAnnotations = false
         var lastAnnotationSig: Int?
         private var regionSettle: DispatchWorkItem?
@@ -89,6 +103,38 @@ struct MapKitView: UIViewRepresentable {
             let pt = g.location(in: mv)
             let coord = mv.convert(pt, toCoordinateFrom: mv)
             onLongPressCoordinate?(coord)
+        }
+
+        @objc func handleDoubleTap(_ g: UITapGestureRecognizer) {
+            guard g.state == .ended, let mv = mapViewRef else { return }
+            let pt = g.location(in: mv)
+            let coord = mv.convert(pt, toCoordinateFrom: mv)
+            onDoubleTapCoordinate?(coord)
+        }
+
+        /// 让系统自带的「双击缩放」手势等待我们的双击失败 → 双击只触发坐标查询,不缩放。
+        /// MKMapView 的手势可能在自身或子视图上,递归处理;在 make/update 调用,require(toFail:) 幂等。
+        func suppressSystemDoubleTapZoom(on view: UIView) {
+            guard let mine = myDoubleTap else { return }
+            func walk(_ target: UIView) {
+                for recognizer in target.gestureRecognizers ?? [] {
+                    if let tap = recognizer as? UITapGestureRecognizer,
+                       tap.numberOfTapsRequired == 2, tap !== mine
+                    {
+                        tap.require(toFail: mine)
+                    }
+                }
+                target.subviews.forEach(walk)
+            }
+            walk(view)
+        }
+
+        /// 允许与其它手势并存(长按/拖动/缩放),仅靠 require(toFail:) 抑制双击缩放。
+        func gestureRecognizer(
+            _ gestureRecognizer: UIGestureRecognizer,
+            shouldRecognizeSimultaneouslyWith other: UIGestureRecognizer
+        ) -> Bool {
+            true
         }
 
         #if targetEnvironment(macCatalyst)

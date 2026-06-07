@@ -144,6 +144,9 @@ struct StudioRootView: View {
                 onLongPressCoordinate: { coord in
                     pendingCoordinate = coord
                     showCreateMenu = true
+                },
+                onDoubleTapCoordinate: { coord in
+                    Task { await lookupPlace(at: coord) }
                 }
             )
             .ignoresSafeArea()
@@ -709,6 +712,23 @@ struct StudioRootView: View {
 
     private func flyTo(_ coord: CLLocationCoordinate2D) {
         camera = MKMapCamera(lookingAtCenter: coord, fromDistance: 2000, pitch: 0, heading: 0)
+    }
+
+    /// 双击地图空白:逆地理编码坐标 → 复用外部地点详情卡(ExternalPlaceCard)。
+    private func lookupPlace(at coord: CLLocationCoordinate2D) async {
+        searchMarker = SearchMarker(coordinate: coord, name: "查询中…")
+        showPlaceDetail = false
+        do {
+            if let hit = try await ExternalPlaceSearch.reverseGeocode(coord) {
+                searchPlace = hit
+                searchMarker = SearchMarker(coordinate: hit.coordinate, name: hit.name)
+                showPlaceDetail = true
+            } else {
+                searchMarker = nil
+            }
+        } catch {
+            searchMarker = nil
+        }
     }
 
     private func createPin(_ kind: EntityKind, layerId: UUID?, name: String = "") {

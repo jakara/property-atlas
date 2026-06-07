@@ -41,6 +41,26 @@ enum ExternalPlaceSearch {
         }
     }
 
+    /// 反查坐标处地点(双击地图空白)。CLGeocoder 逆地理编码 → PlaceHit。无结果返回 nil。
+    static func reverseGeocode(_ coordinate: CLLocationCoordinate2D) async throws -> PlaceHit? {
+        let location = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
+        let placemarks = try await CLGeocoder().reverseGeocodeLocation(location)
+        guard let placemark = placemarks.first else { return nil }
+        let detail = [placemark.locality, placemark.subLocality, placemark.thoroughfare, placemark.subThoroughfare]
+            .compactMap { $0 }
+            .joined(separator: " ")
+        let name = placemark.name ?? placemark.thoroughfare ?? placemark.areasOfInterest?.first ?? "此处"
+        return PlaceHit(
+            name: name,
+            subtitle: detail,
+            coordinate: placemark.location?.coordinate ?? coordinate,
+            category: placemark.areasOfInterest?.first,
+            phone: nil,
+            url: nil,
+            fullAddress: detail.isEmpty ? name : detail
+        )
+    }
+
     private static func subtitle(_ placemark: MKPlacemark) -> String {
         [placemark.locality, placemark.thoroughfare, placemark.subThoroughfare]
             .compactMap { $0 }
