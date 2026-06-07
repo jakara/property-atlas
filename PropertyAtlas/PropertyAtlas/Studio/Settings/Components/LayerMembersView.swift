@@ -12,7 +12,17 @@ struct LayerMembersView: View {
     let onSelect: (EntityRef, CLLocationCoordinate2D?, Bool) -> Void
     let onEdit: (EntityRef, CLLocationCoordinate2D?, Bool) -> Void
     @Environment(\.modelContext) private var context
-    @State private var kind: EntityKind = .compound
+    @AppStorage("layerMembersKind") private var kindRaw: String = EntityKind.compound.rawValue
+    private var kind: EntityKind {
+        EntityKind(rawValue: kindRaw) ?? .compound
+    }
+
+    private var kindBinding: Binding<EntityKind> {
+        Binding(get: { kind }, set: { kindRaw = $0.rawValue })
+    }
+
+    @AppStorage("layerMembersScrollId") private var scrollIdRaw: String = ""
+    @State private var scrollId: UUID?
     @State private var query = ""
 
     private let kinds: [(value: EntityKind, label: String)] = [
@@ -21,9 +31,13 @@ struct LayerMembersView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            GlassSegmented(options: kinds, selection: $kind)
+            GlassSegmented(options: kinds, selection: kindBinding)
             TextField("搜索\(label)", text: $query).glassField()
             list
+        }
+        .onAppear { scrollId = UUID(uuidString: scrollIdRaw) }
+        .onChange(of: scrollId) { _, newValue in
+            scrollIdRaw = newValue?.uuidString ?? ""
         }
     }
 
@@ -39,12 +53,18 @@ struct LayerMembersView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.vertical, 6)
         } else {
-            VStack(spacing: 0) {
-                ForEach(Array(hits.enumerated()), id: \.element.id) { idx, hit in
-                    if idx > 0 { RowDivider() }
-                    row(hit)
+            ScrollView {
+                LazyVStack(spacing: 0) {
+                    ForEach(Array(hits.enumerated()), id: \.element.id) { idx, hit in
+                        if idx > 0 { RowDivider() }
+                        row(hit)
+                            .id(hit.id)
+                    }
                 }
+                .scrollTargetLayout()
             }
+            .frame(maxHeight: 300)
+            .scrollPosition(id: $scrollId)
             .background(Studio.glassInput, in: RoundedRectangle(cornerRadius: Studio.rCard, style: .continuous))
         }
     }
