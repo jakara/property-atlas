@@ -48,7 +48,7 @@ enum EntityFieldSchema {
             ]
         case .area:
             [
-                FieldDescriptor("category", "区域类型", .enumRef, enumScope: "area.category"),
+                FieldDescriptor("category", "类型", .enumRef, enumScope: "area.category"),
                 FieldDescriptor("textDescription", "描述", .string),
             ]
         }
