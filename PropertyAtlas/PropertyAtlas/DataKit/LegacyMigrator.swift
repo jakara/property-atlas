@@ -161,6 +161,51 @@ enum LegacyMigrator {
         dataset.areaNamesNormalizedV1 = true
     }
 
+    /// 幂等回填:旧库 MapView 的普通过滤器无 entityType → 按名称/字段推断补上。
+    /// 闸门 dataset.filterEntityTypeMigratedV1。新库已直接 seed entityType,此处只补旧库。
+    static func migrateFilterEntityTypes(dataset: Dataset, in ctx: ModelContext) {
+        guard !dataset.filterEntityTypeMigratedV1 else { return }
+        let dsId = dataset.id
+        let views = (try? ctx.fetch(FetchDescriptor<MapView>(
+            predicate: #Predicate { $0.datasetId == dsId }
+        ))) ?? []
+        for v in views {
+            var normals = ViewConfigCodec.decodeNormals(v.normalFiltersJSON)
+            var changed = false
+            for i in normals.indices where normals[i].entityType.isEmpty {
+                if let t = inferEntityType(name: normals[i].name, dimension: normals[i].dimension) {
+                    normals[i].entityType = t
+                    changed = true
+                }
+            }
+            if changed {
+                v.normalFiltersJSON = ViewConfigCodec.encodeNormals(normals)
+                v.updatedAt = Date()
+            }
+        }
+        dataset.filterEntityTypeMigratedV1 = true
+    }
+
+    /// 纯逻辑:按过滤器名 / 字段 key 推断实体类型(category 跨类型歧义 → nil)。
+    static func inferEntityType(name: String, dimension: MapDimension) -> String? {
+        let byName: [String: String] = [
+            "精装类型": "compound", "阶段": "school", "POI 类型": "poi", "POI类型": "poi",
+            "区域类型": "area", "等级": "school", "新房/二手": "compound", "学制": "school",
+        ]
+        if let t = byName[name] { return t }
+        if dimension.kind == .field, let k = dimension.fieldKey {
+            let byKey: [String: String] = [
+                "finishType": "compound", "isNewHouse": "compound", "deliveryTime": "compound",
+                "developer": "compound", "propertyMgmt": "compound", "buildYear": "compound",
+                "areaSegments": "compound", "priceSegments": "compound",
+                "grade": "school", "form": "school", "capacity": "school", "communitiesText": "school",
+                "textDescription": "area",
+            ]
+            return byKey[k]
+        }
+        return nil
+    }
+
     // MARK: stage 3 — LegacySchool → School
 
     private static func migrateSchools(_ legacySchools: [SchoolSeed], dataset: Dataset, in ctx: ModelContext) throws {
@@ -627,20 +672,21 @@ enum LegacyMigrator {
         // P9b: hardcoded NormalFilter list (formerly derived from per-field config
         // rows sorted by slot). Order is behavior-equivalent to the prior
         // slot-ascending derivation captured empirically before deletion.
-        func fieldFilter(_ name: String, _ key: String) -> NormalFilter {
+        func fieldFilter(_ name: String, _ key: String, _ entity: String) -> NormalFilter {
             NormalFilter(
                 name: name,
-                dimension: MapDimension(kind: .field, fieldKey: key, fieldSource: "base")
+                dimension: MapDimension(kind: .field, fieldKey: key, fieldSource: "base"),
+                entityType: entity
             )
         }
         let normals: [NormalFilter] = [
-            fieldFilter("精装类型", "finishType"),
-            fieldFilter("阶段", "category"),
-            fieldFilter("POI 类型", "category"),
-            fieldFilter("区域类型", "category"),
-            fieldFilter("等级", "grade"),
-            fieldFilter("新房/二手", "isNewHouse"),
-            fieldFilter("学制", "form"),
+            fieldFilter("精装类型", "finishType", "compound"),
+            fieldFilter("阶段", "category", "school"),
+            fieldFilter("POI 类型", "category", "poi"),
+            fieldFilter("区域类型", "category", "area"),
+            fieldFilter("等级", "grade", "school"),
+            fieldFilter("新房/二手", "isNewHouse", "compound"),
+            fieldFilter("学制", "form", "school"),
         ]
         let normalsJSON = (try? JSONHelpers.encode(normals)) ?? "[]"
         let emptyPrimary = PrimaryFilter(conditions: [], groupBy: nil)

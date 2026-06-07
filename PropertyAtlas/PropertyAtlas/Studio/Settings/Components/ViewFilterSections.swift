@@ -6,12 +6,11 @@ import SwiftUI
 struct ViewPrimaryFilterSection: View {
     let mv: MapView
     @State private var primary = PrimaryFilter(conditions: [], groupBy: nil)
-    private let entityType = "school"
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             SettingsCard("主过滤 · 分组染色") {
-                PrimaryFilterEditor(filter: $primary, entityType: entityType, datasetId: mv.datasetId)
+                PrimaryFilterEditor(filter: $primary, datasetId: mv.datasetId)
                     .onChange(of: primary) { _, new in
                         mv.primaryFilterJSON = ViewConfigCodec.encodePrimary(new)
                         mv.updatedAt = Date()
@@ -30,7 +29,6 @@ struct ViewPrimaryFilterSection: View {
 struct ViewNormalFilterSection: View {
     let mv: MapView
     @State private var normals: [NormalFilter] = []
-    private let entityType = "school"
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -47,11 +45,14 @@ struct ViewNormalFilterSection: View {
                             Image(systemName: "trash").font(.system(size: 12)).foregroundStyle(Studio.bad)
                         }.buttonStyle(.plain)
                     }
+                    EntityTypePicker(entityType: Binding(get: { normals[index].entityType }, set: { normals[index].entityType = $0
+                        saveNormals()
+                    }))
                     DimensionPicker(
                         dimension: Binding(get: { normals[index].dimension }, set: { normals[index].dimension = $0
                             saveNormals()
                         }),
-                        entityType: entityType,
+                        entityType: normals[index].entityType,
                         datasetId: mv.datasetId
                     )
                 }
@@ -59,7 +60,7 @@ struct ViewNormalFilterSection: View {
                 .background(Studio.glassInput, in: RoundedRectangle(cornerRadius: Studio.rCard, style: .continuous))
             }
             AddRow("加普通过滤") {
-                normals.append(NormalFilter(name: "新过滤", dimension: MapDimension(kind: .field)))
+                normals.append(NormalFilter(name: "新过滤", dimension: MapDimension(kind: .field), entityType: "compound"))
                 saveNormals()
             }
         }

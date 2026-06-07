@@ -38,6 +38,7 @@ enum SeedImporter {
             StyleConsolidationMigrator.run(in: context)
             normalizeAreaNamesIfNeeded(in: context)
             seedDistrictBoundariesIfNeeded(in: context)
+            migrateFilterEntityTypesIfNeeded(in: context)
             try context.save()
             progress(1.0, "已就绪")
             return false
@@ -65,6 +66,7 @@ enum SeedImporter {
         progress(0.95, "保存")
         StyleConsolidationMigrator.run(in: context)
         seedDistrictBoundariesIfNeeded(in: context)
+        migrateFilterEntityTypesIfNeeded(in: context)
         try context.save()
         progress(1.0, "完成")
         return true
@@ -124,6 +126,14 @@ enum SeedImporter {
                 context.insert(area)
             }
             ds.districtBoundariesSeededV1 = true
+        }
+    }
+
+    /// 幂等回填普通过滤器 entityType(旧库)。新库 seed 已带 entityType,会立即标记跳过。
+    private static func migrateFilterEntityTypesIfNeeded(in context: ModelContext) {
+        let datasets = (try? context.fetch(FetchDescriptor<Dataset>())) ?? []
+        for ds in datasets where !ds.filterEntityTypeMigratedV1 {
+            LegacyMigrator.migrateFilterEntityTypes(dataset: ds, in: context)
         }
     }
 

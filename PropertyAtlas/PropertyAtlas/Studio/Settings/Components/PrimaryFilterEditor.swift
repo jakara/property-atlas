@@ -3,32 +3,32 @@ import SwiftUI
 
 struct PrimaryFilterEditor: View {
     @Binding var filter: PrimaryFilter
-    let entityType: String
     let datasetId: UUID
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("主过滤(分组 + 条件)")
+            Text("主过滤(实体 + 分组 + 条件)")
                 .font(Studio.sans(13, .semibold))
                 .foregroundStyle(Studio.on)
+            EntityTypePicker(entityType: $filter.entityType)
             // groupBy row
             Toggle("启用分组染色 (groupBy)", isOn: groupByEnabled)
                 .font(Studio.sans(13))
                 .foregroundStyle(Studio.on)
                 .tint(Studio.cool)
             if filter.groupBy != nil {
-                DimensionPicker(dimension: groupByBinding, entityType: entityType, datasetId: datasetId)
+                DimensionPicker(dimension: groupByBinding, entityType: filter.entityType, datasetId: datasetId)
                     .padding(.leading, 8)
             }
             Rectangle().fill(Studio.glassLine).frame(height: 1)
-            Text("条件 (AND)")
+            Text("条件 (AND · 仅约束所选实体)")
                 .font(Studio.sans(10, .semibold))
                 .textCase(.uppercase)
                 .foregroundStyle(Studio.on3)
             ForEach(filter.conditions.indices, id: \.self) { i in
                 FilterConditionRow(
                     condition: conditionBinding(i),
-                    entityType: entityType,
+                    entityType: filter.entityType,
                     datasetId: datasetId,
                     onDelete: { filter.conditions.remove(at: i) }
                 )

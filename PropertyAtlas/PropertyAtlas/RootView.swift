@@ -673,8 +673,9 @@ struct StudioRootView: View {
         let viewRules = buildViewStyleRules(dsId: dsId, viewId: activeMapView?.id)
         let palette = activeMapView.flatMap { $0.paletteHex.isEmpty ? nil : $0.paletteHex }
             ?? PaletteAssigner.highContrast
+        // 分组染色只作用于主过滤器绑定的实体类型(空 entityType → 不染)
         let groupItems = cands
-            .filter { visibleIds.contains($0.id) && $0.type != "area" }
+            .filter { visibleIds.contains($0.id) && !primary.entityType.isEmpty && $0.type == primary.entityType }
             .map { GroupColorResolver.Item(id: $0.id, entity: $0.entity, layerNames: membership[$0.id] ?? []) }
         let groupColors = GroupColorResolver.colors(
             items: groupItems, groupBy: primary.groupBy, palette: palette,
@@ -712,8 +713,9 @@ struct StudioRootView: View {
         primary: PrimaryFilter, normals: [NormalFilter], palette: [String], dsId: UUID,
         edgeProjection: EdgeProjection? = nil, dimCache: DimResolveCache? = nil
     ) -> [LegendSpec] {
-        func entriesFor(_ ids: Set<UUID>, _ dim: MapDimension, prefixOne: Bool) -> [LegendSpec.Entry] {
-            cands.filter { ids.contains($0.id) }.map { cand in
+        /// entityType 非空时只计入该类型实体(图例/计数按实体 scope)
+        func entriesFor(_ ids: Set<UUID>, _ dim: MapDimension, entityType: String, prefixOne: Bool) -> [LegendSpec.Entry] {
+            cands.filter { ids.contains($0.id) && (entityType.isEmpty || $0.type == entityType) }.map { cand in
                 let input = MapDimension.Input(
                     entity: cand.entity, layerNames: membership[cand.id] ?? [],
                     context: modelContext, datasetId: dsId,
@@ -726,7 +728,7 @@ struct StudioRootView: View {
         }
         var specs: [LegendSpec] = []
         if let gb = primary.groupBy {
-            let entries = entriesFor(visibleIds, gb, prefixOne: true)
+            let entries = entriesFor(visibleIds, gb, entityType: primary.entityType, prefixOne: true)
             let distinct = Array(Set(entries.flatMap(\.values)))
             let assign = PaletteAssigner.assign(values: distinct, palette: palette)
             specs.append(LegendSpec(
@@ -735,7 +737,7 @@ struct StudioRootView: View {
             ))
         }
         for nf in normals {
-            let entries = entriesFor(normalLegendIds, nf.dimension, prefixOne: false)
+            let entries = entriesFor(normalLegendIds, nf.dimension, entityType: nf.entityType, prefixOne: false)
             specs.append(LegendSpec(
                 title: nf.name, dimensionKey: nf.dimension.key,
                 togglable: true, dropZeroViewport: false, swatch: [:], entries: entries
