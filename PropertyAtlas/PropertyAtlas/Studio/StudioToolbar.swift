@@ -26,12 +26,14 @@ struct StudioToolbar: View {
             }
             .menuStyle(.borderlessButton).fixedSize()
 
-            // aspect ratio
+            // aspect ratio — 扁平按钮,当前项打勾
             Menu {
-                Toggle("显示出图框", isOn: $showSafeFrame)
-                Divider()
-                Picker("画幅", selection: $aspect) {
-                    ForEach(CanvasAspect.allCases) { a in Text(a.rawValue).tag(a) }
+                ForEach(CanvasAspect.allCases) { a in
+                    Button {
+                        aspect = a
+                    } label: {
+                        Label(a.rawValue, systemImage: a == aspect ? "checkmark" : "crop")
+                    }
                 }
             } label: {
                 DockLabel(icon: "crop", text: aspect.rawValue, caret: true)
