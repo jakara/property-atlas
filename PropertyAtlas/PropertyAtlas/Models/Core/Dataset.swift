@@ -10,6 +10,7 @@ final class Dataset {
     var activeCameraPresetId: UUID?
     var stylesMigratedV2: Bool = false
     var areaNamesNormalizedV1: Bool = false
+    var districtBoundariesSeededV1: Bool = false
     var sortOrder: Int = 0
     var version: Int = 1
     var createdAt: Date = Date()

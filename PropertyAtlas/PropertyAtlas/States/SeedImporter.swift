@@ -37,6 +37,7 @@ enum SeedImporter {
         if try !context.fetch(FetchDescriptor<Dataset>()).isEmpty {
             StyleConsolidationMigrator.run(in: context)
             normalizeAreaNamesIfNeeded(in: context)
+            seedDistrictBoundariesIfNeeded(in: context)
             try context.save()
             progress(1.0, "已就绪")
             return false
@@ -63,6 +64,7 @@ enum SeedImporter {
 
         progress(0.95, "保存")
         StyleConsolidationMigrator.run(in: context)
+        seedDistrictBoundariesIfNeeded(in: context)
         try context.save()
         progress(1.0, "完成")
         return true
@@ -93,6 +95,55 @@ enum SeedImporter {
         for ds in pending {
             LegacyMigrator.normalizeAreaNames(zones: zones, dataset: ds, in: context)
         }
+    }
+
+    /// 幂等播种天津 16 行政区边界为新 Area(GCJ-02,与现有数据/底图一致)。
+    /// 确定性 id(dist_bound_{datasetId}_{adcode})防重复;归默认图层;闸门 districtBoundariesSeededV1。
+    private static func seedDistrictBoundariesIfNeeded(in context: ModelContext) {
+        let datasets = (try? context.fetch(FetchDescriptor<Dataset>())) ?? []
+        let pending = datasets.filter { !$0.districtBoundariesSeededV1 }
+        guard !pending.isEmpty, let root = try? loadJSON("district_boundaries") else { return }
+        let items = parseDistrictBoundaries(root)
+        guard !items.isEmpty else { return }
+        for ds in pending {
+            let dsId = ds.id
+            let defaultLayerId = (try? context.fetch(FetchDescriptor<Layer>(
+                predicate: #Predicate { $0.datasetId == dsId && !$0.deleted }
+            )))?.first(where: { $0.isDefault })?.id
+            for it in items {
+                let aid = uuid(from: "dist_bound_\(dsId.uuidString)_\(it.adcode)")
+                let exists = ((try? context.fetch(FetchDescriptor<Area>(
+                    predicate: #Predicate { $0.id == aid }
+                )))?.isEmpty == false)
+                if exists { continue }
+                let area = Area(datasetId: dsId, name: it.name, geometryKind: "polygon", geometryJSON: it.geometryJSON)
+                area.id = aid
+                area.layerId = defaultLayerId
+                area.category = "行政区"
+                area.fillOpacity = 0.08
+                context.insert(area)
+            }
+            ds.districtBoundariesSeededV1 = true
+        }
+    }
+
+    private static func parseDistrictBoundaries(
+        _ root: [String: Any]
+    ) -> [(adcode: String, name: String, geometryJSON: String)] {
+        guard let items = root["items"] as? [[String: Any]] else { return [] }
+        var out: [(adcode: String, name: String, geometryJSON: String)] = []
+        for it in items {
+            guard let name = it["name"] as? String,
+                  let geom = it["geometry"],
+                  let data = try? JSONSerialization.data(withJSONObject: geom),
+                  let geomStr = String(data: data, encoding: .utf8)
+            else { continue }
+            let adcode = (it["adcode"] as? Int).map(String.init)
+                ?? (it["adcode"] as? String)
+                ?? name
+            out.append((adcode, name, geomStr))
+        }
+        return out
     }
 
     // MARK: - Bundle / Dev source loading
