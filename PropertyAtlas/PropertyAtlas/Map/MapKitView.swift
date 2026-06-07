@@ -48,6 +48,11 @@ struct MapKitView: UIViewRepresentable {
         doubleTap.delegate = context.coordinator
         v.addGestureRecognizer(doubleTap)
         context.coordinator.myDoubleTap = doubleTap
+        // 快捷键:shift+移动鼠标→平移;control+上下移动→缩放(经 hover + modifierFlags)
+        let hover = UIHoverGestureRecognizer(
+            target: context.coordinator, action: #selector(Coordinator.handleHover(_:))
+        )
+        v.addGestureRecognizer(hover)
         context.coordinator.suppressSystemDoubleTapZoom(on: v)
         context.coordinator.mapViewRef = v
         context.coordinator.onRegionChange = onRegionChange
@@ -115,10 +120,33 @@ struct MapKitView: UIViewRepresentable {
         var lastPOISignature: String?
         var isRefreshingAnnotations = false
         var lastAnnotationSig: Int?
+        private var lastHoverPoint: CGPoint?
         private var regionSettle: DispatchWorkItem?
         /// 低于此 zoom 隐藏所有文字标签(只留圆点)。城市概览 ~11-12,街区 ~15+。
         private static let labelMinZoom: Double = 13
         private var lastLabelsAllowed: Bool?
+
+        /// shift + 移动鼠标 → 平移地图;control + 上下移动 → 缩放。其余 hover 忽略。
+        @objc func handleHover(_ g: UIHoverGestureRecognizer) {
+            guard let mv = mapViewRef else { return }
+            let pt = g.location(in: mv)
+            let mods = g.modifierFlags
+            defer { lastHoverPoint = (g.state == .ended || g.state == .cancelled) ? nil : pt }
+            guard g.state == .changed, let last = lastHoverPoint else { return }
+            let dx = pt.x - last.x
+            let dy = pt.y - last.y
+            if mods.contains(.shift) {
+                // 拖动:内容跟随鼠标 → 中心反向移动
+                let target = CGPoint(x: mv.center.x - dx, y: mv.center.y - dy)
+                mv.setCenter(mv.convert(target, toCoordinateFrom: mv), animated: false)
+            } else if mods.contains(.control), abs(dy) > 0.1 {
+                // 上(dy<0)放大,下缩小
+                let cam = mv.camera.copy() as? MKMapCamera ?? mv.camera
+                let factor = 1 + Double(dy) / 200
+                cam.centerCoordinateDistance = min(max(cam.centerCoordinateDistance * factor, 200), 4_000_000)
+                mv.setCamera(cam, animated: false)
+            }
+        }
 
         @objc func handleLongPress(_ g: UILongPressGestureRecognizer) {
             guard g.state == .began, let mv = mapViewRef else { return }
