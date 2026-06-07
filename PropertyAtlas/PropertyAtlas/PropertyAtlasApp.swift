@@ -56,6 +56,15 @@ struct PropertyAtlasApp: App {
                         .keyboardShortcut(KeyEquivalent(Character("\(i + 1)")), modifiers: .command)
                     }
                 }
+                // 隐藏无用的系统默认菜单项(保留 Edit 复制/撤销、Window 供文本框用)。
+                CommandGroup(replacing: .newItem) {}
+                CommandGroup(replacing: .saveItem) {}
+                CommandGroup(replacing: .importExport) {}
+                CommandGroup(replacing: .printItem) {}
+                CommandGroup(replacing: .textFormatting) {}
+                CommandGroup(replacing: .toolbar) {}
+                CommandGroup(replacing: .sidebar) {}
+                CommandGroup(replacing: .help) {}
             }
         #endif
     }
