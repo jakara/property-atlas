@@ -79,6 +79,8 @@ struct StudioRootView: View {
     /// 地点详情卡的锚点(屏幕坐标,双击/选 POI 时记录)→ 卡浮在鼠标下方。
     @State private var placePoint: CGPoint?
     @State private var drawMode = false
+    @State private var areaDrawMode = false
+    @State private var areaDrawPoints: [CLLocationCoordinate2D] = []
     @State private var showCreateMenu = false
     @State private var showSettings = false
     /// 从设置页导航到实体详情时置位;详情关闭(selectedRef→nil)后据此重新唤起设置页。
@@ -246,6 +248,11 @@ struct StudioRootView: View {
                 FreeDrawCanvas(active: $drawMode)
                     .ignoresSafeArea()
             }
+            // 绘制区域层:点击放顶点(同样在 chrome 之下)
+            if areaDrawMode {
+                AreaDrawLayer(points: $areaDrawPoints, region: visibleRegion)
+                    .ignoresSafeArea()
+            }
 
             if let ctx = viewContext {
                 StudioOverlay(
@@ -255,8 +262,25 @@ struct StudioRootView: View {
                     poiEnabled: poiEnabledBinding,
                     poiCategories: poiCategoriesBinding,
                     drawMode: $drawMode,
+                    areaDrawMode: $areaDrawMode,
                     hideWatermark: !exportMode && (appState.selectedRef != nil || showPlaceDetail)
                 )
+            }
+
+            if areaDrawMode {
+                VStack {
+                    AreaDrawPanel(
+                        count: areaDrawPoints.count,
+                        onUndo: { if !areaDrawPoints.isEmpty { areaDrawPoints.removeLast() } },
+                        onFinish: { finishAreaDraw() },
+                        onCancel: { areaDrawPoints = []
+                            areaDrawMode = false
+                        }
+                    )
+                    .padding(.top, 96)
+                    Spacer()
+                }
+                .zIndex(35)
             }
 
             if !exportMode, showSearch {
@@ -923,6 +947,27 @@ struct StudioRootView: View {
         searchPlace = nil
         showPlaceDetail = false
         createPrefillName = nil
+        appState.select(ref)
+        appState.beginEditing()
+    }
+
+    /// 完成区域绘制:顶点 → GeoJSON Polygon → 新 Area(默认层),选中并打开编辑器改名。
+    private func finishAreaDraw() {
+        guard areaDrawPoints.count >= 3, let dsId = viewContext?.datasetIdValue else { return }
+        let layerId = layersForDataset(dsId).first(where: { $0.isDefault })?.id
+        let geo = (try? GeoJSONHelper.encodePolygon(areaDrawPoints)) ?? ""
+        let ref = EntityWriter.createPin(
+            kind: .area, datasetId: dsId, name: "新区域",
+            latitude: 0, longitude: 0, layerId: layerId, in: modelContext
+        )
+        if let a = EntityReader.fetch(Area.self, ref.id, modelContext) {
+            a.geometryJSON = geo
+            a.geometryKind = "polygon"
+            a.updatedAt = Date()
+        }
+        try? modelContext.save()
+        areaDrawPoints = []
+        areaDrawMode = false
         appState.select(ref)
         appState.beginEditing()
     }

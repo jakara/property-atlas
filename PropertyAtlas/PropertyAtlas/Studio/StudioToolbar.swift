@@ -14,6 +14,7 @@ struct StudioToolbar: View {
     @Binding var poiEnabled: Bool
     @Binding var poiCategories: Set<StudioPOIOption>
     @Binding var drawMode: Bool
+    @Binding var areaDrawMode: Bool
 
     var body: some View {
         HStack(spacing: 4) {
@@ -66,9 +67,18 @@ struct StudioToolbar: View {
             .keyboardShortcut("f", modifiers: .command)
 
             // 自由绘图开关
-            Button { drawMode.toggle() } label: {
-                DockLabel(icon: "scribble.variable", iconOnly: true)
-                    .foregroundStyle(drawMode ? Studio.cool : Studio.on)
+            Button { drawMode.toggle()
+                if drawMode { areaDrawMode = false }
+            } label: {
+                DockLabel(icon: drawMode ? "scribble.variable" : "scribble", iconOnly: true)
+            }
+            .buttonStyle(.plain)
+
+            // 绘制区域(打点)开关
+            Button { areaDrawMode.toggle()
+                if areaDrawMode { drawMode = false }
+            } label: {
+                DockLabel(icon: areaDrawMode ? "hexagon.fill" : "hexagon", iconOnly: true)
             }
             .buttonStyle(.plain)
 

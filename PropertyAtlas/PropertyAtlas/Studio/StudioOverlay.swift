@@ -12,6 +12,7 @@ struct StudioOverlay: View {
     @Binding var poiEnabled: Bool
     @Binding var poiCategories: Set<StudioPOIOption>
     @Binding var drawMode: Bool
+    @Binding var areaDrawMode: Bool
     /// 非出图模式下右抽屉打开时隐藏水印,避免与抽屉重叠。
     let hideWatermark: Bool
 
@@ -63,7 +64,7 @@ struct StudioOverlay: View {
                         onSnapshot: {}, showSettings: $showSettings, exportMode: $exportMode,
                         showSafeFrame: $showSafeFrame, showSearch: $showSearch, mapStyle: $mapStyle,
                         poiEnabled: $poiEnabled, poiCategories: $poiCategories,
-                        drawMode: $drawMode
+                        drawMode: $drawMode, areaDrawMode: $areaDrawMode
                     )
                     .padding(.bottom, 22)
                 }
