@@ -93,7 +93,7 @@ enum LegacyMigrator {
         for z in zones {
             let area = Area(
                 datasetId: dataset.id,
-                name: z.name,
+                name: AreaNameFormatter.displayName(district: z.primaryDistrict, zoneName: z.name),
                 geometryKind: z.geometryStage == "raster" ? "raster" : "polygon",
                 geometryJSON: z.geometry
             )
@@ -139,6 +139,26 @@ enum LegacyMigrator {
             }
             ctx.insert(area)
         }
+    }
+
+    /// 幂等改名:对已迁移的库,按 area.id 关联回 seed zone 取 district,重写 Area.name 为显示名。
+    /// 由 dataset.areaNamesNormalizedV1 闸门保证只跑一次。新库走 migrateAreas 已直接写显示名。
+    static func normalizeAreaNames(zones: [ZoneSeed], dataset: Dataset, in ctx: ModelContext) {
+        guard !dataset.areaNamesNormalizedV1 else { return }
+        let byId = Dictionary(zones.map { ($0.id, $0) }, uniquingKeysWith: { a, _ in a })
+        let dsId = dataset.id
+        let areas = (try? ctx.fetch(FetchDescriptor<Area>(
+            predicate: #Predicate { $0.datasetId == dsId }
+        ))) ?? []
+        for a in areas {
+            guard let z = byId[a.id] else { continue }
+            let newName = AreaNameFormatter.displayName(district: z.primaryDistrict, zoneName: z.name)
+            if a.name != newName {
+                a.name = newName
+                a.updatedAt = Date()
+            }
+        }
+        dataset.areaNamesNormalizedV1 = true
     }
 
     // MARK: stage 3 — LegacySchool → School

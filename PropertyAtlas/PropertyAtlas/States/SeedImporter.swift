@@ -36,6 +36,7 @@ enum SeedImporter {
         // 已有 Dataset → 已 seed,跳过
         if try !context.fetch(FetchDescriptor<Dataset>()).isEmpty {
             StyleConsolidationMigrator.run(in: context)
+            normalizeAreaNamesIfNeeded(in: context)
             try context.save()
             progress(1.0, "已就绪")
             return false
@@ -80,6 +81,17 @@ enum SeedImporter {
             if members.isEmpty { continue }
             let best = members.map(\.tier).max { (priority[$0] ?? 0) < (priority[$1] ?? 0) }
             bundle.zones[i].tier = best ?? "普通"
+        }
+    }
+
+    /// 已迁移库的幂等片区改名:仅当有 dataset 未标 areaNamesNormalizedV1 时才 load zones(便宜,101 行)。
+    private static func normalizeAreaNamesIfNeeded(in context: ModelContext) {
+        let datasets = (try? context.fetch(FetchDescriptor<Dataset>())) ?? []
+        let pending = datasets.filter { !$0.areaNamesNormalizedV1 }
+        guard !pending.isEmpty, let root = try? loadJSON("zones") else { return }
+        let zones = parseZones(root)
+        for ds in pending {
+            LegacyMigrator.normalizeAreaNames(zones: zones, dataset: ds, in: context)
         }
     }
 

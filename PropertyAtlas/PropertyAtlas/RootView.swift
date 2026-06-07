@@ -259,7 +259,7 @@ struct StudioRootView: View {
                         visibleRegion: visibleRegion,
                         onPickEntity: { ref, coord, hasCoord in
                             appState.select(ref)
-                            if hasCoord, let coord { flyTo(coord) }
+                            focusOnSelect(ref, coord, hasCoord)
                             searchMarker = nil
                             searchPlace = nil
                             showPlaceDetail = false
@@ -377,14 +377,14 @@ struct StudioRootView: View {
                             onClose: { showSettings = false },
                             onEntitySelect: { ref, coord, hasCoord in
                                 appState.select(ref)
-                                if hasCoord, let coord { flyTo(coord) }
+                                focusOnSelect(ref, coord, hasCoord)
                                 reopenSettingsOnDeselect = true
                                 showSettings = false
                             },
                             onEntityEdit: { ref, coord, hasCoord in
                                 appState.select(ref)
                                 appState.beginEditing()
-                                if hasCoord, let coord { flyTo(coord) }
+                                focusOnSelect(ref, coord, hasCoord)
                                 reopenSettingsOnDeselect = true
                                 showSettings = false
                             }
@@ -685,9 +685,12 @@ struct StudioRootView: View {
             cands: cands, visibleIds: visibleIds, groupColors: groupColors,
             viewStyles: viewStyles, viewRules: viewRules, highlight: highlight
         )
+        // 选中片区 → 即便所在层/过滤隐藏也强制绘制(配合 focusArea 自动 focus)
+        let selectedAreaId = appState.selectedRef?.kind == .area ? appState.selectedRef?.id : nil
+        let dsAreas = areas.filter { $0.datasetId == dsId }
         let (areaOverlays, styleMap) = buildAreaOverlays(
-            areas: visibility["area"] == true ? areas.filter { $0.datasetId == dsId } : [],
-            visibleIds: visibleIds, viewStyles: viewStyles, viewRules: viewRules
+            areas: visibility["area"] == true ? dsAreas : dsAreas.filter { $0.id == selectedAreaId },
+            visibleIds: visibleIds, viewStyles: viewStyles, viewRules: viewRules, forceId: selectedAreaId
         )
         let edgeLines = buildEdgeLines(labels: activeMapView?.drawEdgeLines ?? [], datasetId: dsId)
 
@@ -794,11 +797,11 @@ struct StudioRootView: View {
 
     private func buildAreaOverlays(
         areas: [Area], visibleIds: Set<UUID>, viewStyles: [String: ViewEntityStyle],
-        viewRules: [String: [ResolvedStyleRule]]
+        viewRules: [String: [ResolvedStyleRule]], forceId: UUID? = nil
     ) -> ([MKOverlay], [ObjectIdentifier: AreaStyle]) {
         var overlays: [MKOverlay] = []
         var map: [ObjectIdentifier: AreaStyle] = [:]
-        for a in areas where !a.deleted && visibleIds.contains(a.id) {
+        for a in areas where !a.deleted && (visibleIds.contains(a.id) || a.id == forceId) {
             let style = StyleResolver.resolveArea(
                 entity: a.styleEntity, viewStyle: viewStyles["area"], rules: viewRules["area"] ?? []
             )
@@ -829,6 +832,23 @@ struct StudioRootView: View {
 
     private func flyTo(_ coord: CLLocationCoordinate2D) {
         camera = MKMapCamera(lookingAtCenter: coord, fromDistance: 2000, pitch: 0, heading: 0)
+    }
+
+    /// 选中实体后 focus:片区按多边形包围盒 fit,其余实体按坐标 flyTo。
+    private func focusOnSelect(_ ref: EntityRef, _ coord: CLLocationCoordinate2D?, _ hasCoord: Bool) {
+        if ref.kind == .area {
+            focusArea(ref.id)
+        } else if hasCoord, let coord {
+            flyTo(coord)
+        }
+    }
+
+    /// 片区聚焦:解析 geometryJSON 多边形 → 包围盒中心 + 视距。无几何则不动。
+    private func focusArea(_ id: UUID) {
+        guard let a = areas.first(where: { $0.id == id }),
+              let coords = try? GeoJSONHelper.decodePolygon(a.geometryJSON), !coords.isEmpty,
+              let fit = AreaFocus.fit(coordinates: coords) else { return }
+        camera = MKMapCamera(lookingAtCenter: fit.center, fromDistance: fit.distance, pitch: 0, heading: 0)
     }
 
     /// 指南针双击:保持中心/距离/俯仰,heading 归零(正北朝上)。
