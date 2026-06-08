@@ -34,22 +34,27 @@ OUT_PATHS = [
 # 天津"三环十四射"。match = OSM name 正则;环路按方向分段,用 .* 收全。
 # 十四射名称随版本浮动(见 skill 文档),按实际命中调整。
 ROADS = [
+    # 三环
     {"name": "内环线", "match": "^内环.*路$", "ring": "内环", "radial": False},
     {"name": "中环线", "match": "^中环.*路$", "ring": "中环", "radial": False},
     {"name": "外环线", "match": "外环线|^外环.*路$", "ring": "外环", "radial": False},
-    {"name": "西青道", "match": "^西青道$", "ring": None, "radial": True},
-    {"name": "复康路", "match": "^复康路$", "ring": None, "radial": True},
-    {"name": "卫津路", "match": "^卫津(南)?路$", "ring": None, "radial": True},
-    {"name": "友谊路", "match": "^友谊(南)?路$", "ring": None, "radial": True},
-    {"name": "大沽路", "match": "^大沽(南)?路$", "ring": None, "radial": True},
-    {"name": "津滨大道", "match": "^津滨大道$", "ring": None, "radial": True},
-    {"name": "卫国道", "match": "^卫国道$", "ring": None, "radial": True},
+    # 十四射(权威名单:reformdata/sohu「三环十四射」放射干线)。OSM 实名有出入,按命中调正则。
+    {"name": "丁字沽三号路", "match": "丁字沽三号路|丁字沽三", "ring": None, "radial": True},
+    {"name": "京津公路", "match": "^京津公路$", "ring": None, "radial": True},
+    {"name": "铁东路", "match": "^铁东路$", "ring": None, "radial": True},
+    {"name": "十一经路", "match": "^十一经路$", "ring": None, "radial": True},
     {"name": "新开路", "match": "^新开路$", "ring": None, "radial": True},
     {"name": "中山北路", "match": "^中山北路$", "ring": None, "radial": True},
     {"name": "解放路", "match": "^解放(南|北)?路$", "ring": None, "radial": True},
-    {"name": "金钟路", "match": "^金钟河大街$|^金钟路$", "ring": None, "radial": True},
-    {"name": "津塘路", "match": "^津塘路$", "ring": None, "radial": True},
+    {"name": "大沽路", "match": "^大沽(南)?路$", "ring": None, "radial": True},
+    {"name": "卫津路", "match": "^卫津(南)?路$", "ring": None, "radial": True},
+    {"name": "津淄路", "match": "^津淄路$|津淄", "ring": None, "radial": True},
     {"name": "新宜白大道", "match": "^新宜白大道$|宜白", "ring": None, "radial": True},
+    {"name": "金钟路", "match": "^金钟河大街$|^金钟路$", "ring": None, "radial": True},
+    {"name": "卫国道", "match": "^卫国道$", "ring": None, "radial": True},
+    {"name": "津塘路", "match": "^津塘路$", "ring": None, "radial": True},
+    {"name": "复康路", "match": "^复康路$", "ring": None, "radial": True},
+    {"name": "西青道", "match": "^西青道$", "ring": None, "radial": True},
 ]
 
 # ---- WGS-84 → GCJ-02 (standard China offset, "eviltransform" formula) ----
