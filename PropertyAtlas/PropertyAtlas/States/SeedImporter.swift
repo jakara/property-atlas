@@ -38,6 +38,7 @@ enum SeedImporter {
             StyleConsolidationMigrator.run(in: context)
             normalizeAreaNamesIfNeeded(in: context)
             seedDistrictBoundariesIfNeeded(in: context)
+            seedRoadLinesIfNeeded(in: context)
             migrateFilterEntityTypesIfNeeded(in: context)
             ensureAreaCategoryOptions(in: context)
             try context.save()
@@ -67,6 +68,7 @@ enum SeedImporter {
         progress(0.95, "保存")
         StyleConsolidationMigrator.run(in: context)
         seedDistrictBoundariesIfNeeded(in: context)
+        seedRoadLinesIfNeeded(in: context)
         migrateFilterEntityTypesIfNeeded(in: context)
         try context.save()
         progress(1.0, "完成")
@@ -128,6 +130,55 @@ enum SeedImporter {
             }
             ds.districtBoundariesSeededV1 = true
         }
+    }
+
+    /// 幂等播种天津"三环十四射"道路为 Area 折线(GCJ-02)。确定性 id 防重复;
+    /// 归默认图层;category="道路";ring/radial → tags;闸门 roadLinesSeededV1。
+    private static func seedRoadLinesIfNeeded(in context: ModelContext) {
+        let datasets = (try? context.fetch(FetchDescriptor<Dataset>())) ?? []
+        let pending = datasets.filter { !$0.roadLinesSeededV1 }
+        guard !pending.isEmpty, let root = try? loadJSON("road_lines") else { return }
+        let items = parseRoadLines(root)
+        guard !items.isEmpty else { return }
+        for ds in pending {
+            let dsId = ds.id
+            let defaultLayerId = (try? context.fetch(FetchDescriptor<Layer>(
+                predicate: #Predicate { $0.datasetId == dsId && !$0.deleted }
+            )))?.first(where: { $0.isDefault })?.id
+            for it in items {
+                let aid = uuid(from: "road_line_\(dsId.uuidString)_\(it.name)")
+                let exists = ((try? context.fetch(FetchDescriptor<Area>(
+                    predicate: #Predicate { $0.id == aid }
+                )))?.isEmpty == false)
+                if exists { continue }
+                let area = Area(datasetId: dsId, name: it.name, geometryKind: "line", geometryJSON: it.geometryJSON)
+                area.id = aid
+                area.layerId = defaultLayerId
+                area.category = "道路"
+                area.tags = it.tags
+                context.insert(area)
+            }
+            ds.roadLinesSeededV1 = true
+        }
+    }
+
+    private static func parseRoadLines(
+        _ root: [String: Any]
+    ) -> [(name: String, geometryJSON: String, tags: [String])] {
+        guard let items = root["items"] as? [[String: Any]] else { return [] }
+        var out: [(name: String, geometryJSON: String, tags: [String])] = []
+        for it in items {
+            guard let name = it["name"] as? String,
+                  let geom = it["geometry"],
+                  let data = try? JSONSerialization.data(withJSONObject: geom),
+                  let geomStr = String(data: data, encoding: .utf8)
+            else { continue }
+            var tags: [String] = []
+            if let ring = it["ring"] as? String, !ring.isEmpty { tags.append(ring) }
+            if (it["radial"] as? Bool) == true { tags.append("射线") }
+            out.append((name, geomStr, tags))
+        }
+        return out
     }
 
     /// 幂等回填普通过滤器 entityType(旧库)。新库 seed 已带 entityType,会立即标记跳过。
