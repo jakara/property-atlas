@@ -10,6 +10,8 @@ struct EntityEditor: View {
     let onClose: () -> Void
     let onDelete: () -> Void
     let onSelectRelated: (EntityRef) -> Void
+    /// 区域专用:进入多边形重绘(替换原几何)。非区域为 nil。
+    var onRedrawPolygon: (() -> Void)?
 
     @Environment(\.modelContext) private var context
     @State private var name: String = ""
@@ -57,6 +59,9 @@ struct EntityEditor: View {
                 EntityBadge(kind: badgeKind)
                 Spacer()
                 Menu {
+                    if ref.kind == .area, let onRedrawPolygon {
+                        Button { onRedrawPolygon() } label: { Label("重绘多边形", systemImage: "pencil.and.outline") }
+                    }
                     Button(role: .destructive) { onDelete() } label: { Label("删除", systemImage: "trash") }
                 } label: {
                     Image(systemName: "ellipsis").font(.system(size: 15, weight: .semibold))

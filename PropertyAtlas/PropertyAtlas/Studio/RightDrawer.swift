@@ -6,6 +6,8 @@ import SwiftUI
 struct RightDrawer: View {
     @Bindable var appState: AppState
     let datasetId: UUID
+    /// 区域重绘多边形:由 RootView 进入绘制态。
+    var onRedrawArea: (UUID) -> Void = { _ in }
     @Environment(\.modelContext) private var context
 
     var body: some View {
@@ -21,7 +23,8 @@ struct RightDrawer: View {
                             EntityWriter.softDelete(ref, in: context)
                             appState.clearSelection()
                         },
-                        onSelectRelated: { appState.select($0) }
+                        onSelectRelated: { appState.select($0) },
+                        onRedrawPolygon: ref.kind == .area ? { onRedrawArea(ref.id) } : nil
                     )
                 default:
                     EntityCard(

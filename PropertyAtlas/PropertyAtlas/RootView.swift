@@ -81,6 +81,8 @@ struct StudioRootView: View {
     @State private var drawMode = false
     @State private var areaDrawMode = false
     @State private var areaDrawPoints: [CLLocationCoordinate2D] = []
+    /// 非 nil = 正在重绘某区域(完成时替换其几何,而非新建)。
+    @State private var redrawAreaId: UUID?
     @State private var showCreateMenu = false
     @State private var showSettings = false
     /// 从设置页导航到实体详情时置位;详情关闭(selectedRef→nil)后据此重新唤起设置页。
@@ -275,6 +277,7 @@ struct StudioRootView: View {
                         onFinish: { finishAreaDraw() },
                         onCancel: { areaDrawPoints = []
                             areaDrawMode = false
+                            redrawAreaId = nil
                         }
                     )
                     .padding(.top, 96)
@@ -316,7 +319,7 @@ struct StudioRootView: View {
                 .transition(.opacity)
             }
 
-            if !exportMode {
+            if !exportMode, !areaDrawMode {
                 GeometryReader { geo in
                     HStack {
                         Spacer()
@@ -324,7 +327,10 @@ struct StudioRootView: View {
                             if showCreateMenu {
                                 createDrawer(dsId: dsId)
                             } else {
-                                RightDrawer(appState: appState, datasetId: dsId)
+                                RightDrawer(
+                                    appState: appState, datasetId: dsId,
+                                    onRedrawArea: { startAreaRedraw($0) }
+                                )
                             }
                         }
                         .frame(width: geo.size.width * 0.382)
@@ -359,7 +365,7 @@ struct StudioRootView: View {
                 .zIndex(20)
             }
 
-            if !exportMode {
+            if !exportMode, !areaDrawMode {
                 GeometryReader { geo in
                     HStack {
                         LeftDrawerView(
@@ -960,11 +966,33 @@ struct StudioRootView: View {
         appState.beginEditing()
     }
 
-    /// 完成区域绘制:顶点 → GeoJSON Polygon → 新 Area(默认层),选中并打开编辑器改名。
+    /// 进入区域重绘:隐藏左右抽屉(由 areaDrawMode 触发),从空白开始打点;聚焦原区域便于参照。
+    private func startAreaRedraw(_ id: UUID) {
+        redrawAreaId = id
+        areaDrawPoints = []
+        focusArea(id)
+        areaDrawMode = true
+    }
+
+    /// 完成区域绘制:顶点 → GeoJSON Polygon。重绘态替换原区域几何;否则新建 Area(默认层)。
     private func finishAreaDraw() {
         guard areaDrawPoints.count >= 3, let dsId = viewContext?.datasetIdValue else { return }
-        let layerId = layersForDataset(dsId).first(where: { $0.isDefault })?.id
         let geo = (try? GeoJSONHelper.encodePolygon(areaDrawPoints)) ?? ""
+
+        if let id = redrawAreaId {
+            if let a = EntityReader.fetch(Area.self, id, modelContext) {
+                a.geometryJSON = geo
+                a.geometryKind = "polygon"
+                a.updatedAt = Date()
+            }
+            try? modelContext.save()
+            areaDrawPoints = []
+            areaDrawMode = false
+            redrawAreaId = nil
+            return // 保留原选中 + 编辑态,抽屉随 areaDrawMode=false 恢复
+        }
+
+        let layerId = layersForDataset(dsId).first(where: { $0.isDefault })?.id
         let ref = EntityWriter.createPin(
             kind: .area, datasetId: dsId, name: "新区域",
             latitude: 0, longitude: 0, layerId: layerId, in: modelContext
