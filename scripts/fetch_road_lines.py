@@ -163,16 +163,18 @@ def main():
     for road in ROADS:
         resp = query(road["match"])
         segs = ways_geometry(resp)
-        chain = stitch(segs)
-        if len(chain) >= 2:
-            coords = [list(wgs2gcj(lng, lat)) for lng, lat in chain]
+        # 不缝合:每个 OSM way 各自成一条线 → MultiLineString。缝合会用直线把不相邻
+        # 的段强连,产生横穿街区的假连线(实测错误)。way 本身已是连续折线。
+        lines = [[list(wgs2gcj(lng, lat)) for lng, lat in s] for s in segs if len(s) >= 2]
+        if lines:
+            pts = sum(len(line) for line in lines)
             items.append({
                 "name": road["name"],
                 "ring": road["ring"],
                 "radial": road["radial"],
-                "geometry": {"type": "LineString", "coordinates": coords},
+                "geometry": {"type": "MultiLineString", "coordinates": lines},
             })
-            report.append(f"  OK  {road['name']}: {len(segs)} segs → {len(coords)} pts")
+            report.append(f"  OK  {road['name']}: {len(lines)} ways, {pts} pts")
         else:
             report.append(f"  --  {road['name']}: no geometry (match='{road['match']}')")
         time.sleep(SLEEP)
@@ -187,7 +189,7 @@ def main():
     print("\n".join(report))
     print(f"\n{len(items)}/{len(ROADS)} roads with geometry → {OUT_PATHS[0]}")
     if items:
-        s = items[0]["geometry"]["coordinates"][0]
+        s = items[0]["geometry"]["coordinates"][0][0]
         print(f"sample ({items[0]['name']}): {s}  (expect ~117.x, ~39.x)")
 
 
