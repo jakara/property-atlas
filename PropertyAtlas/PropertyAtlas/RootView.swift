@@ -194,7 +194,12 @@ struct StudioRootView: View {
                     }
                     // 折线区域:styleMap 命中 → 描边渲染;未命中的 MKPolyline(edge 连线)走默认。
                     if let line = overlay as? MKPolyline, let style = cache.styleMap[ObjectIdentifier(overlay)] {
-                        return AreaLineRenderer(polyline: line, style: style)
+                        let r = MKPolylineRenderer(polyline: line)
+                        r.strokeColor = HexColor.parse(style.strokeHex) ?? HexColor.parse(style.fillHex) ?? .systemTeal
+                        r.lineWidth = max(CGFloat(style.strokeWidth), 3)
+                        r.lineCap = .round
+                        r.lineJoin = .round
+                        return r
                     }
                     return nil
                 },
