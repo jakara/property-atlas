@@ -1,23 +1,14 @@
 #if targetEnvironment(macCatalyst)
 import SwiftUI
 
-/// Title card — part of the exported picture (`.titlecard`). 仅出图模式展示。
-/// Kicker(编译期 BrandConfig)+ 32pt bold 标题 + 副标题。文案在视图设置「出图文案」配。
+/// Title card — part of the exported picture (`.titlecard`). 仅出图模式展示标题/副标题。
+/// 32pt bold 标题 + 副标题。文案在视图设置「出图文案」配。品牌标见 `BrandMark`(全模式)。
 struct StudioTitleCard: View {
     let title: String
     let subtitle: String
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
-            if BrandConfig.showBrandKicker {
-                HStack(spacing: 8) {
-                    RoundedRectangle(cornerRadius: 1).fill(Studio.brandRaw)
-                        .frame(width: 22, height: 2)
-                    Text(BrandConfig.brandKicker)
-                        .font(Studio.sans(12, .semibold)).tracking(1.6)
-                        .foregroundStyle(Studio.brandRaw)
-                }
-            }
             if !title.isEmpty {
                 Text(title)
                     .font(.system(size: 32, weight: .bold))
@@ -31,6 +22,22 @@ struct StudioTitleCard: View {
             }
         }
         .frame(maxWidth: 480, alignment: .leading)
+    }
+}
+
+/// 应用品牌标(编译期 BrandConfig)。出图/非出图都展示在左上角。
+struct BrandMark: View {
+    var body: some View {
+        if BrandConfig.showBrandKicker {
+            HStack(spacing: 8) {
+                RoundedRectangle(cornerRadius: 1).fill(Studio.brandRaw)
+                    .frame(width: 22, height: 2)
+                Text(BrandConfig.brandKicker)
+                    .font(Studio.sans(12, .semibold)).tracking(1.6)
+                    .foregroundStyle(Studio.brandRaw)
+            }
+            .shadow(color: .black.opacity(0.25), radius: 4, y: 1)
+        }
     }
 }
 #endif

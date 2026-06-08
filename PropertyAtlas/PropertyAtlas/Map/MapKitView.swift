@@ -55,6 +55,7 @@ struct MapKitView: UIViewRepresentable {
         v.addGestureRecognizer(hover)
         context.coordinator.suppressSystemDoubleTapZoom(on: v)
         context.coordinator.mapViewRef = v
+        MapSnapshot.mapView = v
         context.coordinator.onRegionChange = onRegionChange
         context.coordinator.onSchoolSelect = onSchoolSelect
         context.coordinator.onLongPressCoordinate = onLongPressCoordinate

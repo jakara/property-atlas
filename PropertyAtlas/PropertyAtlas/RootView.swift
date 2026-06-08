@@ -368,6 +368,7 @@ struct StudioRootView: View {
                             currentZoom: zoom,
                             filterState: filterState,
                             layerState: layerState,
+                            onToggleLayer: { toggleLayer($0) },
                             // 顶到指南针上方:屏高 − 顶距80 − 指南针区(88+22)− 间隙16。
                             maxHeight: max(200, geo.size.height - 80 - 126)
                         )
@@ -447,6 +448,10 @@ struct StudioRootView: View {
             configureTitlebar()
         }
         .onChange(of: datasets.first?.id) { _, _ in ensureViewContext() }
+        // 视图设置改「启用图层」→ 同步 layerState(与左抽屉图层开关联动)
+        .onChange(of: viewContext?.activeMapView?.enabledLayerIds) { _, new in
+            if let new { layerState.initialize(enabledIds: new) }
+        }
         .onChange(of: appState.selectedRef) { _, newValue in
             // 从设置导航来的详情关闭(esc/×)→ 重新唤起设置页。
             if newValue == nil, reopenSettingsOnDeselect {
@@ -972,6 +977,21 @@ struct StudioRootView: View {
         areaDrawMode = false
         appState.select(ref)
         appState.beginEditing()
+    }
+
+    /// 切换图层启用:写回 active MapView.enabledLayerIds(持久,单一数据源)+ 同步 layerState。
+    /// 视图设置「启用图层」也改同一字段 → 两处联动。
+    private func toggleLayer(_ id: UUID) {
+        guard let mv = viewContext?.activeMapView else { layerState.toggle(id)
+            return
+        }
+        if mv.enabledLayerIds.contains(id) {
+            mv.enabledLayerIds.removeAll { $0 == id }
+        } else {
+            mv.enabledLayerIds.append(id)
+        }
+        mv.updatedAt = Date()
+        layerState.initialize(enabledIds: mv.enabledLayerIds)
     }
 
     private func idKind(for id: UUID, in pins: [MKAnnotation]) -> EntityKind? {

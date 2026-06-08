@@ -28,17 +28,20 @@ struct StudioOverlay: View {
                     .transition(.opacity)
             }
 
-            // title card — top-leading, part of the picture。仅出图模式展示。
-            if exportMode {
-                VStack {
-                    HStack {
-                        StudioTitleCard(title: mv?.copyTitle ?? "", subtitle: mv?.copySubtitle ?? "")
-                        Spacer()
+            // 品牌标 + 标题卡 — top-leading。品牌标全模式常驻;标题/副标题仅出图。
+            VStack {
+                HStack {
+                    VStack(alignment: .leading, spacing: 10) {
+                        BrandMark()
+                        if exportMode {
+                            StudioTitleCard(title: mv?.copyTitle ?? "", subtitle: mv?.copySubtitle ?? "")
+                        }
                     }
                     Spacer()
                 }
-                .padding(.top, 40).padding(.leading, 24)
+                Spacer()
             }
+            .padding(.top, 40).padding(.leading, 24)
 
             // watermark + 二维码 — bottom-trailing,出图/非出图均展示;抽屉打开时隐藏。
             if !hideWatermark {
@@ -61,7 +64,7 @@ struct StudioOverlay: View {
                     Spacer()
                     StudioToolbar(
                         viewContext: viewContext, aspect: $aspect,
-                        onSnapshot: {}, showSettings: $showSettings, exportMode: $exportMode,
+                        onSnapshot: { MapSnapshot.copyToClipboard() }, showSettings: $showSettings, exportMode: $exportMode,
                         showSafeFrame: $showSafeFrame, showSearch: $showSearch, mapStyle: $mapStyle,
                         poiEnabled: $poiEnabled, poiCategories: $poiCategories,
                         drawMode: $drawMode, areaDrawMode: $areaDrawMode
@@ -85,6 +88,7 @@ struct StudioOverlay: View {
                         .environment(\.colorScheme, .dark)
                     }
                     .buttonStyle(.plain)
+                    .keyboardShortcut(.cancelAction) // Esc 退出出图
                     .padding(.top, 22)
                     Spacer()
                 }
@@ -129,7 +133,8 @@ private struct SafeFrameOverlay: View {
     }
 
     private func fitted(in size: CGSize) -> CGSize {
-        let margin: CGFloat = 56
+        // 撑满:宽或高顶满(取约束轴),仅留极小边距防贴边裁切
+        let margin: CGFloat = 4
         let avail = CGSize(width: size.width - margin * 2, height: size.height - margin * 2)
         let r = aspect.pixelSize.width / aspect.pixelSize.height
         var w = avail.width
