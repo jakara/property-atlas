@@ -5,12 +5,13 @@ Used by the project skill `fetch-road-lines`. Keyless. Output schema matches the
 app's seed loader (SeedImporter.parseRoadLines):
 
     {"items":[{"name","ring":<str|null>,"radial":<bool>,
-               "geometry":{"type":"LineString","coordinates":[[lng,lat],...]}}]}
+               "geometry":{"type":"MultiLineString","coordinates":[[[lng,lat],...],...]}}]}
 
 Coordinates are GCJ-02 (OSM is WGS-84 → converted here; the app/basemap is GCJ-02).
-Roads in OSM are split into directional segments (e.g. 中环东路/南路/西路), so each
-target road matches by NAME REGEX and the segments are greedily stitched into one
-LineString. Edit ROADS below to add/adjust roads, then re-run.
+Output is MultiLineString per road (each OSM way = one component, NOT stitched —
+stitching joined disjoint ways with straight off-network connectors).
+Ring roads come from OSM route=road RELATIONS (full closed ring); radial roads come
+from way NAME REGEX. Edit ROADS below to add/adjust roads, then re-run.
 
     python3 scripts/fetch_road_lines.py
 """
@@ -31,13 +32,15 @@ OUT_PATHS = [
     "reports/extracted/road_lines.json",
 ]
 
-# 天津"三环十四射"。match = OSM name 正则;环路按方向分段,用 .* 收全。
-# 十四射名称随版本浮动(见 skill 文档),按实际命中调整。
+# 天津"三环十四射"。
+#   环路 → OSM **route=road 关系**(`rel` 字段):成员 way 一次收全,闭合无缺口。
+#         名称正则收不全(环由不同街名段拼成),且会误命中外区同名局部路。
+#         内环线 OSM 无 route=road 关系、way 也不统名 → 暂不抓(见 skill 文档)。
+#   放射 → way name 正则(`match` 字段)。十四射名称随版本浮动,按实际命中调整。
 ROADS = [
-    # 三环
-    {"name": "内环线", "match": "^内环.*路$", "ring": "内环", "radial": False},
-    {"name": "中环线", "match": "^中环.*路$", "ring": "中环", "radial": False},
-    {"name": "外环线", "match": "外环线|^外环.*路$", "ring": "外环", "radial": False},
+    # 三环(中/外环走关系;内环 OSM 无可靠源,暂缺)
+    {"name": "中环线", "rel": 19378071, "ring": "中环", "radial": False},
+    {"name": "外环线", "rel": 19379007, "ring": "外环", "radial": False},
     # 十四射(权威名单:reformdata/sohu「三环十四射」放射干线)。OSM 实名有出入,按命中调正则。
     {"name": "丁字沽三号路", "match": "丁字沽三号路|丁字沽三", "ring": None, "radial": True},
     {"name": "京津公路", "match": "^京津公路$", "ring": None, "radial": True},
@@ -97,13 +100,8 @@ def wgs2gcj(lng, lat):
 
 
 # ---- Overpass ----
-def query(regex):
-    q = (
-        f'[out:json][timeout:60];'
-        f'way["highway"]["name"~"{regex}"]'
-        f'({BBOX[0]},{BBOX[1]},{BBOX[2]},{BBOX[3]});out geom;'
-    )
-    data = urllib.parse.urlencode({"data": q}).encode()
+def _fetch(overpass_ql):
+    data = urllib.parse.urlencode({"data": overpass_ql}).encode()
     req = urllib.request.Request(OVERPASS, data=data, headers={"User-Agent": UA})
     for attempt in range(5):
         try:
@@ -114,6 +112,20 @@ def query(regex):
             print(f"    retry {attempt + 1}/5 after {wait}s ({e})")
             time.sleep(wait)
     return {"elements": []}
+
+
+def query(regex):
+    """Radial roads: ways matching a name regex within the urban bbox."""
+    return _fetch(
+        f'[out:json][timeout:60];'
+        f'way["highway"]["name"~"{regex}"]'
+        f'({BBOX[0]},{BBOX[1]},{BBOX[2]},{BBOX[3]});out geom;'
+    )
+
+
+def query_relation(rel_id):
+    """Ring roads: all member ways of an OSM route=road relation (full closed ring)."""
+    return _fetch(f'[out:json][timeout:90];rel({rel_id});way(r);out geom;')
 
 
 def ways_geometry(resp):
@@ -127,41 +139,14 @@ def ways_geometry(resp):
     return out
 
 
-def _dist2(a, b):
-    return (a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2
-
-
-def stitch(segments):
-    """Greedy nearest-endpoint stitch of segments → one chain (WGS-84)."""
-    if not segments:
-        return []
-    segs = [list(s) for s in segments]
-    chain = segs.pop(0)
-    while segs:
-        head, tail = chain[0], chain[-1]
-        best_i, best_rev, best_at_tail, best_d = None, False, True, None
-        for i, s in enumerate(segs):
-            for at_tail, anchor in ((True, tail), (False, head)):
-                d_start = _dist2(anchor, s[0])
-                d_end = _dist2(anchor, s[-1])
-                d, rev = (d_start, False) if d_start <= d_end else (d_end, True)
-                if best_d is None or d < best_d:
-                    best_d, best_i, best_rev, best_at_tail = d, i, rev, at_tail
-        s = segs.pop(best_i)
-        if best_rev:
-            s = list(reversed(s))
-        if best_at_tail:
-            chain += s
-        else:
-            chain = s + chain
-    return chain
-
-
 def main():
     items = []
     report = []
     for road in ROADS:
-        resp = query(road["match"])
+        if "rel" in road:
+            resp = query_relation(road["rel"])
+        else:
+            resp = query(road["match"])
         segs = ways_geometry(resp)
         # 不缝合:每个 OSM way 各自成一条线 → MultiLineString。缝合会用直线把不相邻
         # 的段强连,产生横穿街区的假连线(实测错误)。way 本身已是连续折线。
@@ -176,7 +161,8 @@ def main():
             })
             report.append(f"  OK  {road['name']}: {len(lines)} ways, {pts} pts")
         else:
-            report.append(f"  --  {road['name']}: no geometry (match='{road['match']}')")
+            src = f"rel={road['rel']}" if "rel" in road else f"match='{road['match']}'"
+            report.append(f"  --  {road['name']}: no geometry ({src})")
         time.sleep(SLEEP)
 
     payload = {"items": items}
