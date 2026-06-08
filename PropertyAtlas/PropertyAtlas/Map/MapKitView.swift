@@ -136,8 +136,10 @@ struct MapKitView: UIViewRepresentable {
             let wantZoom = mods.contains(.control)
             if g.state == .ended || g.state == .cancelled || !(wantPan || wantZoom) {
                 lastHoverPoint = nil
+                setMacCursor("arrowCursor")
                 return
             }
+            setMacCursor(wantPan ? "openHandCursor" : "resizeUpDownCursor")
             let pt = g.location(in: mv)
             guard let last = lastHoverPoint else { lastHoverPoint = pt
                 return
@@ -182,6 +184,17 @@ struct MapKitView: UIViewRepresentable {
             }
             let coord = mv.convert(pt, toCoordinateFrom: mv)
             onDoubleTapCoordinate?(pt, coord)
+        }
+
+        /// 经 NSCursor 反射设鼠标样式(Catalyst 无 AppKit)。selector 如 openHandCursor /
+        /// resizeUpDownCursor / arrowCursor。失败静默(非关键路径)。
+        private func setMacCursor(_ selector: String) {
+            guard let cls = NSClassFromString("NSCursor") as? NSObject.Type else { return }
+            let getSel = NSSelectorFromString(selector)
+            guard cls.responds(to: getSel),
+                  let cursor = cls.perform(getSel)?.takeUnretainedValue() as? NSObject else { return }
+            let setSel = NSSelectorFromString("set")
+            if cursor.responds(to: setSel) { cursor.perform(setSel) }
         }
 
         /// 经 NSApplication 反射调 keyWindow 的 performZoom:(最大化/还原)。
