@@ -11,8 +11,6 @@ struct EntityDefaultStyleEditor: View {
     @Environment(\.modelContext) private var context
     @State private var row: ViewEntityStyle?
 
-    private let shapes = ["circle", "square", "hexagon", "diamond", "triangle", "star"]
-
     var body: some View {
         StudioDisclosure(title, summary: row?.fillHex ?? "默认", open: false) {
             if entityType == "area" {
@@ -38,19 +36,10 @@ struct EntityDefaultStyleEditor: View {
     // MARK: - Subviews
 
     private var shapePicker: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text("形状").font(Studio.sans(11, .medium)).foregroundStyle(Studio.on2)
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 7) {
-                    ForEach(shapes, id: \.self) { shape in
-                        StudioChip(shape, isOn: row?.shape == shape) {
-                            let bound = getOrCreateRow()
-                            bound.shape = (bound.shape == shape) ? nil : shape
-                            bound.updatedAt = Date()
-                        }
-                    }
-                }
-            }
+        ShapeChipRow(selected: row?.shape) { newShape in
+            let bound = getOrCreateRow()
+            bound.shape = newShape
+            bound.updatedAt = Date()
         }
     }
 

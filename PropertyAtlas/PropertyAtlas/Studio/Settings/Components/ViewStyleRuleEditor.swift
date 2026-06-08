@@ -10,8 +10,6 @@ struct ViewStyleRuleEditor: View {
     @Environment(\.modelContext) private var context
     @State private var conditions: [ViewStyleCondition] = []
 
-    private let shapes = ["circle", "square", "hexagon", "diamond", "triangle", "star"]
-
     var body: some View {
         StudioDisclosure("规则", summary: summaryText, open: false) {
             VStack(alignment: .leading, spacing: 8) {
@@ -104,18 +102,9 @@ struct ViewStyleRuleEditor: View {
     }
 
     private var shapePicker: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text("形状").font(Studio.sans(11, .medium)).foregroundStyle(Studio.on2)
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 7) {
-                    ForEach(shapes, id: \.self) { shape in
-                        StudioChip(shape, isOn: rule.shape == shape) {
-                            rule.shape = (rule.shape == shape) ? nil : shape
-                            rule.updatedAt = Date()
-                        }
-                    }
-                }
-            }
+        ShapeChipRow(selected: rule.shape) { newShape in
+            rule.shape = newShape
+            rule.updatedAt = Date()
         }
     }
 

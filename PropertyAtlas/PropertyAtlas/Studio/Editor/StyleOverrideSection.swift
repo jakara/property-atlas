@@ -8,10 +8,8 @@ struct StyleOverrideSection: View {
     @Environment(\.modelContext) private var context
     @State private var override = OverrideStyle()
 
-    private let shapes = ["circle", "square", "hexagon", "diamond", "triangle", "star"]
-
     private var summary: String {
-        (override.shape ?? "圆点") + " · " + (override.fillHex == nil ? "继承视图默认" : "自定义")
+        override.fillHex == nil ? "继承视图默认" : "自定义"
     }
 
     private var fillBinding: Binding<String> {
@@ -36,17 +34,11 @@ struct StyleOverrideSection: View {
 
     var body: some View {
         StudioDisclosure("样式覆盖", summary: summary, open: false) {
-            VStack(alignment: .leading, spacing: 6) {
-                Text("形状").font(Studio.sans(11, .medium)).foregroundStyle(Studio.on2)
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 7) {
-                        ForEach(shapes, id: \.self) { s in
-                            StudioChip(s, isOn: override.shape == s) {
-                                override.shape = (override.shape == s) ? nil : s
-                                persist()
-                            }
-                        }
-                    }
+            // 区域(多边形/折线)无 pin 形状概念 → 不显示形状选择。
+            if ref.kind != .area {
+                ShapeChipRow(selected: override.shape) { newShape in
+                    override.shape = newShape
+                    persist()
                 }
             }
             VStack(alignment: .leading, spacing: 6) {
