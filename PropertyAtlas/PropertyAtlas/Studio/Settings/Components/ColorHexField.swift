@@ -47,6 +47,8 @@ struct ColorHexField: View {
                     .strokeBorder(Studio.glassLine, lineWidth: 1)
             }
         }
+        // 字段消失(关编辑器/设置/切 tab)→ 主动关掉系统取色器浮窗,防残留。
+        .onDisappear { MacColorPanel.close() }
     }
 }
 #endif

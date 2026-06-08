@@ -62,6 +62,7 @@ struct EntityEditor: View {
                     if ref.kind == .area, let onRedrawPolygon {
                         Button { onRedrawPolygon() } label: { Label("重绘多边形", systemImage: "pencil.and.outline") }
                     }
+                    Button { MacColorPanel.close() } label: { Label("关闭取色器", systemImage: "eyedropper") }
                     Button(role: .destructive) { onDelete() } label: { Label("删除", systemImage: "trash") }
                 } label: {
                     Image(systemName: "ellipsis").font(.system(size: 15, weight: .semibold))

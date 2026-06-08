@@ -66,6 +66,12 @@ struct SettingsSheet: View {
         HStack {
             Text("设置").font(Studio.sans(19, .bold)).foregroundStyle(Studio.on)
             Spacer()
+            // 防取色器浮窗卡住:手动关闭。
+            Button { MacColorPanel.close() } label: {
+                Image(systemName: "eyedropper").font(.system(size: 14, weight: .medium)).foregroundStyle(Studio.on2)
+            }
+            .buttonStyle(.plain)
+            .help("关闭取色器")
             Button(action: onClose) {
                 Text("完成").font(Studio.sans(14, .semibold)).foregroundStyle(Studio.cool)
             }
