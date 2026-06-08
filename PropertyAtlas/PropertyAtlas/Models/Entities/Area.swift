@@ -28,6 +28,8 @@ final class Area {
     var rasterImageRef: String?
 
     var category: String?
+    /// 自由文本标签(多值)。区分用途,如行政区下的"街道"。
+    var tags: [String] = []
     var strokeHex: String?
     var fillOpacity: Double = 0.2
     var textDescription: String?

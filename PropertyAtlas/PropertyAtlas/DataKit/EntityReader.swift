@@ -21,6 +21,16 @@ enum EntityReader {
         }
     }
 
+    /// 自由文本标签(全实体通用)。
+    static func tags(_ ref: EntityRef, in context: ModelContext) -> [String] {
+        switch ref.kind {
+        case .compound: fetch(Compound.self, ref.id, context)?.tags ?? []
+        case .school: fetch(School.self, ref.id, context)?.tags ?? []
+        case .poi: fetch(POI.self, ref.id, context)?.tags ?? []
+        case .area: fetch(Area.self, ref.id, context)?.tags ?? []
+        }
+    }
+
     /// 通用字段读取（baseField 或 customField），经 styleEntity 统一映射。
     static func value(_ ref: EntityRef, key: String, in context: ModelContext) -> AnyJSON? {
         styleEntity(ref, in: context)?.field(key)

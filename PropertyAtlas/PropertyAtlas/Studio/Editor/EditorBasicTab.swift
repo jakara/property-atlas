@@ -18,6 +18,7 @@ struct EditorBasicTab: View {
             ForEach(EntityFieldSchema.fields(for: ref.kind), id: \.key) { f in
                 fieldEditor(f)
             }
+            TagsEditor(ref: ref)
             StyleOverrideSection(ref: ref)
         }
     }
@@ -126,6 +127,92 @@ private struct IntFieldEditor: View {
             .glassField()
             .onAppear { if case let .int(v) = EntityReader.value(ref, key: key, in: context) { text = String(v) } }
             .onSubmit { if let n = Int(text) { EntityWriter.setValue(ref, key: key, value: .int(n), in: context) } }
+    }
+}
+
+/// 自由文本标签编辑器(全实体通用):chip 流式排列,× 删,输入框 + 回车/＋ 加。
+private struct TagsEditor: View {
+    let ref: EntityRef
+    @Environment(\.modelContext) private var context
+    @State private var tags: [String] = []
+    @State private var draft = ""
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text("标签").font(Studio.sans(11, .medium)).foregroundStyle(Studio.on2)
+            if !tags.isEmpty {
+                TagFlow(spacing: 6) {
+                    ForEach(tags, id: \.self) { chip($0) }
+                }
+            }
+            HStack(spacing: 6) {
+                TextField("加标签", text: $draft).glassField().onSubmit(add)
+                Button(action: add) { Image(systemName: "plus") }
+                    .buttonStyle(.tbtn(.ghost))
+                    .disabled(draft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+            }
+        }
+        .onAppear { tags = EntityReader.tags(ref, in: context) }
+        .onChange(of: ref) { _, _ in tags = EntityReader.tags(ref, in: context) }
+    }
+
+    private func chip(_ t: String) -> some View {
+        HStack(spacing: 4) {
+            Text(t).font(Studio.sans(12)).foregroundStyle(Studio.on).lineLimit(1)
+            Button { remove(t) } label: {
+                Image(systemName: "xmark").font(.system(size: 9, weight: .bold)).foregroundStyle(Studio.on2)
+            }.buttonStyle(.plain)
+        }
+        .padding(.horizontal, 9).padding(.vertical, 5)
+        .background(Studio.glassHover, in: Capsule())
+        .overlay { Capsule().strokeBorder(Studio.glassLine, lineWidth: 1) }
+    }
+
+    private func add() {
+        let t = draft.trimmingCharacters(in: .whitespacesAndNewlines)
+        draft = ""
+        guard !t.isEmpty, !tags.contains(t) else { return }
+        tags.append(t)
+        EntityWriter.setTags(ref, tags, in: context)
+    }
+
+    private func remove(_ t: String) {
+        tags.removeAll { $0 == t }
+        EntityWriter.setTags(ref, tags, in: context)
+    }
+}
+
+/// 简单流式布局:子视图按行排,超宽换行。
+private struct TagFlow: Layout {
+    var spacing: CGFloat = 6
+
+    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+        let maxW = proposal.width ?? .infinity
+        var x: CGFloat = 0, y: CGFloat = 0, rowH: CGFloat = 0
+        for s in subviews {
+            let sz = s.sizeThatFits(.unspecified)
+            if x + sz.width > maxW, x > 0 { x = 0
+                y += rowH + spacing
+                rowH = 0
+            }
+            x += sz.width + spacing
+            rowH = max(rowH, sz.height)
+        }
+        return CGSize(width: maxW.isFinite ? maxW : x, height: y + rowH)
+    }
+
+    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+        var x = bounds.minX, y = bounds.minY, rowH: CGFloat = 0
+        for s in subviews {
+            let sz = s.sizeThatFits(.unspecified)
+            if x + sz.width > bounds.maxX, x > bounds.minX { x = bounds.minX
+                y += rowH + spacing
+                rowH = 0
+            }
+            s.place(at: CGPoint(x: x, y: y), proposal: ProposedViewSize(sz))
+            x += sz.width + spacing
+            rowH = max(rowH, sz.height)
+        }
     }
 }
 

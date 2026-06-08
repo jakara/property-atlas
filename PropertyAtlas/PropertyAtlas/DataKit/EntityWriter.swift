@@ -39,6 +39,10 @@ enum EntityWriter {
         return EntityRef(id: id, kind: kind)
     }
 
+    static func setTags(_ ref: EntityRef, _ v: [String], in context: ModelContext) {
+        touch(ref, in: context) { $0.tags = v } s: { $0.tags = v } p: { $0.tags = v } a: { $0.tags = v }
+    }
+
     static func setName(_ ref: EntityRef, _ name: String, in context: ModelContext) {
         touch(ref, in: context) { c in c.name = name } s: { $0.name = name } p: { $0.name = name } a: { $0.name = name }
     }

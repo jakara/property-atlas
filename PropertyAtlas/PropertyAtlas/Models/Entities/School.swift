@@ -10,6 +10,8 @@ final class School {
 
     var name: String = ""
     var aliases: [String] = []
+    /// 自由文本标签(多值)。
+    var tags: [String] = []
     var address: String?
     var latitude: Double = 0
     var longitude: Double = 0
