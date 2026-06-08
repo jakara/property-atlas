@@ -6,6 +6,7 @@ struct FilterConditionRow: View {
     let entityType: String
     let datasetId: UUID
     let onDelete: () -> Void
+    @Environment(\.modelContext) private var context
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
@@ -34,7 +35,17 @@ struct FilterConditionRow: View {
             .font(Studio.sans(13, .semibold))
             .tint(Studio.cool)
             if condition.op != .exists {
-                AnyJSONValueField(value: valueBinding)
+                if !enumOptions.isEmpty, [.equals, .notEquals, .contains].contains(condition.op) {
+                    // 字段是枚举 → 出枚举下拉(单值 op);其余 op(in/范围)仍自由输入
+                    Picker("值", selection: enumValueBinding) {
+                        Text("—").tag("")
+                        ForEach(enumOptions, id: \.self) { Text($0).tag($0) }
+                    }
+                    .font(Studio.sans(13))
+                    .tint(Studio.cool)
+                } else {
+                    AnyJSONValueField(value: valueBinding)
+                }
             }
         }
         .padding(10)
@@ -56,6 +67,27 @@ struct FilterConditionRow: View {
 
     private var valueBinding: Binding<AnyJSON> {
         Binding(get: { condition.value }, set: { condition = FilterCondition(dimension: condition.dimension, op: condition.op, value: $0) })
+    }
+
+    /// 当前字段的枚举 scope(base 字段经 EntityFieldSchema、custom 经 entityType.key)。
+    private var enumScope: String? {
+        guard condition.dimension.kind == .field, let fk = condition.dimension.fieldKey else { return nil }
+        return FieldKeyCatalog.fields(entityType: entityType, datasetId: datasetId, context: context)
+            .first { $0.key == fk }?.enumScope
+    }
+
+    private var enumOptions: [String] {
+        guard let scope = enumScope else { return [] }
+        return FieldKeyCatalog.enumLabels(scope: scope, datasetId: datasetId, context: context)
+    }
+
+    private var enumValueBinding: Binding<String> {
+        Binding(
+            get: { if case let .string(s) = condition.value { return s }
+                return ""
+            },
+            set: { valueBinding.wrappedValue = .string($0) }
+        )
     }
 }
 #endif
