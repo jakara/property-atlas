@@ -193,14 +193,25 @@ struct StudioRootView: View {
                         return AreaOverlayRenderer(polygon: polygon, style: style)
                     }
                     // 折线区域:styleMap 命中 → 描边渲染;未命中的 MKPolyline(edge 连线)走默认。
-                    if let line = overlay as? MKPolyline, let style = cache.styleMap[ObjectIdentifier(overlay)] {
-                        let r = MKPolylineRenderer(polyline: line)
-                        // 线色取 fillHex(主色,也是分组染色写入处);strokeHex 是多边形描边(默认白),线上不可见。
-                        r.strokeColor = HexColor.parse(style.fillHex) ?? HexColor.parse(style.strokeHex) ?? .systemTeal
-                        r.lineWidth = max(CGFloat(style.strokeWidth), 4)
-                        r.lineCap = .round
-                        r.lineJoin = .round
-                        return r
+                    if let style = cache.styleMap[ObjectIdentifier(overlay)] {
+                        let color = HexColor.parse(style.fillHex) ?? HexColor.parse(style.strokeHex) ?? .systemTeal
+                        let width = max(CGFloat(style.strokeWidth), 4)
+                        if let line = overlay as? MKPolyline {
+                            let r = MKPolylineRenderer(polyline: line)
+                            r.strokeColor = color
+                            r.lineWidth = width
+                            r.lineCap = .round
+                            r.lineJoin = .round
+                            return r
+                        }
+                        if let mline = overlay as? MKMultiPolyline {
+                            let r = MKMultiPolylineRenderer(multiPolyline: mline)
+                            r.strokeColor = color
+                            r.lineWidth = width
+                            r.lineCap = .round
+                            r.lineJoin = .round
+                            return r
+                        }
                     }
                     return nil
                 },
@@ -913,7 +924,7 @@ struct StudioRootView: View {
         guard let a = areas.first(where: { $0.id == id }) else { return }
         let coords = (
             a.geometryKind == "line"
-                ? try? GeoJSONHelper.decodeLine(a.geometryJSON)
+                ? (try? GeoJSONHelper.decodeLines(a.geometryJSON))?.flatMap { $0 }
                 : try? GeoJSONHelper.decodePolygon(a.geometryJSON)
         ) ?? []
         guard !coords.isEmpty, let fit = AreaFocus.fit(coordinates: coords) else { return }

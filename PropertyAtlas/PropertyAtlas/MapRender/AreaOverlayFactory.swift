@@ -17,10 +17,15 @@ enum AreaOverlayFactory {
             polygon.title = area.name
             return Result(overlay: polygon, style: style, areaId: area.id)
         case "line":
-            guard let coords = try? GeoJSONHelper.decodeLine(area.geometryJSON), coords.count >= 2 else { return nil }
-            let line = MKPolyline(coordinates: coords, count: coords.count)
-            line.title = area.name
-            return Result(overlay: line, style: style, areaId: area.id)
+            guard let lines = try? GeoJSONHelper.decodeLines(area.geometryJSON) else { return nil }
+            let polys = lines.filter { $0.count >= 2 }.map { MKPolyline(coordinates: $0, count: $0.count) }
+            guard !polys.isEmpty else { return nil }
+            if polys.count == 1 {
+                polys[0].title = area.name
+                return Result(overlay: polys[0], style: style, areaId: area.id)
+            }
+            // 多段(MultiLineString):各 OSM way 各自成线,不缝合 → 无假连线。
+            return Result(overlay: MKMultiPolyline(polys), style: style, areaId: area.id)
         case "raster":
             return nil
         default:
