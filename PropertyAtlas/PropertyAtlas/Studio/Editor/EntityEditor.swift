@@ -35,9 +35,9 @@ struct EntityEditor: View {
                 .padding(14)
             }
         }
-        .frame(width: 340)
-        .frame(maxHeight: 760)
-        .glassSurface(radius: Studio.rPanel)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .frame(maxHeight: 720)
+        .glassSurface(Studio.glass, radius: Studio.rPanel, elevation: .float)
         .environment(\.colorScheme, .dark)
         .tint(Studio.cool)
         .onAppear { name = EntityReader.name(ref, in: context) ?? "" }

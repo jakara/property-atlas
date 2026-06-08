@@ -12,29 +12,18 @@ struct RightDrawer: View {
 
     var body: some View {
         if let ref = appState.selectedRef {
-            Group {
-                switch appState.editingMode {
-                case .edit:
-                    EntityEditor(
-                        ref: ref, datasetId: datasetId, appState: appState,
-                        onClose: { appState.editingMode = .read },
-                        onDelete: {
-                            EdgeStore.cascadeSoftDelete(entityId: ref.id, datasetId: datasetId, in: context)
-                            EntityWriter.softDelete(ref, in: context)
-                            appState.clearSelection()
-                        },
-                        onSelectRelated: { appState.select($0) },
-                        onRedrawPolygon: ref.kind == .area ? { onRedrawArea(ref.id) } : nil
-                    )
-                default:
-                    EntityCard(
-                        ref: ref, datasetId: datasetId,
-                        onEdit: { appState.beginEditing() },
-                        onClose: { appState.clearSelection() },
-                        onSelectRelated: { appState.select($0) }
-                    )
-                }
-            }
+            // 单一就地编辑面板:选中即可编辑,无只读/编辑切换。
+            EntityEditor(
+                ref: ref, datasetId: datasetId, appState: appState,
+                onClose: { appState.clearSelection() },
+                onDelete: {
+                    EdgeStore.cascadeSoftDelete(entityId: ref.id, datasetId: datasetId, in: context)
+                    EntityWriter.softDelete(ref, in: context)
+                    appState.clearSelection()
+                },
+                onSelectRelated: { appState.select($0) },
+                onRedrawPolygon: ref.kind == .area ? { onRedrawArea(ref.id) } : nil
+            )
             .transition(.move(edge: .trailing).combined(with: .opacity))
         }
     }

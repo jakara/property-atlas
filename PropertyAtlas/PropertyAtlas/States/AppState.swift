@@ -5,29 +5,26 @@ import Observation
 @MainActor
 @Observable
 final class AppState {
-    enum EditingMode { case read, edit, live }
     enum EditTab { case basic, relations, media, custom, privateNotes }
 
     var activeDatasetId: UUID?
     var activeThemeId: UUID?
     var selectedRef: EntityRef?
-    var editingMode: EditingMode = .read
     var currentEditTab: EditTab = .basic
 
+    /// 单一就地编辑面板:选中即打开可编辑面板(无只读/编辑切换)。
     func select(_ ref: EntityRef) {
         selectedRef = ref
-        editingMode = .read
+        currentEditTab = .basic
     }
 
+    /// 兼容旧调用(新建后)。面板已就地可编辑,这里只回到基本 tab。
     func beginEditing() {
-        guard selectedRef != nil else { return }
-        editingMode = .edit
         currentEditTab = .basic
     }
 
     func clearSelection() {
         selectedRef = nil
-        editingMode = .read
     }
 
     func switchDataset(to id: UUID) {
