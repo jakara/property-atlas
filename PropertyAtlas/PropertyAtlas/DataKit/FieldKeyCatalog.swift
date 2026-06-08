@@ -7,13 +7,18 @@ enum FieldKeyCatalog {
     struct FieldItem: Hashable {
         let key: String
         let label: String
-        let source: String   // "base" | "custom"
+        let source: String // "base" | "custom"
         let enumScope: String?
     }
 
     static func fields(entityType: String, datasetId: UUID, context: ModelContext?) -> [FieldItem] {
         guard let kind = EntityKind(rawValue: entityType) else { return [] }
-        var out: [FieldItem] = EntityFieldSchema.fields(for: kind).map {
+        // 通用标识字段:名字 / ID(分组染色「一实体一色」常用;名字重复时用 ID 保唯一)
+        var out: [FieldItem] = [
+            FieldItem(key: "name", label: "名字", source: "base", enumScope: nil),
+            FieldItem(key: "id", label: "ID", source: "base", enumScope: nil),
+        ]
+        out += EntityFieldSchema.fields(for: kind).map {
             FieldItem(key: $0.key, label: $0.label, source: "base", enumScope: $0.enumScope)
         }
         if let ctx = context {

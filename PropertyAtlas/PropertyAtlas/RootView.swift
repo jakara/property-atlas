@@ -723,7 +723,8 @@ struct StudioRootView: View {
         let dsAreas = areas.filter { $0.datasetId == dsId }
         let (areaOverlays, styleMap) = buildAreaOverlays(
             areas: visibility["area"] == true ? dsAreas : dsAreas.filter { $0.id == selectedAreaId },
-            visibleIds: visibleIds, viewStyles: viewStyles, viewRules: viewRules, forceId: selectedAreaId
+            visibleIds: visibleIds, viewStyles: viewStyles, viewRules: viewRules,
+            groupColors: groupColors, forceId: selectedAreaId
         )
         let edgeLines = buildEdgeLines(labels: activeMapView?.drawEdgeLines ?? [], datasetId: dsId)
 
@@ -831,13 +832,14 @@ struct StudioRootView: View {
 
     private func buildAreaOverlays(
         areas: [Area], visibleIds: Set<UUID>, viewStyles: [String: ViewEntityStyle],
-        viewRules: [String: [ResolvedStyleRule]], forceId: UUID? = nil
+        viewRules: [String: [ResolvedStyleRule]], groupColors: [UUID: String] = [:], forceId: UUID? = nil
     ) -> ([MKOverlay], [ObjectIdentifier: AreaStyle]) {
         var overlays: [MKOverlay] = []
         var map: [ObjectIdentifier: AreaStyle] = [:]
         for a in areas where !a.deleted && (visibleIds.contains(a.id) || a.id == forceId) {
             let style = StyleResolver.resolveArea(
-                entity: a.styleEntity, viewStyle: viewStyles["area"], rules: viewRules["area"] ?? []
+                entity: a.styleEntity, viewStyle: viewStyles["area"], rules: viewRules["area"] ?? [],
+                groupFillHex: groupColors[a.id]
             )
             if let r = AreaOverlayFactory.makeOverlay(for: a, style: style) {
                 overlays.append(r.overlay)

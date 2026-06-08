@@ -29,7 +29,8 @@ enum StyleResolver {
     static func resolveArea(
         entity: StyleEntity,
         viewStyle: ViewEntityStyle?,
-        rules: [ResolvedStyleRule] = []
+        rules: [ResolvedStyleRule] = [],
+        groupFillHex: String? = nil
     ) -> AreaStyle {
         let base = StyleDefaults.builtinArea()
         var partial = PartialAreaStyle()
@@ -43,6 +44,7 @@ enum StyleResolver {
         for rule in rules where rule.enabled && matches(rule, entity) {
             partial.merge(rule.areaPartial)
         }
+        if let groupFillHex { partial.fillHex = groupFillHex }
         partial.merge(entity.overrideArea)
         return partial.finalize(default: base)
     }

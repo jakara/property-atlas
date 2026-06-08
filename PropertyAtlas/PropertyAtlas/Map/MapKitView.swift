@@ -127,23 +127,38 @@ struct MapKitView: UIViewRepresentable {
         private var lastLabelsAllowed: Bool?
 
         /// shift + 移动鼠标 → 平移地图;control + 上下移动 → 缩放。其余 hover 忽略。
+        /// 经 region 线性增量(非 convert),baseline 显式更新;无修饰键/结束即清 baseline。
         @objc func handleHover(_ g: UIHoverGestureRecognizer) {
             guard let mv = mapViewRef else { return }
-            let pt = g.location(in: mv)
             let mods = g.modifierFlags
-            defer { lastHoverPoint = (g.state == .ended || g.state == .cancelled) ? nil : pt }
-            guard g.state == .changed, let last = lastHoverPoint else { return }
-            let dx = pt.x - last.x
-            let dy = pt.y - last.y
-            if mods.contains(.shift) {
-                // 拖动:内容跟随鼠标 → 中心反向移动
-                let target = CGPoint(x: mv.center.x - dx, y: mv.center.y - dy)
-                mv.setCenter(mv.convert(target, toCoordinateFrom: mv), animated: false)
-            } else if mods.contains(.control), abs(dy) > 0.1 {
+            let wantPan = mods.contains(.shift)
+            let wantZoom = mods.contains(.control)
+            if g.state == .ended || g.state == .cancelled || !(wantPan || wantZoom) {
+                lastHoverPoint = nil
+                return
+            }
+            let pt = g.location(in: mv)
+            guard let last = lastHoverPoint else { lastHoverPoint = pt
+                return
+            }
+            let dx = Double(pt.x - last.x)
+            let dy = Double(pt.y - last.y)
+            lastHoverPoint = pt
+            let w = Double(mv.bounds.width)
+            let h = Double(mv.bounds.height)
+            guard w > 0, h > 0 else { return }
+            if wantPan {
+                // 内容跟随光标:鼠标右移→中心西移,鼠标下移→中心北移
+                let region = mv.region
+                var c = region.center
+                c.longitude -= dx / w * region.span.longitudeDelta
+                c.latitude += dy / h * region.span.latitudeDelta
+                c.latitude = min(max(c.latitude, -85), 85)
+                mv.setCenter(c, animated: false)
+            } else if wantZoom, abs(dy) > 0.1 {
                 // 上(dy<0)放大,下缩小
                 let cam = mv.camera.copy() as? MKMapCamera ?? mv.camera
-                let factor = 1 + Double(dy) / 200
-                cam.centerCoordinateDistance = min(max(cam.centerCoordinateDistance * factor, 200), 4_000_000)
+                cam.centerCoordinateDistance = min(max(cam.centerCoordinateDistance * (1 + dy / 200), 200), 4_000_000)
                 mv.setCamera(cam, animated: false)
             }
         }
