@@ -11,6 +11,8 @@ final class MapView {
     var enabledLayerIds: [UUID] = []
     var primaryFilterJSON: String = #"{"conditions":[],"groupBy":null}"#
     var normalFiltersJSON: String = "[]"
+    /// 普通过滤器 chip 隐藏态(持久):{dimensionKey: [hidden values]}。下次启动还原。
+    var hiddenChipsJSON: String = "{}"
     var visibilityJSON: String = #"{"compound":true,"school":true,"poi":true,"area":true}"#
     var paletteId: UUID?
     var paletteHex: [String] = []

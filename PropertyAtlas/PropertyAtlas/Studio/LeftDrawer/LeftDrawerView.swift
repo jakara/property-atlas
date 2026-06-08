@@ -10,6 +10,8 @@ struct LeftDrawerView: View {
     @Bindable var layerState: LayerState
     /// 切换图层启用(写回 active MapView.enabledLayerIds → 与视图设置联动)。
     var onToggleLayer: (UUID) -> Void = { _ in }
+    /// 切换普通过滤 chip 隐藏(持久到 active MapView.hiddenChipsJSON)。
+    var onToggleChip: (String, String) -> Void = { _, _ in }
     /// 上层按屏高算出的上限(顶到指南针上方);内容撑不满则缩到 fit。
     var maxHeight: CGFloat = 640
     @State private var contentHeight: CGFloat = 0
@@ -19,7 +21,7 @@ struct LeftDrawerView: View {
             VStack(alignment: .leading, spacing: 14) {
                 LayersView(layers: layers, currentZoom: currentZoom, layerState: layerState, onToggle: onToggleLayer)
                 Rectangle().fill(Studio.glassLine).frame(height: 1)
-                LegendView(sections: legendSections, filterState: filterState)
+                LegendView(sections: legendSections, filterState: filterState, onToggle: onToggleChip)
             }
             .padding(.horizontal, 10).padding(.vertical, 12)
             .background(

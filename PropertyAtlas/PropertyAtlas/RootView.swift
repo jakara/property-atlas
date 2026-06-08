@@ -369,6 +369,7 @@ struct StudioRootView: View {
                             filterState: filterState,
                             layerState: layerState,
                             onToggleLayer: { toggleLayer($0) },
+                            onToggleChip: { toggleChip($0, $1) },
                             // 顶到指南针上方:屏高 − 顶距80 − 指南针区(88+22)− 间隙16。
                             maxHeight: max(200, geo.size.height - 80 - 126)
                         )
@@ -438,13 +439,14 @@ struct StudioRootView: View {
         .animation(.easeInOut(duration: 0.25), value: showSettings)
         .onChange(of: viewContext?.activeMapView?.id) { _, _ in
             layerState.resetForTheme(enabledIds: viewContext?.activeMapView?.enabledLayerIds ?? [])
-            filterState.reset()
+            restoreChips()
             searchMarker = nil
             searchPlace = nil
             showPlaceDetail = false
             showSearch = false
         }
         .onAppear { ensureViewContext()
+            restoreChips()
             configureTitlebar()
         }
         .onChange(of: datasets.first?.id) { _, _ in ensureViewContext() }
@@ -977,6 +979,28 @@ struct StudioRootView: View {
         areaDrawMode = false
         appState.select(ref)
         appState.beginEditing()
+    }
+
+    /// 切换普通过滤 chip 隐藏 + 持久到 active MapView.hiddenChipsJSON。
+    private func toggleChip(_ dimKey: String, _ value: String) {
+        filterState.toggle(dimensionKey: dimKey, value: value)
+        guard let mv = viewContext?.activeMapView,
+              let data = try? JSONEncoder().encode(filterState.snapshot()),
+              let s = String(data: data, encoding: .utf8) else { return }
+        mv.hiddenChipsJSON = s
+        mv.updatedAt = Date()
+    }
+
+    /// 从 active MapView.hiddenChipsJSON 恢复 chip 隐藏态(切视图/启动)。
+    private func restoreChips() {
+        guard let mv = viewContext?.activeMapView,
+              let data = mv.hiddenChipsJSON.data(using: .utf8),
+              let dict = try? JSONDecoder().decode([String: [String]].self, from: data)
+        else {
+            filterState.reset()
+            return
+        }
+        filterState.load(dict)
     }
 
     /// 切换图层启用:写回 active MapView.enabledLayerIds(持久,单一数据源)+ 同步 layerState。

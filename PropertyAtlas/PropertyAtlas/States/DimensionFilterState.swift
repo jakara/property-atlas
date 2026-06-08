@@ -19,4 +19,14 @@ final class DimensionFilterState {
     func reset() {
         hidden = [:]
     }
+
+    /// 持久化快照(Set → 有序数组)。
+    func snapshot() -> [String: [String]] {
+        hidden.mapValues { Array($0).sorted() }
+    }
+
+    /// 从持久化字典恢复(空值剔除)。
+    func load(_ dict: [String: [String]]) {
+        hidden = dict.compactMapValues { $0.isEmpty ? nil : Set($0) }
+    }
 }

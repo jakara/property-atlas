@@ -17,6 +17,7 @@ struct LegendSection: Identifiable {
 struct LegendView: View {
     let sections: [LegendSection]
     @Bindable var filterState: DimensionFilterState
+    var onToggle: (String, String) -> Void = { _, _ in }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -57,7 +58,7 @@ struct LegendView: View {
 
         if togglable {
             Button {
-                filterState.toggle(dimensionKey: dimensionKey, value: row.value)
+                onToggle(dimensionKey, row.value)
             } label: {
                 content.contentShape(Rectangle())
             }
