@@ -195,8 +195,9 @@ struct StudioRootView: View {
                     // 折线区域:styleMap 命中 → 描边渲染;未命中的 MKPolyline(edge 连线)走默认。
                     if let line = overlay as? MKPolyline, let style = cache.styleMap[ObjectIdentifier(overlay)] {
                         let r = MKPolylineRenderer(polyline: line)
-                        r.strokeColor = HexColor.parse(style.strokeHex) ?? HexColor.parse(style.fillHex) ?? .systemTeal
-                        r.lineWidth = max(CGFloat(style.strokeWidth), 3)
+                        // 线色取 fillHex(主色,也是分组染色写入处);strokeHex 是多边形描边(默认白),线上不可见。
+                        r.strokeColor = HexColor.parse(style.fillHex) ?? HexColor.parse(style.strokeHex) ?? .systemTeal
+                        r.lineWidth = max(CGFloat(style.strokeWidth), 4)
                         r.lineCap = .round
                         r.lineJoin = .round
                         return r
