@@ -39,6 +39,7 @@ enum SeedImporter {
             normalizeAreaNamesIfNeeded(in: context)
             seedDistrictBoundariesIfNeeded(in: context)
             seedRoadLinesIfNeeded(in: context)
+            ensureRoadUnifiedTag(in: context)
             migrateFilterEntityTypesIfNeeded(in: context)
             ensureAreaCategoryOptions(in: context)
             try context.save()
@@ -179,6 +180,19 @@ enum SeedImporter {
             out.append((name, geomStr, tags))
         }
         return out
+    }
+
+    /// 幂等给道路折线补总标签"三环十四射"(旧库 seed 时没加 / seed insert-guard 不更新 tags)。
+    private static func ensureRoadUnifiedTag(in context: ModelContext) {
+        let line = "line"
+        let road = "道路"
+        let areas = (try? context.fetch(FetchDescriptor<Area>(
+            predicate: #Predicate { $0.geometryKind == line && $0.category == road && !$0.deleted }
+        ))) ?? []
+        for a in areas where !a.tags.contains("三环十四射") {
+            a.tags = ["三环十四射"] + a.tags
+            a.updatedAt = Date()
+        }
     }
 
     /// 幂等回填普通过滤器 entityType(旧库)。新库 seed 已带 entityType,会立即标记跳过。
