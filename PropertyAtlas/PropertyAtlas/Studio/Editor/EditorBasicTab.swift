@@ -13,6 +13,8 @@ struct EditorBasicTab: View {
         VStack(alignment: .leading, spacing: 12) {
             if ref.kind != .area {
                 coordRow
+            } else {
+                geometryRow
             }
             LayerPickerRow(ref: ref, datasetId: datasetId)
             ForEach(EntityFieldSchema.fields(for: ref.kind), id: \.key) { f in
@@ -34,6 +36,21 @@ struct EditorBasicTab: View {
                 mono: true,
                 muted: true
             )
+        }
+    }
+
+    /// 区域几何类型只读展示(多边形/折线/栅格)。
+    private var geometryRow: some View {
+        let kind = (EntityReader.fetch(Area.self, ref.id, context)?.geometryKind) ?? ""
+        let label: String = switch kind {
+        case "polygon": "多边形"
+        case "line": "折线"
+        case "raster": "栅格"
+        default: kind.isEmpty ? "—" : kind
+        }
+        return VStack(alignment: .leading, spacing: 6) {
+            Text("几何类型 · 只读").font(Studio.sans(11, .medium)).foregroundStyle(Studio.on2)
+            FieldRow(key: "几何", value: label, muted: true)
         }
     }
 

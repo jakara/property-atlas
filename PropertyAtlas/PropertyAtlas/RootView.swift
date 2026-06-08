@@ -1025,6 +1025,7 @@ struct StudioRootView: View {
         if let a = EntityReader.fetch(Area.self, ref.id, modelContext) {
             a.geometryJSON = geo
             a.geometryKind = kindStr
+            if isLine { a.category = "道路" } // 折线默认归"道路"类型
             a.updatedAt = Date()
         }
         try? modelContext.save()

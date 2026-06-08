@@ -551,7 +551,7 @@ enum LegacyMigrator {
             ("compound.finishType", ["毛坯", "精装", "毛坯/精装"]),
             ("compound.deliveryTime", ["现房", "期房"]),
             ("poi.category", ["地铁站", "商场", "医院", "办事处", "学区办", "公交站", "景点"]),
-            ("area.category", ["行政区", "片区", "商圈", "管辖区"]),
+            ("area.category", ["行政区", "片区", "学区", "道路", "街道", "商圈", "管辖区"]),
             ("edge.label", ["对口小学", "片内中学", "周边", "集团成员", "集团领办", "管辖", "属于", "所属片区"]),
         ]
         for (scope, labels) in seeds {
@@ -564,6 +564,21 @@ enum LegacyMigrator {
                 )
                 ctx.insert(opt)
             }
+        }
+    }
+
+    /// 幂等补齐 area.category 枚举值(既有库无闸,按 scope+label 去重补缺)。新增 学区/道路/街道。
+    static func ensureAreaCategoryOptions(dataset: Dataset, in ctx: ModelContext) {
+        let dsId = dataset.id
+        let scope = "area.category"
+        let existing = ((try? ctx.fetch(FetchDescriptor<EnumOption>(
+            predicate: #Predicate { $0.datasetId == dsId && $0.scope == scope && !$0.deleted }
+        ))) ?? []).map(\.label)
+        let want = ["学区", "道路", "街道"]
+        var nextOrder = existing.count
+        for label in want where !existing.contains(label) {
+            ctx.insert(EnumOption(datasetId: dsId, scope: scope, label: label, sortOrder: nextOrder))
+            nextOrder += 1
         }
     }
 

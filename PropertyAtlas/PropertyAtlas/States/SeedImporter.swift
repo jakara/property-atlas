@@ -39,6 +39,7 @@ enum SeedImporter {
             normalizeAreaNamesIfNeeded(in: context)
             seedDistrictBoundariesIfNeeded(in: context)
             migrateFilterEntityTypesIfNeeded(in: context)
+            ensureAreaCategoryOptions(in: context)
             try context.save()
             progress(1.0, "已就绪")
             return false
@@ -134,6 +135,14 @@ enum SeedImporter {
         let datasets = (try? context.fetch(FetchDescriptor<Dataset>())) ?? []
         for ds in datasets where !ds.filterEntityTypeMigratedV1 {
             LegacyMigrator.migrateFilterEntityTypes(dataset: ds, in: context)
+        }
+    }
+
+    /// 既有库幂等补齐 area.category 新枚举值(学区/道路/街道)。
+    private static func ensureAreaCategoryOptions(in context: ModelContext) {
+        let datasets = (try? context.fetch(FetchDescriptor<Dataset>())) ?? []
+        for ds in datasets {
+            LegacyMigrator.ensureAreaCategoryOptions(dataset: ds, in: context)
         }
     }
 
