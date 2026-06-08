@@ -48,8 +48,8 @@ ROADS = [
     {"name": "中山北路", "match": "^中山北路$", "ring": None, "radial": True},
     {"name": "解放路", "match": "^解放(南|北)?路$", "ring": None, "radial": True},
     {"name": "金钟路", "match": "^金钟河大街$|^金钟路$", "ring": None, "radial": True},
-    {"name": "津塘公路", "match": "^津塘公路$", "ring": None, "radial": True},
-    {"name": "新宜白大道", "match": "^新宜白大道$", "ring": None, "radial": True},
+    {"name": "津塘路", "match": "^津塘路$", "ring": None, "radial": True},
+    {"name": "新宜白大道", "match": "^新宜白大道$|宜白", "ring": None, "radial": True},
 ]
 
 # ---- WGS-84 → GCJ-02 (standard China offset, "eviltransform" formula) ----
