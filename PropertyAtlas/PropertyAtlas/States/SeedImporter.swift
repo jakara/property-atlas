@@ -155,7 +155,7 @@ enum SeedImporter {
                 area.id = aid
                 area.layerId = defaultLayerId
                 area.category = "道路"
-                area.tags = it.tags
+                area.tags = ["三环十四射"] + it.tags // 统一总标签 + 环名/射线,便于一键过滤
                 context.insert(area)
             }
             ds.roadLinesSeededV1 = true

@@ -69,6 +69,13 @@ struct MapDimension: Codable, Hashable {
             return [input.entity.entityType]
         case .field:
             guard let fk = fieldKey else { return [] }
+            // 多值字段(如 tags):数组元素各自成一个维度值。
+            if case let .array(items)? = input.entity.field(fk) {
+                return items.compactMap { item in
+                    let s = ValueFormat.display(item)
+                    return s.isEmpty ? nil : s
+                }
+            }
             let s = ValueFormat.display(input.entity.field(fk))
             return s.isEmpty ? [] : [s]
         case .edgeField:

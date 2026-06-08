@@ -17,6 +17,8 @@ enum FieldKeyCatalog {
         var out: [FieldItem] = [
             FieldItem(key: "name", label: "名字", source: "base", enumScope: nil),
             FieldItem(key: "id", label: "ID", source: "base", enumScope: nil),
+            // 自由文本标签(多值):按 contains/equals 匹配某个 tag(如"三环十四射")。
+            FieldItem(key: "tags", label: "标签", source: "base", enumScope: nil),
         ]
         out += EntityFieldSchema.fields(for: kind).map {
             FieldItem(key: $0.key, label: $0.label, source: "base", enumScope: $0.enumScope)

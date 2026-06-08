@@ -98,6 +98,7 @@ extension School {
         var base: [String: AnyJSON] = [:]
         base["name"] = .string(name)
         base["id"] = .string(id.uuidString)
+        if !tags.isEmpty { base["tags"] = .array(tags.map { AnyJSON.string($0) }) }
         if let v = address { base["address"] = .string(v) }
         if let v = category { base["category"] = .string(v) }
         if let v = grade { base["grade"] = .string(v) }
@@ -122,6 +123,7 @@ extension Compound {
         var base: [String: AnyJSON] = [:]
         base["name"] = .string(name)
         base["id"] = .string(id.uuidString)
+        if !tags.isEmpty { base["tags"] = .array(tags.map { AnyJSON.string($0) }) }
         if let v = address { base["address"] = .string(v) }
         if let v = buildYear { base["buildYear"] = .int(v) }
         if let v = developer { base["developer"] = .string(v) }
@@ -148,6 +150,7 @@ extension POI {
         var base: [String: AnyJSON] = [:]
         base["name"] = .string(name)
         base["id"] = .string(id.uuidString)
+        if !tags.isEmpty { base["tags"] = .array(tags.map { AnyJSON.string($0) }) }
         if let v = address { base["address"] = .string(v) }
         if let v = category { base["category"] = .string(v) }
         return StyleEntity(
@@ -167,6 +170,7 @@ extension Area {
         var base: [String: AnyJSON] = [:]
         base["name"] = .string(name)
         base["id"] = .string(id.uuidString)
+        if !tags.isEmpty { base["tags"] = .array(tags.map { AnyJSON.string($0) }) }
         if let v = category { base["category"] = .string(v) }
         base["fillOpacity"] = .double(fillOpacity)
         if let v = textDescription { base["textDescription"] = .string(v) }
