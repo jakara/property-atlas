@@ -16,6 +16,11 @@ enum AreaOverlayFactory {
             let polygon = MKPolygon(coordinates: coords, count: coords.count)
             polygon.title = area.name
             return Result(overlay: polygon, style: style, areaId: area.id)
+        case "line":
+            guard let coords = try? GeoJSONHelper.decodeLine(area.geometryJSON), coords.count >= 2 else { return nil }
+            let line = MKPolyline(coordinates: coords, count: coords.count)
+            line.title = area.name
+            return Result(overlay: line, style: style, areaId: area.id)
         case "raster":
             return nil
         default:

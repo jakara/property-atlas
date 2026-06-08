@@ -81,6 +81,8 @@ struct StudioRootView: View {
     @State private var drawMode = false
     @State private var areaDrawMode = false
     @State private var areaDrawPoints: [CLLocationCoordinate2D] = []
+    /// 当前绘制几何类型(多边形 / 折线)。
+    @State private var areaDrawKind: AreaDrawKind = .polygon
     /// 非 nil = 正在重绘某区域(完成时替换其几何,而非新建)。
     @State private var redrawAreaId: UUID?
     @State private var showCreateMenu = false
@@ -190,6 +192,10 @@ struct StudioRootView: View {
                     if let polygon = overlay as? MKPolygon, let style = cache.styleMap[ObjectIdentifier(overlay)] {
                         return AreaOverlayRenderer(polygon: polygon, style: style)
                     }
+                    // 折线区域:styleMap 命中 → 描边渲染;未命中的 MKPolyline(edge 连线)走默认。
+                    if let line = overlay as? MKPolyline, let style = cache.styleMap[ObjectIdentifier(overlay)] {
+                        return AreaLineRenderer(polyline: line, style: style)
+                    }
                     return nil
                 },
                 onRegionChange: { visibleRegion = $0 },
@@ -252,7 +258,7 @@ struct StudioRootView: View {
             }
             // 绘制区域层:点击放顶点(同样在 chrome 之下)
             if areaDrawMode {
-                AreaDrawLayer(points: $areaDrawPoints, region: visibleRegion)
+                AreaDrawLayer(points: $areaDrawPoints, region: visibleRegion, closed: areaDrawKind == .polygon)
                     .ignoresSafeArea()
             }
 
@@ -265,6 +271,7 @@ struct StudioRootView: View {
                     poiCategories: poiCategoriesBinding,
                     drawMode: $drawMode,
                     areaDrawMode: $areaDrawMode,
+                    areaDrawKind: $areaDrawKind,
                     hideWatermark: !exportMode && (appState.selectedRef != nil || showPlaceDetail)
                 )
             }
@@ -273,6 +280,7 @@ struct StudioRootView: View {
                 VStack {
                     AreaDrawPanel(
                         count: areaDrawPoints.count,
+                        kind: areaDrawKind,
                         onUndo: { if !areaDrawPoints.isEmpty { areaDrawPoints.removeLast() } },
                         onFinish: { finishAreaDraw() },
                         onCancel: { areaDrawPoints = []
@@ -894,9 +902,13 @@ struct StudioRootView: View {
 
     /// 片区聚焦:解析 geometryJSON 多边形 → 包围盒中心 + 视距。无几何则不动。
     private func focusArea(_ id: UUID) {
-        guard let a = areas.first(where: { $0.id == id }),
-              let coords = try? GeoJSONHelper.decodePolygon(a.geometryJSON), !coords.isEmpty,
-              let fit = AreaFocus.fit(coordinates: coords) else { return }
+        guard let a = areas.first(where: { $0.id == id }) else { return }
+        let coords = (
+            a.geometryKind == "line"
+                ? try? GeoJSONHelper.decodeLine(a.geometryJSON)
+                : try? GeoJSONHelper.decodePolygon(a.geometryJSON)
+        ) ?? []
+        guard !coords.isEmpty, let fit = AreaFocus.fit(coordinates: coords) else { return }
         camera = MKMapCamera(lookingAtCenter: fit.center, fromDistance: fit.distance, pitch: 0, heading: 0)
     }
 
@@ -966,23 +978,30 @@ struct StudioRootView: View {
         appState.beginEditing()
     }
 
-    /// 进入区域重绘:隐藏左右抽屉(由 areaDrawMode 触发),从空白开始打点;聚焦原区域便于参照。
+    /// 进入区域重绘:按原几何类型(line/polygon)从空白打点;聚焦原区域便于参照。
     private func startAreaRedraw(_ id: UUID) {
         redrawAreaId = id
         areaDrawPoints = []
+        areaDrawKind = (areas.first(where: { $0.id == id })?.geometryKind == "line") ? .line : .polygon
         focusArea(id)
         areaDrawMode = true
     }
 
-    /// 完成区域绘制:顶点 → GeoJSON Polygon。重绘态替换原区域几何;否则新建 Area(默认层)。
+    /// 完成绘制:顶点 → GeoJSON(Polygon / LineString)。重绘态替换原几何;否则新建 Area(默认层)。
     private func finishAreaDraw() {
-        guard areaDrawPoints.count >= 3, let dsId = viewContext?.datasetIdValue else { return }
-        let geo = (try? GeoJSONHelper.encodePolygon(areaDrawPoints)) ?? ""
+        guard areaDrawPoints.count >= areaDrawKind.minPoints, let dsId = viewContext?.datasetIdValue else { return }
+        let isLine = areaDrawKind == .line
+        let geo = (
+            isLine
+                ? try? GeoJSONHelper.encodeLine(areaDrawPoints)
+                : try? GeoJSONHelper.encodePolygon(areaDrawPoints)
+        ) ?? ""
+        let kindStr = isLine ? "line" : "polygon"
 
         if let id = redrawAreaId {
             if let a = EntityReader.fetch(Area.self, id, modelContext) {
                 a.geometryJSON = geo
-                a.geometryKind = "polygon"
+                a.geometryKind = kindStr
                 a.updatedAt = Date()
             }
             try? modelContext.save()
@@ -994,12 +1013,12 @@ struct StudioRootView: View {
 
         let layerId = layersForDataset(dsId).first(where: { $0.isDefault })?.id
         let ref = EntityWriter.createPin(
-            kind: .area, datasetId: dsId, name: "新区域",
+            kind: .area, datasetId: dsId, name: isLine ? "新折线" : "新区域",
             latitude: 0, longitude: 0, layerId: layerId, in: modelContext
         )
         if let a = EntityReader.fetch(Area.self, ref.id, modelContext) {
             a.geometryJSON = geo
-            a.geometryKind = "polygon"
+            a.geometryKind = kindStr
             a.updatedAt = Date()
         }
         try? modelContext.save()

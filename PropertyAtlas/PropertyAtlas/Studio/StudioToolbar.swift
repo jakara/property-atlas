@@ -15,6 +15,7 @@ struct StudioToolbar: View {
     @Binding var poiCategories: Set<StudioPOIOption>
     @Binding var drawMode: Bool
     @Binding var areaDrawMode: Bool
+    @Binding var areaDrawKind: AreaDrawKind
 
     var body: some View {
         HStack(spacing: 4) {
@@ -74,11 +75,27 @@ struct StudioToolbar: View {
             }
             .buttonStyle(.plain)
 
-            // 绘制区域(打点)开关
-            Button { areaDrawMode.toggle()
-                if areaDrawMode { drawMode = false }
+            // 绘制区域(多边形打点)开关
+            Button {
+                let on = areaDrawMode && areaDrawKind == .polygon
+                areaDrawMode = !on
+                if !on { areaDrawKind = .polygon
+                    drawMode = false
+                }
             } label: {
-                DockLabel(icon: areaDrawMode ? "hexagon.fill" : "hexagon", iconOnly: true)
+                DockLabel(icon: areaDrawMode && areaDrawKind == .polygon ? "hexagon.fill" : "hexagon", iconOnly: true)
+            }
+            .buttonStyle(.plain)
+
+            // 绘制折线(打点)开关
+            Button {
+                let on = areaDrawMode && areaDrawKind == .line
+                areaDrawMode = !on
+                if !on { areaDrawKind = .line
+                    drawMode = false
+                }
+            } label: {
+                DockLabel(icon: areaDrawMode && areaDrawKind == .line ? "line.diagonal.arrow" : "line.diagonal", iconOnly: true)
             }
             .buttonStyle(.plain)
 
