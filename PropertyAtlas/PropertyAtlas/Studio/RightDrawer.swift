@@ -8,6 +8,8 @@ struct RightDrawer: View {
     let datasetId: UUID
     /// 区域重绘多边形:由 RootView 进入绘制态。
     var onRedrawArea: (UUID) -> Void = { _ in }
+    /// 面板最大高度(顶到底部 dock 上方,尽量免滚动条)。
+    var maxHeight: CGFloat = 720
     @Environment(\.modelContext) private var context
 
     var body: some View {
@@ -22,7 +24,8 @@ struct RightDrawer: View {
                     appState.clearSelection()
                 },
                 onSelectRelated: { appState.select($0) },
-                onRedrawPolygon: ref.kind == .area ? { onRedrawArea(ref.id) } : nil
+                onRedrawPolygon: ref.kind == .area ? { onRedrawArea(ref.id) } : nil,
+                maxHeight: maxHeight
             )
             .transition(.move(edge: .trailing).combined(with: .opacity))
         }

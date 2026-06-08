@@ -12,6 +12,8 @@ struct EntityEditor: View {
     let onSelectRelated: (EntityRef) -> Void
     /// 区域专用:进入多边形重绘(替换原几何)。非区域为 nil。
     var onRedrawPolygon: (() -> Void)?
+    /// 面板最大高度(由抽屉按屏高算,顶到底部 dock 上方,尽量免滚动条)。
+    var maxHeight: CGFloat = 720
 
     @Environment(\.modelContext) private var context
     @State private var name: String = ""
@@ -36,7 +38,7 @@ struct EntityEditor: View {
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .frame(maxHeight: 720)
+        .frame(maxHeight: maxHeight)
         .glassSurface(Studio.glass, radius: Studio.rPanel, elevation: .float)
         .environment(\.colorScheme, .dark)
         .tint(Studio.cool)

@@ -343,7 +343,9 @@ struct StudioRootView: View {
                             } else {
                                 RightDrawer(
                                     appState: appState, datasetId: dsId,
-                                    onRedrawArea: { startAreaRedraw($0) }
+                                    onRedrawArea: { startAreaRedraw($0) },
+                                    // 顶到底部 dock 上方:屏高 − 顶距80 − 底部 dock 区(22+52+14)。
+                                    maxHeight: max(280, geo.size.height - 80 - 88)
                                 )
                             }
                         }
