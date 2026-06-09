@@ -156,10 +156,19 @@ enum SeedImporter {
                 area.layerId = defaultLayerId
                 area.category = "道路"
                 area.tags = ["三环十四射"] + it.tags // 统一总标签 + 环名/射线,便于一键过滤
+                area.styleFillHex = roadFillHex(tags: it.tags) // 三环各色 + 射线一色(线色取 fillHex)
                 context.insert(area)
             }
             ds.roadLinesSeededV1 = true
         }
+    }
+
+    /// 道路按类上色:三环各一色,射线统一一色。线渲染取 fillHex 作线色。
+    private static func roadFillHex(tags: [String]) -> String {
+        if tags.contains("内环") { return "#E53935" } // 红
+        if tags.contains("中环") { return "#FB8C00" } // 橙
+        if tags.contains("外环") { return "#1E88E5" } // 蓝
+        return "#43A047" // 射线/其他 — 绿
     }
 
     private static func parseRoadLines(
