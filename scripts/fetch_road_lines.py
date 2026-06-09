@@ -10,8 +10,9 @@ app's seed loader (SeedImporter.parseRoadLines):
 Coordinates are GCJ-02 (OSM is WGS-84 → converted here; the app/basemap is GCJ-02).
 Output is MultiLineString per road (each OSM way = one component, NOT stitched —
 stitching joined disjoint ways with straight off-network connectors).
-Ring roads come from OSM route=road RELATIONS (full closed ring); radial roads come
-from way NAME REGEX. Edit ROADS below to add/adjust roads, then re-run.
+Ring roads: 中环/外环 from OSM route=road RELATIONS; 内环 from its 9 component street
+names within a tight center bbox (no relation/consistent name). Radials from way NAME
+REGEX. Edit ROADS below to add/adjust roads, then re-run.
 
     python3 scripts/fetch_road_lines.py
 """
@@ -38,7 +39,15 @@ OUT_PATHS = [
 #         内环线 OSM 无 route=road 关系、way 也不统名 → 暂不抓(见 skill 文档)。
 #   放射 → way name 正则(`match` 字段)。十四射名称随版本浮动,按实际命中调整。
 ROADS = [
-    # 三环(中/外环走关系;内环 OSM 无可靠源,暂缺)
+    # 三环
+    #   内环:OSM 无关系、街名各异 → 按组成内环的 9 条街名抓,限内环中心 bbox
+    #         隔离环段(同名街/放射延伸段被 bbox 裁掉)。组成见用户提供的内环线图。
+    {
+        "name": "内环线", "ring": "内环", "radial": False,
+        "names": ["北马路", "狮子林大街", "新开路", "十一经路", "曲阜道",
+                  "南京路", "南开三马路", "西马路", "通北路"],
+        "bbox": (39.105, 117.158, 39.156, 117.232),  # S,W,N,E
+    },
     {"name": "中环线", "rel": 19378071, "ring": "中环", "radial": False},
     {"name": "外环线", "rel": 19379007, "ring": "外环", "radial": False},
     # 十四射(权威名单:reformdata/sohu「三环十四射」放射干线)。OSM 实名有出入,按命中调正则。
@@ -128,6 +137,25 @@ def query_relation(rel_id):
     return _fetch(f'[out:json][timeout:90];rel({rel_id});way(r);out geom;')
 
 
+def query_names(names, bbox):
+    """Roads built from several named streets within a tight bbox (e.g. 内环线).
+
+    The bbox isolates the ring arc — it clips same-named streets elsewhere and the
+    radial tails of streets (新开路/十一经路) that run beyond the ring. Returns the
+    merged way list of all names.
+    """
+    elements = []
+    for nm in names:
+        resp = _fetch(
+            f'[out:json][timeout:60];'
+            f'way["highway"]["name"="{nm}"]'
+            f'({bbox[0]},{bbox[1]},{bbox[2]},{bbox[3]});out geom;'
+        )
+        elements += resp.get("elements", [])
+        time.sleep(SLEEP)
+    return {"elements": elements}
+
+
 def ways_geometry(resp):
     """Each way → list[(lng,lat)] (WGS-84)."""
     out = []
@@ -145,6 +173,8 @@ def main():
     for road in ROADS:
         if "rel" in road:
             resp = query_relation(road["rel"])
+        elif "names" in road:
+            resp = query_names(road["names"], road["bbox"])
         else:
             resp = query(road["match"])
         segs = ways_geometry(resp)
@@ -161,7 +191,12 @@ def main():
             })
             report.append(f"  OK  {road['name']}: {len(lines)} ways, {pts} pts")
         else:
-            src = f"rel={road['rel']}" if "rel" in road else f"match='{road['match']}'"
+            if "rel" in road:
+                src = f"rel={road['rel']}"
+            elif "names" in road:
+                src = f"names={road['names']}"
+            else:
+                src = f"match='{road['match']}'"
             report.append(f"  --  {road['name']}: no geometry ({src})")
         time.sleep(SLEEP)
 
