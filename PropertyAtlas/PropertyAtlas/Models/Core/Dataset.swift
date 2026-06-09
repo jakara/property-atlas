@@ -13,6 +13,20 @@ final class Dataset {
     var districtBoundariesSeededV1: Bool = false
     var filterEntityTypeMigratedV1: Bool = false
     var roadLinesSeededV1: Bool = false
+    // 全局展示设置(原 MapView 持有;多图层同屏后上提 dataset)
+    var studioMapStyleRaw: String = "mutedLight"
+    var bgMapStyle: String = "standard"
+    var canvasAspectRaw: String = "16:9"
+    var poiEnabled: Bool = false
+    var poiCategoriesRaw: String = ""
+    var spotlightOnSelect: Bool = true
+    var drawEdgeLines: [String] = []
+    var copyTitle: String?
+    var copySubtitle: String?
+    var copyWatermark: String?
+    var watermarkQRData: Data?
+    // 图层中心化重构迁移闸(LayerMigratorV3)
+    var layerModelV3: Bool = false
     var sortOrder: Int = 0
     var version: Int = 1
     var createdAt: Date = Date()
