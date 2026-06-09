@@ -75,6 +75,9 @@ ROADS = [
                   "密云路", "西横堤", "千里堤", "双环路", "佳宁道", "南仓道",
                   "淮河道", "昆仑北路", "昆仑路"],
         "bbox": (38.95, 116.95, 39.35, 117.50),
+        # 东外环弧(淮河道交口→昆仑路交口):属快速路体系,但 OSM 无街名,
+        # 从外环关系裁东北象限补入。
+        "rel_clips": [(19379007, (39.165, 117.190, 39.235, 117.340))],
     },
     {
         "name": "北横快速路", "ring": None, "radial": False, "express": True,
@@ -156,6 +159,29 @@ def query_relation(rel_id):
     return _fetch(f'[out:json][timeout:90];rel({rel_id});way(r);out geom;')
 
 
+def relation_segments_in_bbox(rel_id, bbox):
+    """Member ways of a relation, clipped to the points falling inside bbox.
+
+    For the fast ring's east arc, which shares the 外环 relation (19379007) and has
+    no own street name in OSM. Returns WGS-84 segments (list of [(lon,lat)…]).
+    """
+    resp = query_relation(rel_id)
+    south, west, north, east = bbox
+
+    def inside(lon, lat):
+        return south <= lat <= north and west <= lon <= east
+
+    segs = []
+    for el in resp.get("elements", []):
+        if el.get("type") != "way":
+            continue
+        pts = [(g["lon"], g["lat"]) for g in (el.get("geometry") or [])]
+        kept = [(lo, la) for lo, la in pts if inside(lo, la)]
+        if len(kept) >= 2:
+            segs.append(kept)
+    return segs
+
+
 def query_names(names, bbox):
     """Roads built from several named streets within a tight bbox (e.g. 内环线).
 
@@ -199,6 +225,11 @@ def main():
         else:
             resp = query(road["match"])
         segs = ways_geometry(resp)
+        # 额外:relation 裁剪段(给快速环线补「东外环弧」,该段 OSM 无街名)。
+        for rid, bb in road.get("rel_clips", []):
+            extra = relation_segments_in_bbox(rid, bb)
+            print(f"      rel_clip {rid}: {len(extra)} segs")
+            segs += extra
         # 不缝合:每个 OSM way 各自成一条线 → MultiLineString。缝合会用直线把不相邻
         # 的段强连,产生横穿街区的假连线(实测错误)。way 本身已是连续折线。
         lines = [[list(wgs2gcj(lng, lat)) for lng, lat in s] for s in segs if len(s) >= 2]

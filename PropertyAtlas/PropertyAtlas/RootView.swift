@@ -874,19 +874,41 @@ struct StudioRootView: View {
         areas: [Area], visibleIds: Set<UUID>, viewStyles: [String: ViewEntityStyle],
         viewRules: [String: [ResolvedStyleRule]], groupColors: [UUID: String] = [:], forceId: UUID? = nil
     ) -> ([MKOverlay], [ObjectIdentifier: AreaStyle]) {
-        var overlays: [MKOverlay] = []
-        var map: [ObjectIdentifier: AreaStyle] = [:]
+        var built: [(overlay: MKOverlay, style: AreaStyle)] = []
         for a in areas where !a.deleted && (visibleIds.contains(a.id) || a.id == forceId) {
             let style = StyleResolver.resolveArea(
                 entity: a.styleEntity, viewStyle: viewStyles["area"], rules: viewRules["area"] ?? [],
                 groupFillHex: groupColors[a.id]
             )
             if let r = AreaOverlayFactory.makeOverlay(for: a, style: style) {
-                overlays.append(r.overlay)
-                map[ObjectIdentifier(r.overlay)] = r.style
+                built.append((r.overlay, r.style))
             }
         }
+        // 共线道路的染色优先级:外环(底) < 中环 < 内环 < 快速路 < 射线(顶)。
+        // 让铁东路/西青道(射线·绿)盖过快速路(紫),东外环弧(快速路·紫)盖过外环(蓝)。
+        let stable = built.enumerated().sorted {
+            let pa = roadDrawPriority($0.element.style.fillHex), pb = roadDrawPriority($1.element.style.fillHex)
+            return pa != pb ? pa < pb : $0.offset < $1.offset
+        }
+        var overlays: [MKOverlay] = []
+        var map: [ObjectIdentifier: AreaStyle] = [:]
+        for item in stable {
+            overlays.append(item.element.overlay)
+            map[ObjectIdentifier(item.element.overlay)] = item.element.style
+        }
         return (overlays, map)
+    }
+
+    /// 道路按类的绘制层级(小=底,大=顶)。键为 seed 写入的固定类色;其它(行政区填充)=0。
+    private func roadDrawPriority(_ fillHex: String?) -> Int {
+        switch fillHex {
+        case "#1E88E5": 1 // 外环
+        case "#FB8C00": 2 // 中环
+        case "#E53935": 3 // 内环
+        case "#8E24AA": 4 // 快速路
+        case "#43A047": 5 // 射线
+        default: 0 // 行政区等
+        }
     }
 
     /// 视口裁剪:保留 region 外扩 margin(各方向 0.5×span)内的 pin。region 未知 → 全留。
