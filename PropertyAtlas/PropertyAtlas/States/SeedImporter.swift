@@ -142,9 +142,7 @@ enum SeedImporter {
         guard !items.isEmpty else { return }
         for ds in pending {
             let dsId = ds.id
-            let defaultLayerId = (try? context.fetch(FetchDescriptor<Layer>(
-                predicate: #Predicate { $0.datasetId == dsId && !$0.deleted }
-            )))?.first(where: { $0.isDefault })?.id
+            let roadLayerId = roadNetworkLayerId(dsId: dsId, in: context)
             for it in items {
                 let aid = uuid(from: "road_line_\(dsId.uuidString)_\(it.name)")
                 let exists = ((try? context.fetch(FetchDescriptor<Area>(
@@ -153,7 +151,7 @@ enum SeedImporter {
                 if exists { continue }
                 let area = Area(datasetId: dsId, name: it.name, geometryKind: "line", geometryJSON: it.geometryJSON)
                 area.id = aid
-                area.layerId = defaultLayerId
+                area.layerId = roadLayerId // 三环十四射 + 快速路 → 「路网」图层
                 area.category = "道路"
                 area.tags = it.tags // 三环十四射:总标签+环名/射线;快速路:["快速路"]
                 area.styleFillHex = roadFillHex(tags: it.tags) // 三环各色 + 射线一色 + 快速路一色
@@ -161,6 +159,20 @@ enum SeedImporter {
             }
             ds.roadLinesSeededV1 = true
         }
+    }
+
+    /// 「路网」图层 id:存在则复用,否则建一个。所有道路(三环十四射+快速路)归此层。
+    private static func roadNetworkLayerId(dsId: UUID, in context: ModelContext) -> UUID? {
+        let layers = (try? context.fetch(FetchDescriptor<Layer>(
+            predicate: #Predicate { $0.datasetId == dsId && !$0.deleted }
+        ))) ?? []
+        if let existing = layers.first(where: { $0.name == "路网" }) { return existing.id }
+        let layer = Layer(datasetId: dsId, name: "路网")
+        layer.enabled = true
+        layer.iconSF = "road.lanes"
+        layer.sortOrder = (layers.map(\.sortOrder).max() ?? 0) + 1
+        context.insert(layer)
+        return layer.id
     }
 
     /// 道路按类上色:三环各一色,射线一色,快速路一色。线渲染取 fillHex 作线色。
