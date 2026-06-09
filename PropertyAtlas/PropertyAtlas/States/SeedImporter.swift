@@ -155,19 +155,20 @@ enum SeedImporter {
                 area.id = aid
                 area.layerId = defaultLayerId
                 area.category = "道路"
-                area.tags = ["三环十四射"] + it.tags // 统一总标签 + 环名/射线,便于一键过滤
-                area.styleFillHex = roadFillHex(tags: it.tags) // 三环各色 + 射线一色(线色取 fillHex)
+                area.tags = it.tags // 三环十四射:总标签+环名/射线;快速路:["快速路"]
+                area.styleFillHex = roadFillHex(tags: it.tags) // 三环各色 + 射线一色 + 快速路一色
                 context.insert(area)
             }
             ds.roadLinesSeededV1 = true
         }
     }
 
-    /// 道路按类上色:三环各一色,射线统一一色。线渲染取 fillHex 作线色。
+    /// 道路按类上色:三环各一色,射线一色,快速路一色。线渲染取 fillHex 作线色。
     private static func roadFillHex(tags: [String]) -> String {
         if tags.contains("内环") { return "#E53935" } // 红
         if tags.contains("中环") { return "#FB8C00" } // 橙
         if tags.contains("外环") { return "#1E88E5" } // 蓝
+        if tags.contains("快速路") { return "#8E24AA" } // 紫
         return "#43A047" // 射线/其他 — 绿
     }
 
@@ -183,8 +184,13 @@ enum SeedImporter {
                   let geomStr = String(data: data, encoding: .utf8)
             else { continue }
             var tags: [String] = []
-            if let ring = it["ring"] as? String, !ring.isEmpty { tags.append(ring) }
-            if (it["radial"] as? Bool) == true { tags.append("射线") }
+            if (it["express"] as? Bool) == true {
+                tags = ["快速路"] // 快速路系统(高架),独立体系
+            } else {
+                tags.append("三环十四射") // 统一总标签,便于一键过滤
+                if let ring = it["ring"] as? String, !ring.isEmpty { tags.append(ring) }
+                if (it["radial"] as? Bool) == true { tags.append("射线") }
+            }
             out.append((name, geomStr, tags))
         }
         return out

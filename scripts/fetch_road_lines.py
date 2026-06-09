@@ -67,6 +67,25 @@ ROADS = [
     {"name": "津塘路", "match": "^津塘路$", "ring": None, "radial": True},
     {"name": "复康路", "match": "^复康路$", "ring": None, "radial": True},
     {"name": "西青道", "match": "^西青道$", "ring": None, "radial": True},
+    # 中心城区快速路系统(高架)。OSM 无路线关系 → 按沿线地面街名拼(urban bbox)。
+    #   西纵(中段)/南横已取消(2021–2035 规划),不含。组成见维基「天津快速路」。
+    {
+        "name": "快速环线", "ring": None, "radial": False, "express": True,
+        "names": ["黑牛城道", "红旗南路", "简阳路", "春明路", "菊苑路", "华锦路",
+                  "密云路", "西横堤", "千里堤", "双环路", "佳宁道", "南仓道",
+                  "淮河道", "昆仑北路", "昆仑路"],
+        "bbox": (38.95, 116.95, 39.35, 117.50),
+    },
+    {
+        "name": "北横快速路", "ring": None, "radial": False, "express": True,
+        "names": ["西青道", "志成路"],
+        "bbox": (38.95, 116.95, 39.35, 117.50),
+    },
+    {
+        "name": "东纵快速路", "ring": None, "radial": False, "express": True,
+        "names": ["铁东北路", "铁东路", "万柳村大街", "张贵庄路", "津滨大道"],
+        "bbox": (38.95, 116.95, 39.35, 117.50),
+    },
 ]
 
 # ---- WGS-84 → GCJ-02 (standard China offset, "eviltransform" formula) ----
@@ -151,7 +170,9 @@ def query_names(names, bbox):
             f'way["highway"]["name"="{nm}"]'
             f'({bbox[0]},{bbox[1]},{bbox[2]},{bbox[3]});out geom;'
         )
-        elements += resp.get("elements", [])
+        ways = resp.get("elements", [])
+        print(f"      {nm}: {len(ways)} ways")
+        elements += ways
         time.sleep(SLEEP)
     return {"elements": elements}
 
@@ -187,6 +208,7 @@ def main():
                 "name": road["name"],
                 "ring": road["ring"],
                 "radial": road["radial"],
+                "express": road.get("express", False),
                 "geometry": {"type": "MultiLineString", "coordinates": lines},
             })
             report.append(f"  OK  {road['name']}: {len(lines)} ways, {pts} pts")
