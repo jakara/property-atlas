@@ -62,7 +62,6 @@ struct StudioRootView: View {
     @Query private var schools: [School]
     @Query private var pois: [POI]
     @Query private var areas: [Area]
-    @Query private var layersQuery: [Layer]
     @Query private var viewStyleRules: [ViewStyleRule]
     @Query private var viewStyleConditions: [ViewStyleCondition]
 
@@ -951,7 +950,7 @@ struct StudioRootView: View {
         let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
         let ref = EntityWriter.createPin(
             kind: kind, datasetId: dsId, name: trimmed.isEmpty ? "未命名" : trimmed,
-            latitude: coord.latitude, longitude: coord.longitude, layerId: nil, in: modelContext
+            latitude: coord.latitude, longitude: coord.longitude, in: modelContext
         )
         searchMarker = nil
         searchPlace = nil
@@ -996,7 +995,7 @@ struct StudioRootView: View {
 
         let ref = EntityWriter.createPin(
             kind: .area, datasetId: dsId, name: isLine ? "新折线" : "新区域",
-            latitude: 0, longitude: 0, layerId: nil, in: modelContext
+            latitude: 0, longitude: 0, in: modelContext
         )
         if let a = EntityReader.fetch(Area.self, ref.id, modelContext) {
             a.geometryJSON = geo

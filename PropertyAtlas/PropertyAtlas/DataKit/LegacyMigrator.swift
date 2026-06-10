@@ -586,6 +586,7 @@ enum LegacyMigrator {
                 op: .equals, value: .string(value)
             )], groupBy: nil)
         }
+        makeLayer("片区", "area", icon: "map", z: 0, enabled: true, primary: AreaLayerSeed.catchAllPrimary)
         makeLayer("楼盘", "compound", icon: "building.2", z: 10, enabled: true)
         makeLayer("学校", "school", icon: "graduationcap", z: 20, enabled: true)
         makeLayer("POI", "poi", icon: "mappin", z: 30, enabled: false)

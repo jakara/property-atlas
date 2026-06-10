@@ -10,10 +10,9 @@ enum EntityWriter {
         name: String,
         latitude: Double,
         longitude: Double,
-        layerId: UUID?,
         in context: ModelContext
     ) -> EntityRef {
-        _ = layerId // 图层归属已由 entityType + 过滤器派生(layer-centric);形参保留兼容调用点
+        // 图层归属已由 entityType + 过滤器派生(layer-centric),创建时不再指派图层。
         let id: UUID
         switch kind {
         case .compound:
