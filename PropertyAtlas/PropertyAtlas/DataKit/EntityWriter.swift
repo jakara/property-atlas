@@ -39,6 +39,10 @@ enum EntityWriter {
         return EntityRef(id: id, kind: kind)
     }
 
+    static func setLayerId(_ ref: EntityRef, _ id: UUID?, in context: ModelContext) {
+        touch(ref, in: context) { $0.layerId = id } s: { $0.layerId = id } p: { $0.layerId = id } a: { $0.layerId = id }
+    }
+
     static func setTags(_ ref: EntityRef, _ v: [String], in context: ModelContext) {
         touch(ref, in: context) { $0.tags = v } s: { $0.tags = v } p: { $0.tags = v } a: { $0.tags = v }
     }

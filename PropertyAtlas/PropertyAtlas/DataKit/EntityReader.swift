@@ -21,6 +21,15 @@ enum EntityReader {
         }
     }
 
+    static func layerId(_ ref: EntityRef, in context: ModelContext) -> UUID? {
+        switch ref.kind {
+        case .compound: fetch(Compound.self, ref.id, context)?.layerId
+        case .school: fetch(School.self, ref.id, context)?.layerId
+        case .poi: fetch(POI.self, ref.id, context)?.layerId
+        case .area: fetch(Area.self, ref.id, context)?.layerId
+        }
+    }
+
     /// 自由文本标签(全实体通用)。
     static func tags(_ ref: EntityRef, in context: ModelContext) -> [String] {
         switch ref.kind {

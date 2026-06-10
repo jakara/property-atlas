@@ -16,6 +16,7 @@ struct EditorBasicTab: View {
             } else {
                 geometryRow
             }
+            LayerPicker(ref: ref, datasetId: datasetId)
             ForEach(EntityFieldSchema.fields(for: ref.kind), id: \.key) { f in
                 fieldEditor(f)
             }
@@ -243,6 +244,55 @@ private struct BoolFieldEditor: View {
             .tint(Studio.cool)
             .onAppear { if case let .bool(v) = EntityReader.value(ref, key: key, in: context) { on = v } }
             .onChange(of: on) { _, v in EntityWriter.setValue(ref, key: key, value: .bool(v), in: context) }
+    }
+}
+
+/// 所属图层选择:列出同 entityType 的未删图层,选中即写 entity.layerId(移动归属)。
+private struct LayerPicker: View {
+    let ref: EntityRef
+    let datasetId: UUID
+    @Environment(\.modelContext) private var context
+    @Query private var allLayers: [Layer]
+    @State private var selected: UUID?
+
+    private var typeLayers: [Layer] {
+        allLayers
+            .filter { $0.datasetId == datasetId && $0.entityType == ref.typeString && !$0.deleted }
+            .sorted { $0.zIndex < $1.zIndex }
+    }
+
+    private var selectedName: String {
+        typeLayers.first { $0.id == selected }?.name ?? "未设置"
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text("所属图层").font(Studio.sans(11, .medium)).foregroundStyle(Studio.on2)
+            Menu {
+                ForEach(typeLayers, id: \.id) { l in
+                    Button { write(l.id) } label: {
+                        Label(l.name, systemImage: l.id == selected ? "checkmark" : "circle")
+                    }
+                }
+            } label: {
+                HStack(spacing: 6) {
+                    Text(selectedName).font(Studio.sans(14))
+                        .foregroundStyle(selected == nil ? Studio.on3 : Studio.on).lineLimit(1)
+                    Spacer()
+                    Image(systemName: "chevron.down")
+                        .font(.system(size: 11, weight: .semibold)).foregroundStyle(Studio.on3)
+                }
+                .glassField()
+            }
+            .menuStyle(.borderlessButton)
+            .onAppear { selected = EntityReader.layerId(ref, in: context) }
+            .onChange(of: ref) { _, _ in selected = EntityReader.layerId(ref, in: context) }
+        }
+    }
+
+    private func write(_ id: UUID) {
+        selected = id
+        EntityWriter.setLayerId(ref, id, in: context)
     }
 }
 #endif
