@@ -10,14 +10,13 @@ struct PrimaryFilterEditor: View {
             Text("主过滤(实体 + 分组 + 条件)")
                 .font(Studio.sans(13, .semibold))
                 .foregroundStyle(Studio.on)
-            EntityTypePicker(entityType: $filter.entityType)
             // groupBy row
             Toggle("启用分组染色 (groupBy)", isOn: groupByEnabled)
                 .font(Studio.sans(13))
                 .foregroundStyle(Studio.on)
                 .tint(Studio.cool)
             if filter.groupBy != nil {
-                DimensionPicker(dimension: groupByBinding, entityType: filter.entityType, datasetId: datasetId)
+                DimensionPicker(dimension: groupByBinding, entityType: "", datasetId: datasetId)
                     .padding(.leading, 8)
             }
             Rectangle().fill(Studio.glassLine).frame(height: 1)
@@ -28,7 +27,7 @@ struct PrimaryFilterEditor: View {
             ForEach(filter.conditions.indices, id: \.self) { i in
                 FilterConditionRow(
                     condition: conditionBinding(i),
-                    entityType: filter.entityType,
+                    entityType: "",
                     datasetId: datasetId,
                     onDelete: { filter.conditions.remove(at: i) }
                 )

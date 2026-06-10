@@ -45,14 +45,11 @@ struct ViewNormalFilterSection: View {
                             Image(systemName: "trash").font(.system(size: 12)).foregroundStyle(Studio.bad)
                         }.buttonStyle(.plain)
                     }
-                    EntityTypePicker(entityType: Binding(get: { normals[index].entityType }, set: { normals[index].entityType = $0
-                        saveNormals()
-                    }))
                     DimensionPicker(
                         dimension: Binding(get: { normals[index].dimension }, set: { normals[index].dimension = $0
                             saveNormals()
                         }),
-                        entityType: normals[index].entityType,
+                        entityType: "",
                         datasetId: mv.datasetId
                     )
                 }
@@ -60,7 +57,7 @@ struct ViewNormalFilterSection: View {
                 .background(Studio.glassInput, in: RoundedRectangle(cornerRadius: Studio.rCard, style: .continuous))
             }
             AddRow("加普通过滤") {
-                normals.append(NormalFilter(name: "新过滤", dimension: MapDimension(kind: .field), entityType: "compound"))
+                normals.append(NormalFilter(name: "新过滤", dimension: MapDimension(kind: .field)))
                 saveNormals()
             }
         }
