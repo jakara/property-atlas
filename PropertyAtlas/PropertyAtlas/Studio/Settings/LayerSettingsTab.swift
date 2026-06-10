@@ -113,10 +113,18 @@ struct LayerSettingsTab: View {
             TextField("名称", text: Binding(get: { l.name }, set: { l.name = $0
                 l.updatedAt = Date()
             })).glassField()
+            if l.isDefault {
+                Text("默认").font(Studio.sans(10, .semibold)).foregroundStyle(Studio.on3)
+                    .padding(.horizontal, 6).padding(.vertical, 2)
+                    .background(Studio.glassInput, in: Capsule())
+            }
             Button(role: .destructive) { deleteLayer(l)
             } label: {
-                Image(systemName: "trash").font(.system(size: 12)).foregroundStyle(Studio.bad)
-            }.buttonStyle(.plain)
+                Image(systemName: "trash").font(.system(size: 12))
+                    .foregroundStyle(l.isDefault ? Studio.on3 : Studio.bad)
+            }
+            .buttonStyle(.plain)
+            .disabled(l.isDefault)
         }
     }
 
@@ -148,9 +156,8 @@ struct LayerSettingsTab: View {
     }
 
     private func deleteLayer(_ l: Layer) {
-        l.deleted = true
-        l.updatedAt = Date()
-        try? modelContext.save()
+        guard !l.isDefault else { return } // 默认层禁删
+        _ = LayerAssign.deleteLayer(l, in: modelContext)
     }
 }
 #endif
