@@ -15,6 +15,7 @@ struct LayerSettingsTab: View {
     }
 
     @State private var selectedLayerId: UUID?
+    @State private var showTypePicker = false
 
     private var selectedLayer: Layer? {
         dsLayers.first { $0.id == selectedLayerId } ?? dsLayers.first
@@ -30,11 +31,16 @@ struct LayerSettingsTab: View {
                 .labelsHidden().tint(Studio.cool)
                 .lineLimit(1).fixedSize(horizontal: true, vertical: false)
                 Spacer()
-                Button { addLayer() } label: { Image(systemName: "plus") }
+                Button { showTypePicker = true } label: { Image(systemName: "plus") }
                     .buttonStyle(.tbtn(.ghost))
+                    .confirmationDialog("新图层实体类型", isPresented: $showTypePicker, titleVisibility: .visible) {
+                        ForEach(entityTypeChoices, id: \.0) { type, label in
+                            Button(label) { addLayer(entityType: type) }
+                        }
+                    }
             }
             if let layer = selectedLayer {
-                layerCard(layer)
+                layerConfig(layer)
             } else {
                 Text("无图层").font(Studio.sans(13)).foregroundStyle(Studio.on2)
             }
@@ -42,6 +48,20 @@ struct LayerSettingsTab: View {
         .environment(\.colorScheme, .dark)
         .tint(Studio.cool)
         .onAppear { if selectedLayerId == nil { selectedLayerId = dsLayers.first?.id } }
+    }
+
+    private let entityTypeChoices: [(String, String)] = [
+        ("compound", "楼盘"), ("school", "学校"), ("poi", "POI"), ("area", "区域"),
+    ]
+
+    private func layerConfig(_ l: Layer) -> some View {
+        VStack(alignment: .leading, spacing: 16) {
+            layerCard(l)
+            LayerPrimaryFilterSection(layer: l)
+            LayerNormalFilterSection(layer: l)
+            LayerStyleSection(layer: l)
+        }
+        .id(l.id)
     }
 
     private var layerPickerBinding: Binding<UUID?> {
@@ -68,7 +88,10 @@ struct LayerSettingsTab: View {
                     Toggle("启用", isOn: Binding(get: { l.enabled }, set: { l.enabled = $0
                         l.updatedAt = Date()
                     })).font(Studio.sans(13)).tint(Studio.cool).fixedSize()
-                    Text("类型 \(l.entityType)").font(Studio.sans(11, .medium)).foregroundStyle(Studio.on3)
+                    Toggle("图例", isOn: Binding(get: { l.showLegend }, set: { l.showLegend = $0
+                        l.updatedAt = Date()
+                    })).font(Studio.sans(13)).tint(Studio.cool).fixedSize()
+                    Text("类型 \(typeLabel(l.entityType))").font(Studio.sans(11, .medium)).foregroundStyle(Studio.on3)
                     Spacer()
                 }
                 HStack(spacing: 10) {
@@ -110,12 +133,17 @@ struct LayerSettingsTab: View {
         }
     }
 
-    private func addLayer() {
-        let l = Layer(datasetId: datasetId, name: "新图层")
+    private func typeLabel(_ type: String) -> String {
+        entityTypeChoices.first { $0.0 == type }?.1 ?? type
+    }
+
+    private func addLayer(entityType: String) {
+        let l = Layer(datasetId: datasetId, name: "新\(typeLabel(entityType))图层", entityType: entityType)
         l.zIndex = (dsLayers.map(\.zIndex).max() ?? 0) + 1
         l.sortOrder = l.zIndex
         modelContext.insert(l)
         try? modelContext.save()
+        selectedLayerId = l.id
     }
 
     private func deleteLayer(_ l: Layer) {

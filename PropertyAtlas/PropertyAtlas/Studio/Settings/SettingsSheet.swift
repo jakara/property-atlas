@@ -4,7 +4,7 @@ import SwiftData
 import SwiftUI
 
 enum SettingsTab: String, CaseIterable, Identifiable {
-    case view = "视图", layer = "图层", enumOption = "枚举"
+    case layer = "图层", display = "展示", enumOption = "枚举"
     case camera = "相机", customField = "字段", freeDraw = "绘图"
     var id: String {
         rawValue
@@ -12,8 +12,8 @@ enum SettingsTab: String, CaseIterable, Identifiable {
 
     var icon: String {
         switch self {
-        case .view: "rectangle.on.rectangle"
         case .layer: "square.3.layers.3d"
+        case .display: "slider.horizontal.3"
         case .enumOption: "list.bullet"
         case .camera: "camera"
         case .customField: "character.textbox"
@@ -28,10 +28,10 @@ struct SettingsSheet: View {
     let onEntitySelect: (EntityRef, CLLocationCoordinate2D?, Bool) -> Void
     let onEntityEdit: (EntityRef, CLLocationCoordinate2D?, Bool) -> Void
     /// 记录上次活动 tab,关闭后下次打开还原。
-    @AppStorage("studioSettingsTab") private var storedTab: String = SettingsTab.view.rawValue
+    @AppStorage("studioSettingsTab") private var storedTab: String = SettingsTab.layer.rawValue
 
     private var tab: SettingsTab {
-        SettingsTab(rawValue: storedTab) ?? .view
+        SettingsTab(rawValue: storedTab) ?? .layer
     }
 
     var body: some View {
@@ -41,11 +41,11 @@ struct SettingsSheet: View {
             ScrollView {
                 Group {
                     switch tab {
-                    case .view: Text("迁移中 — Phase C").font(Studio.sans(13)).foregroundStyle(Studio.on3)
                     case .layer: LayerSettingsTab(
                             datasetId: layerCtx.datasetIdValue,
                             onSelect: onEntitySelect, onEdit: onEntityEdit
                         )
+                    case .display: DisplaySettingsTab(layerCtx: layerCtx)
                     case .enumOption: EnumOptionSettingsTab(datasetId: layerCtx.datasetIdValue)
                     case .camera: CameraSettingsTab(datasetId: layerCtx.datasetIdValue)
                     case .customField: CustomFieldSettingsTab(datasetId: layerCtx.datasetIdValue)
