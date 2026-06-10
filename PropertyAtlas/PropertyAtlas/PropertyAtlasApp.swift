@@ -10,8 +10,6 @@ struct PropertyAtlasApp: App {
     #else
     @State private var appMode = AppMode(.explore)
     #endif
-    @State private var seedDone = false
-
     init() {
         do {
             container = try ModelSchema.makeContainer()
@@ -32,15 +30,9 @@ struct PropertyAtlasApp: App {
 
     var body: some Scene {
         WindowGroup {
-            Group {
-                if seedDone {
-                    RootView()
-                        .environment(selectionState)
-                        .environment(appMode)
-                } else {
-                    SeedProgressView(onComplete: { seedDone = true })
-                }
-            }
+            RootView()
+                .environment(selectionState)
+                .environment(appMode)
         }
         .modelContainer(container)
         #if targetEnvironment(macCatalyst)
