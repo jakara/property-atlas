@@ -9,8 +9,6 @@ enum ModelSchema {
         Dataset.self, Edge.self, Tag.self, CameraPreset.self,
         // New entities
         Compound.self, School.self, POI.self, Area.self,
-        // New style
-        StyleRule.self, Palette.self, Theme.self,
         // New display
         Layer.self, ViewEntityStyle.self, ViewStyleRule.self, ViewStyleCondition.self,
         // New schema registry

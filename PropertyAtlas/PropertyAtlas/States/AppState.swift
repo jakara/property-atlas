@@ -8,7 +8,6 @@ final class AppState {
     enum EditTab { case basic, relations, media, custom, privateNotes }
 
     var activeDatasetId: UUID?
-    var activeThemeId: UUID?
     var selectedRef: EntityRef?
     var currentEditTab: EditTab = .basic
 

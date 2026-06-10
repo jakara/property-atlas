@@ -1,8 +1,7 @@
 import Foundation
 
 /// Discriminated JSON value used in *JSON String columns where Codable models
-/// stored heterogeneous payloads (e.g. CustomFieldDef.defaultValueJSON,
-/// StyleRule.conditionsJSON).
+/// stored heterogeneous payloads (e.g. CustomFieldDef.defaultValueJSON).
 enum AnyJSON: Codable, Equatable {
     case string(String)
     case int(Int)

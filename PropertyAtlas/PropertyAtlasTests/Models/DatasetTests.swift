@@ -19,9 +19,8 @@ struct DatasetTests {
         #expect(all.first?.version == 1)
     }
 
-    @Test func datasetActiveThemeIdOptionalDefaultsNil() {
+    @Test func datasetActiveCameraPresetIdDefaultsNil() {
         let ds = Dataset(name: "x")
-        #expect(ds.activeThemeId == nil)
         #expect(ds.activeCameraPresetId == nil)
     }
 }

@@ -34,12 +34,4 @@ struct AppStateTests {
         s.switchDataset(to: UUID())
         #expect(s.selectedRef == nil)
     }
-
-    @Test func switchThemeKeepsSelection() {
-        let s = AppState()
-        let ref = EntityRef(id: UUID(), kind: .area)
-        s.select(ref)
-        s.activeThemeId = UUID()
-        #expect(s.selectedRef == ref)
-    }
 }

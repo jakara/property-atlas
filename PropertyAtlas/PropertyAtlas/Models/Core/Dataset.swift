@@ -6,7 +6,6 @@ import SwiftData
 final class Dataset {
     var id: UUID = UUID()
     var name: String = ""
-    var activeThemeId: UUID?
     var activeCameraPresetId: UUID?
     var stylesMigratedV2: Bool = false
     var areaNamesNormalizedV1: Bool = false
