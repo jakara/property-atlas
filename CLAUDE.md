@@ -31,6 +31,8 @@ iPad-first iOS 17+ app for property research in Tianjin. Stack: SwiftUI · MapKi
 - 实施计划 Stage A (已完成): `docs/superpowers/plans/2026-06-06-view-owned-style-stage-a.md`
 - 视图条件样式 spec: `docs/superpowers/specs/2026-06-06-view-conditional-style-design.md`
 - 实施计划 条件样式 (已完成): `docs/superpowers/plans/2026-06-06-view-conditional-style.md`
+- 图层中心化重设计 spec: `docs/superpowers/specs/2026-06-10-layer-centric-view-redesign.md`
+- 实施计划 图层中心化 (已完成): `docs/superpowers/plans/2026-06-10-layer-centric-view-redesign.md`
 - CloudKit: 延后 (iOS 上手后;Catalyst 现 `.none`)
 - P9 余项: 逐实体-逐图层 theme 解析 (明确延后;单 active theme + StyleRule 已覆盖,等具体取景需求再做)
 
@@ -251,6 +253,26 @@ Never sync `pub_*` or `loc_*` to CloudKit.
 > theme.styleRuleIds→旧 StyleRule→ViewStyleRule+ViewStyleCondition;conditionsJSON 解析失败跳过整条规则避免 match-all)。
 > 双库验证:既有库次启动还原学校标识(16 rule/12 cond)、实体数不变(175/823)、幂等。**Stage B**:删旧 StyleRule/
 > Theme/Palette @Model 时一并删 migrateStyleRules,LegacyMigrator 改直接 seed ViewStyleRule+ViewStyleCondition。
+
+> **图层中心化重构 (2026-06-10) 完成后**: 「视图聚合多图层 + 单 active」模型重构为「`Layer` = 单一实体类型 +
+> 自持过滤/样式/染色,多图层同屏 OR、层内过滤 AND」。**`MapView` @Model 删除**,字段并入 `Layer`(吸收
+> `primaryFilterJSON`/`normalFiltersJSON`/`hiddenChipsJSON`/`paletteHex`/`showLegend` + 新 `entityType`[创建时定死];
+> 删 `isDefault`/`themeId`/`staticRefsJSON`/`dynamicQueryJSON`)。**`entity.layerId` 删除** —— 图层成员纯派生
+> (`entityType` 匹配 + 层内 AND 过滤)。新 `LayerResolver.resolve` 取代 `VisibilityResolver`+`LayerEvaluator`,返回
+> `entityId → 命中图层id`(zIndex 最高;多图层并集 = OR)。`MapViewContext`→`LayerContext`(持 dataset + `allLayers`;
+> 图层 enabled 直接读模型,抽屉/图层 tab toggle)。**全局展示设置上提 `Dataset`**(camera/底图/poi/导出文案/水印/画幅/
+> spotlight/drawEdgeLines)。`ViewEntityStyle`/`ViewStyleRule` 改键 `viewId`→`layerId`(每图层 1 行样式)。chip 隐藏键
+> 命名空间 `layerId|dimKey`(多图层各自独立,经各图层 `hiddenChipsJSON` 持久)。`RootView.rebuildContent` 重写:逐图层
+> 样式(`buildStylesByLayer`/`buildRulesByLayer`)、逐图层分组染色(各自 groupBy+paletteHex)、逐图层图例段;area 叠放
+> 按命中图层 zIndex,同层内保留 `roadDrawPriority`(道路类色)。**seed 6 默认图层**(楼盘/学校/POI/行政区[category=行政区]/
+> 路网[category=道路]/**片区**[category≠道路 AND ≠行政区,兜底承接学区片区 nil-category + 用户画的多边形]);新增启动幂等
+> `LayerMigratorV3`(闸 `Dataset.layerModelV3`,按 name ensure 6 图层)。道路 per-road 颜色仍走 `entity.styleFillHex`
+> override(链末端保留)。设置页 6 tab(图层/展示/枚举/相机/字段/绘图):图层 tab 全 CRUD(新建先选 entityType,之后只读)+
+> 层内过滤/普通过滤/调色板/默认样式/条件样式;新 `DisplaySettingsTab` 绑 dataset。删:`MapView`/`VisibilityResolver`/
+> `LayerEvaluator`/`LayerState`/`LayerQuery`/`MapViewContext`/`ViewBasicSection`/`ViewFilterSections`/`ViewStyleSection`/
+> `ViewSettingsTab`/`LayerMembersView`/`LayerPickerRow`/`LayerAssignable` + `PrimaryFilter`/`NormalFilter.entityType`。
+> 单元测试全绿(LayerResolver 6 + LayerMigratorV3 + 迁移测试按 Layer 重写)。**未做(后续 Stage)**:删旧 `StyleRule`/
+> `Theme`/`Palette` @Model + `StyleConsolidationMigrator`(仍作既有库 theme→ViewEntityStyle 过渡搬运)。
 
 ### School district logic
 
