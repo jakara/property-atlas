@@ -33,6 +33,8 @@ iPad-first iOS 17+ app for property research in Tianjin. Stack: SwiftUI · MapKi
 - 实施计划 条件样式 (已完成): `docs/superpowers/plans/2026-06-06-view-conditional-style.md`
 - 图层中心化重设计 spec: `docs/superpowers/specs/2026-06-10-layer-centric-view-redesign.md`
 - 实施计划 图层中心化 (已完成): `docs/superpowers/plans/2026-06-10-layer-centric-view-redesign.md`
+- 图层显式归属 + DB-first spec: `docs/superpowers/specs/2026-06-10-layer-ownership-redesign.md`
+- 实施计划 图层显式归属 (已完成): `docs/superpowers/plans/2026-06-10-layer-ownership-redesign.md`
 - CloudKit: 延后 (iOS 上手后;Catalyst 现 `.none`)
 - P9 余项: 逐实体-逐图层 theme 解析 (明确延后;单 active theme + StyleRule 已覆盖,等具体取景需求再做)
 
@@ -274,6 +276,24 @@ Never sync `pub_*` or `loc_*` to CloudKit.
 > 单元测试全绿(LayerResolver 6 + LayerMigratorV3 + 迁移测试按 Layer 重写)。**未做(后续 Stage)**:删旧 `StyleRule`/
 > `Theme`/`Palette` @Model + `StyleConsolidationMigrator`(仍作既有库 theme→ViewEntityStyle 过渡搬运)。
 
+> **图层显式归属 + DB-first (2026-06-10) 完成后**: 图层中心化的「成员派生(entityType ∩ primaryFilter)」**部分反转**为
+> 「显式归属」。**`entity.layerId` 加回**(4 实体 UUID? 列)—— 图层 = 限定单一 `entityType` 的实体**容器**,成员 =
+> `entity.layerId == layer.id`(显式·永久·无重叠,一实体恰属一层)。`Layer` 加回 `isDefault`(每 entityType 恰一默认层)。
+> 显示管线(全实时,不改归属):容器 → `primaryFilter`(**降级为显示门**,非成员选择器)→ `normalFilter` chip → groupBy 染色;
+> 多层可见集 OR。`StyleEntity` 携 `layerId`;`LayerResolver.resolve` 容器判定加 `entity.layerId == layer.id`(primaryFilter 后置为门)。
+> 新 `LayerAssign`(`defaultLayer`/`bulkAssign` 按条件移动/`previewCount`/`deleteLayer` 非默认层成员回落默认层+软删)。
+> `EntityWriter.createPin` 新建实体落默认层。UI:图层设置加 `LayerBulkAssignSection`(瞬态 `BulkCond` 行→`StyleCondition`→bulkAssign);
+> 默认层禁删+「默认」徽标;`EditorBasicTab` 加「所属图层」Picker(同 entityType 层,`EntityReader.layerId`/`EntityWriter.setLayerId`)。
+> **DB-first**:启动去 seed —— `PropertyAtlasApp` 直开 `RootView`,删 `SeedProgressView`/`SeedImporter`/`LegacyMigrator`/
+> `LayerMigratorV3`/`Models/Seeds`/`Dataset.layerModelV3`(JSON+python 脚本留盘,将来做导出/重导入)。**Stage B**:删 legacy
+> `StyleRule`/`Theme`/`Palette` @Model + `StyleConsolidationMigrator` + `ThemeContext`/`StyleRuleMatcher`/`PaletteResolver` +
+> `StyleDefaults.parseThemeDefaults` + `Dataset.activeThemeId`/`AppState.activeThemeId` + ModelSchema 3 条目(保留
+> `ViewEntityStyle`/`ViewStyleRule`/`ResolvedStyleRule`/`StyleResolver`/`StyleDefaults.builtin*`)。**一次性迁移**(手动·非启动):
+> 加列→启动一次(SwiftData 轻量迁移加 layerId/isDefault、丢 3 legacy 表)→ SQL 写 layerId(compound→楼盘/school→学校/poi→POI/
+> area 按 category 道路→路网·行政区→行政区·其余→片区)+ isDefault(楼盘/学校/POI/片区)+ 清 6 层 primaryFilter。验证:零 null、
+> 成员 174/823/0/139(片区101/行政区16/路网22)、187 单测绿。**注意**:soft-delete 设 `deleted=true` 后**勿** explicit
+> `ctx.save()`(会回滚该列),靠 autosave(见 `EntityWriter.softDelete`/`LayerAssign.deleteLayer` idiom)。**未做**:seed 导出/重导入。
+
 ### School district logic
 
 - **小学** (primary): one compound → one school (`Compound.primarySchoolId`)
@@ -283,7 +303,9 @@ Never sync `pub_*` or `loc_*` to CloudKit.
 
 ### Seed pipeline
 
-Public data **bundled offline** (不运行时 fetch). 5 源 → Python scripts → JSON → bundle → `SeedImporter` 首启动跑. 详情见 `docs/claude/data-pipeline.md`.
+**DB-first (2026-06-10 起)**: 启动**不再** seed —— 本机 DB 即权威数据,无 JSON 兜底,库删=数据没了(备份关键)。
+原 seed 导入码(`SeedImporter`/`LegacyMigrator` 等)已删。bundled JSON + Python 脚本(5 源 → JSON,见 `docs/claude/data-pipeline.md`)
+留盘备查,**将来**再做 seed 导出/重导入功能。
 
 ### CloudKit constraints
 
