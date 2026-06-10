@@ -68,7 +68,7 @@ struct StyleResolverRuleTests {
     }
 
     @Test func ruleBeatsViewStyleButGroupFillBeatsRule() {
-        let viewStyle = ViewEntityStyle(datasetId: UUID(), viewId: UUID(), entityType: "school")
+        let viewStyle = ViewEntityStyle(datasetId: UUID(), layerId: UUID(), entityType: "school")
         viewStyle.fillHex = "#000000"
         let style = StyleResolver.resolvePin(
             entity: school(grade: "重点"), viewStyle: viewStyle,

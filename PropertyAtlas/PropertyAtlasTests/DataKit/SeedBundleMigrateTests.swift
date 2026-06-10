@@ -57,17 +57,13 @@ struct SeedBundleMigrateTests {
         #expect(primary.first?.toId == sid)
     }
 
-    @Test("seeds 4 MapViews with 7 normalFilters")
-    func seedsMapViews() throws {
+    @Test("seeds 6 default Layers by name")
+    func seedsLayers() throws {
         var b = SeedBundle()
         b.schools = [SchoolSeed(id: UUID(), name: "x", district: "和平区")]
         let ctx = try run(b)
-        let views = try ctx.fetch(FetchDescriptor<MapView>())
-        #expect(views.count == 4)
-        let v = try #require(views.first { $0.isActive })
-        let nfs = (try? JSONDecoder().decode([NormalFilter].self, from: Data(v.normalFiltersJSON.utf8))) ?? []
-        #expect(nfs.count == 7)
-        #expect(nfs.contains { $0.name == "精装类型" })
-        #expect(nfs.contains { $0.name == "等级" })
+        let layers = try ctx.fetch(FetchDescriptor<Layer>()).filter { !$0.deleted }
+        let names = Set(layers.map(\.name))
+        #expect(names == ["楼盘", "学校", "POI", "行政区", "路网", "片区"])
     }
 }

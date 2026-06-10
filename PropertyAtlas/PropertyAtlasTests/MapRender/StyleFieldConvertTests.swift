@@ -5,7 +5,7 @@ import Testing
 
 struct StyleFieldConvertTests {
     @Test func viewStyleToPinPartialMapsFields() {
-        let style = ViewEntityStyle(datasetId: UUID(), viewId: UUID(), entityType: "compound")
+        let style = ViewEntityStyle(datasetId: UUID(), layerId: UUID(), entityType: "compound")
         style.shape = "square"
         style.fillHex = "#FF0000"
         style.size = 30

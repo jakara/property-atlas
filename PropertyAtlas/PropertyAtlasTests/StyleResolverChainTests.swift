@@ -9,21 +9,21 @@ struct StyleResolverChainTests {
     }
 
     @Test func viewStyleOverridesBuiltin() {
-        let vs = ViewEntityStyle(datasetId: UUID(), viewId: UUID(), entityType: "compound")
+        let vs = ViewEntityStyle(datasetId: UUID(), layerId: UUID(), entityType: "compound")
         vs.fillHex = "#111111"
         let style = StyleResolver.resolvePin(entity: pinEntity(), viewStyle: vs, groupFillHex: nil)
         #expect(style.fillHex == "#111111")
     }
 
     @Test func groupFillOverridesViewStyle() {
-        let vs = ViewEntityStyle(datasetId: UUID(), viewId: UUID(), entityType: "compound")
+        let vs = ViewEntityStyle(datasetId: UUID(), layerId: UUID(), entityType: "compound")
         vs.fillHex = "#111111"
         let style = StyleResolver.resolvePin(entity: pinEntity(), viewStyle: vs, groupFillHex: "#222222")
         #expect(style.fillHex == "#222222")
     }
 
     @Test func entityOverrideBeatsGroupFill() {
-        let vs = ViewEntityStyle(datasetId: UUID(), viewId: UUID(), entityType: "compound")
+        let vs = ViewEntityStyle(datasetId: UUID(), layerId: UUID(), entityType: "compound")
         vs.fillHex = "#111111"
         let entity = pinEntity(override: PartialPinStyle(fillHex: "#333333"))
         let style = StyleResolver.resolvePin(entity: entity, viewStyle: vs, groupFillHex: "#222222")

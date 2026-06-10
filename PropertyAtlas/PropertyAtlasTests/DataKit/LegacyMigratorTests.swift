@@ -111,7 +111,8 @@ struct LegacyMigratorTests {
         b.compounds = [CompoundSeed(id: UUID(), name: "dummy", district: "和平区")]
         try LegacyMigrator.run(seeds: b, in: ctx)
         let areas = try ctx.fetch(FetchDescriptor<Area>())
-        let area = try #require(areas.first { $0.name == "第一学片" })
+        // 名称经 AreaNameFormatter 消歧:和平区 + 第一学片 → 和平一片
+        let area = try #require(areas.first { $0.name == "和平一片" })
         #expect(area.geometryKind == "polygon")
         #expect(area.fillOpacity == 0.3)
         #expect(area.textDescription == "包含...居委会")
@@ -238,18 +239,10 @@ struct LegacyMigratorTests {
         #expect(names.contains("category-warm"))
         #expect(names.contains("mono-blue"))
         let themes = try ctx.fetch(FetchDescriptor<Theme>())
+        // 单活跃主题(逐图层 theme 延后):只 seed「字段总览」
         #expect(themes.contains { $0.name == "字段总览" })
-        #expect(themes.contains { $0.name == "学区视图" })
-        #expect(themes.contains { $0.name == "商圈视图" })
-        #expect(themes.contains { $0.name == "新房地图" })
-        let layers = try ctx.fetch(FetchDescriptor<Layer>())
-        #expect(layers.contains { $0.isDefault && $0.name == "默认" })
-        // 单归属:backfill 后全部实体 layerId 指向默认层
-        let defaultLayerId = layers.first { $0.isDefault }?.id
-        LegacyMigrator.backfillLayerIds(in: ctx)
-        let compounds = try ctx.fetch(FetchDescriptor<Compound>())
-        #expect(!compounds.isEmpty)
-        #expect(compounds.allSatisfy { $0.layerId == defaultLayerId })
+        let layers = try ctx.fetch(FetchDescriptor<Layer>()).filter { !$0.deleted }
+        #expect(Set(layers.map(\.name)) == ["楼盘", "学校", "POI", "行政区", "路网", "片区"])
         #expect(try ctx.fetch(FetchDescriptor<Dataset>()).first?.activeThemeId != nil)
     }
 
@@ -288,30 +281,20 @@ struct LegacyMigratorTests {
         #expect(!overview.styleRuleIds.isEmpty)
     }
 
-    @Test func seedsMapViewsWithDefaults() throws {
+    @Test func seedsSixDefaultLayers() throws {
         let ctx = try newCtx()
         var b = SeedBundle()
         b.schools = [SchoolSeed(id: UUID(), name: "鞍山道小学", district: "和平区")]
         try LegacyMigrator.run(seeds: b, in: ctx)
-        let views = try ctx.fetch(FetchDescriptor<MapView>())
-        #expect(views.count == 4)
-        let v = try #require(views.first { $0.isActive })
-        #expect(!v.enabledLayerIds.isEmpty)
-        #expect(v.paletteId != nil)
-        #expect((try? JSONDecoder().decode(PrimaryFilter.self, from: Data(v.primaryFilterJSON.utf8))) != nil)
-        let nfs = (try? JSONDecoder().decode([NormalFilter].self, from: Data(v.normalFiltersJSON.utf8))) ?? []
-        #expect(nfs.count == 7)
+        let layers = try ctx.fetch(FetchDescriptor<Layer>()).filter { !$0.deleted }
+        #expect(Set(layers.map(\.name)) == ["楼盘", "学校", "POI", "行政区", "路网", "片区"])
+        // compound 图层带派生的普通过滤(图例 chip)。
+        let compoundLayer = try #require(layers.first { $0.entityType == "compound" })
+        let nfs = (try? JSONDecoder().decode([NormalFilter].self, from: Data(compoundLayer.normalFiltersJSON.utf8))) ?? []
         #expect(nfs.contains { $0.name == "精装类型" })
-        #expect(nfs.contains { $0.name == "等级" })
-    }
-
-    @Test func seededMapViewHasVisibilityJSON() throws {
-        let ctx = try newCtx()
-        var b = SeedBundle()
-        b.schools = [SchoolSeed(id: UUID(), name: "鞍山道小学", district: "和平区")]
-        try LegacyMigrator.run(seeds: b, in: ctx)
-        let v = try #require(try ctx.fetch(FetchDescriptor<MapView>()).first { $0.isActive })
-        let obj = try #require(try? JSONSerialization.jsonObject(with: Data(v.visibilityJSON.utf8)) as? [String: Bool])
-        #expect(obj["school"] != nil)
+        // school 图层带「等级」chip。
+        let schoolLayer = try #require(layers.first { $0.entityType == "school" })
+        let schoolNfs = (try? JSONDecoder().decode([NormalFilter].self, from: Data(schoolLayer.normalFiltersJSON.utf8))) ?? []
+        #expect(schoolNfs.contains { $0.name == "等级" })
     }
 }

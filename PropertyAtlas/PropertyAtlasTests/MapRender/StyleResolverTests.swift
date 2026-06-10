@@ -12,7 +12,7 @@ struct StyleResolverTests {
     }
 
     @Test func viewStyleOverridesBuiltin() {
-        let viewStyle = ViewEntityStyle(datasetId: UUID(), viewId: UUID(), entityType: "school")
+        let viewStyle = ViewEntityStyle(datasetId: UUID(), layerId: UUID(), entityType: "school")
         viewStyle.fillHex = "#FF0000"
         viewStyle.shape = "hexagon"
         let school = School(datasetId: UUID(), name: "x", latitude: 0, longitude: 0)
@@ -22,7 +22,7 @@ struct StyleResolverTests {
     }
 
     @Test func entityOverrideAppliesLast() {
-        let viewStyle = ViewEntityStyle(datasetId: UUID(), viewId: UUID(), entityType: "school")
+        let viewStyle = ViewEntityStyle(datasetId: UUID(), layerId: UUID(), entityType: "school")
         viewStyle.fillHex = "#000000"
         let school = School(datasetId: UUID(), name: "x", latitude: 0, longitude: 0)
         school.styleFillHex = "#7C3AED"
@@ -33,7 +33,7 @@ struct StyleResolverTests {
     }
 
     @Test func resolveAreaUsesViewStyle() {
-        let viewStyle = ViewEntityStyle(datasetId: UUID(), viewId: UUID(), entityType: "area")
+        let viewStyle = ViewEntityStyle(datasetId: UUID(), layerId: UUID(), entityType: "area")
         viewStyle.fillHex = "#FF0000"
         viewStyle.fillOpacity = 0.35
         let area = Area(datasetId: UUID(), name: "片区1", geometryKind: "polygon", geometryJSON: "{}")
@@ -43,7 +43,7 @@ struct StyleResolverTests {
     }
 
     @Test func areaEntityOverrideBeatsViewStyle() {
-        let viewStyle = ViewEntityStyle(datasetId: UUID(), viewId: UUID(), entityType: "area")
+        let viewStyle = ViewEntityStyle(datasetId: UUID(), layerId: UUID(), entityType: "area")
         viewStyle.fillHex = "#FF0000"
         let area = Area(datasetId: UUID(), name: "片区1", geometryKind: "polygon", geometryJSON: "{}")
         area.styleFillHex = "#00FF00"

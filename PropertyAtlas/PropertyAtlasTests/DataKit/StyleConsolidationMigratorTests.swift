@@ -10,34 +10,27 @@ struct StyleConsolidationMigratorTests {
         return ModelContext(container)
     }
 
-    @Test func seedsViewStylesAndPaletteFromTheme() throws {
+    @Test func seedsViewStyleRowFromTheme() throws {
         let ctx = try makeContext()
         let dataset = Dataset(name: "test-ds")
         ctx.insert(dataset)
-        let palette = Palette(name: "p", colorsHex: ["#AAA111", "#BBB222"])
-        ctx.insert(palette)
         let theme = Theme(datasetId: dataset.id, name: "t")
         theme.defaultStylesJSON = ##"{"compound":{"fillHex":"#123456","size":28}}"##
-        theme.showLegend = false
         ctx.insert(theme)
         dataset.activeThemeId = theme.id
-        let view = MapView(datasetId: dataset.id, name: "v")
-        view.paletteId = palette.id
-        view.isActive = true
-        ctx.insert(view)
+        let layer = Layer(datasetId: dataset.id, name: "楼盘", entityType: "compound")
+        ctx.insert(layer)
         try ctx.save()
 
         StyleConsolidationMigrator.run(in: ctx)
 
         let styles = try ctx.fetch(FetchDescriptor<ViewEntityStyle>())
-        #expect(styles.count == 4)
-        let compound = styles.first { $0.entityType == "compound" }
-        #expect(compound?.fillHex == "#123456")
-        #expect(compound?.size == 28)
-        let refreshedViews = try ctx.fetch(FetchDescriptor<MapView>())
-        let refreshedView = refreshedViews.first
-        #expect(refreshedView?.paletteHex == ["#AAA111", "#BBB222"])
-        #expect(refreshedView?.showLegend == false)
+        // 一个 compound 图层 → 恰好一行 compound 样式,从主题默认填充。
+        #expect(styles.count == 1)
+        let compound = try #require(styles.first { $0.entityType == "compound" })
+        #expect(compound.layerId == layer.id)
+        #expect(compound.fillHex == "#123456")
+        #expect(compound.size == 28)
     }
 
     @Test func idempotentDoesNotClobberUserEdits() throws {
@@ -48,46 +41,21 @@ struct StyleConsolidationMigratorTests {
         theme.defaultStylesJSON = ##"{"compound":{"fillHex":"#123456"}}"##
         ctx.insert(theme)
         dataset.activeThemeId = theme.id
-        let view = MapView(datasetId: dataset.id, name: "v")
-        view.isActive = true
-        ctx.insert(view)
+        let layer = Layer(datasetId: dataset.id, name: "楼盘", entityType: "compound")
+        ctx.insert(layer)
         try ctx.save()
 
         StyleConsolidationMigrator.run(in: ctx)
         let firstStyles = try ctx.fetch(FetchDescriptor<ViewEntityStyle>())
+        #expect(firstStyles.count == 1)
         let style = firstStyles.first { $0.entityType == "compound" }
         style?.fillHex = "#999999"
         try ctx.save()
         StyleConsolidationMigrator.run(in: ctx)
         let afterStyles = try ctx.fetch(FetchDescriptor<ViewEntityStyle>())
-        #expect(afterStyles.count == 4)
+        #expect(afterStyles.count == 1)
         let afterStyle = afterStyles.first { $0.entityType == "compound" }
         #expect(afterStyle?.fillHex == "#999999")
-    }
-
-    @Test func resolvesThemeFromTopEnabledLayer() throws {
-        let ctx = try makeContext()
-        let dataset = Dataset(name: "ds4")
-        ctx.insert(dataset)
-        let theme = Theme(datasetId: dataset.id, name: "t")
-        theme.defaultStylesJSON = ##"{"compound":{"fillHex":"#ABCDEF"}}"##
-        ctx.insert(theme)
-        let layer = Layer(datasetId: dataset.id, name: "L")
-        layer.themeId = theme.id
-        layer.zIndex = 10
-        ctx.insert(layer)
-        let view = MapView(datasetId: dataset.id, name: "v")
-        view.enabledLayerIds = [layer.id]
-        view.isActive = true
-        ctx.insert(view)
-        // dataset.activeThemeId 故意留 nil:验证经 layer.themeId 解析
-        try ctx.save()
-
-        StyleConsolidationMigrator.run(in: ctx)
-
-        let styles = try ctx.fetch(FetchDescriptor<ViewEntityStyle>())
-        let compound = styles.first { $0.entityType == "compound" }
-        #expect(compound?.fillHex == "#ABCDEF")
     }
 
     @Test func migratesEntityOverrideJSONToColumns() throws {
@@ -109,8 +77,8 @@ struct StyleConsolidationMigratorTests {
         #expect(refreshedDs?.stylesMigratedV2 == true)
     }
 
-    /// seed 的 theme.defaultStylesJSON 是空 "{}" —— 应建 4 行全 nil(渲染回退 builtin),不崩。
-    @Test func emptyThemeJSONProducesFourNilRows() throws {
+    /// seed 的 theme.defaultStylesJSON 是空 "{}" —— 单图层应得一行全 nil(渲染回退 builtin),不崩。
+    @Test func emptyThemeJSONProducesNilRow() throws {
         let ctx = try makeContext()
         let dataset = Dataset(name: "ds5")
         ctx.insert(dataset)
@@ -118,15 +86,16 @@ struct StyleConsolidationMigratorTests {
         theme.defaultStylesJSON = "{}"
         ctx.insert(theme)
         dataset.activeThemeId = theme.id
-        let view = MapView(datasetId: dataset.id, name: "v")
-        view.isActive = true
-        ctx.insert(view)
+        let layer = Layer(datasetId: dataset.id, name: "楼盘", entityType: "compound")
+        ctx.insert(layer)
         try ctx.save()
 
         StyleConsolidationMigrator.run(in: ctx)
 
         let styles = try ctx.fetch(FetchDescriptor<ViewEntityStyle>())
-        #expect(styles.count == 4)
-        #expect(styles.allSatisfy { $0.fillHex == nil && $0.shape == nil && $0.labelVisible == nil })
+        #expect(styles.count == 1)
+        let row = try #require(styles.first)
+        #expect(row.entityType == "compound")
+        #expect(row.fillHex == nil && row.shape == nil && row.labelVisible == nil)
     }
 }

@@ -25,9 +25,8 @@ struct StyleConsolidationMigratorRuleTests {
         theme.styleRuleIds = [old.id]
         ctx.insert(theme)
         dataset.activeThemeId = theme.id
-        let view = MapView(datasetId: dataset.id, name: "v")
-        view.isActive = true
-        ctx.insert(view)
+        let layer = Layer(datasetId: dataset.id, name: "学校", entityType: "school")
+        ctx.insert(layer)
         try ctx.save()
 
         StyleConsolidationMigrator.run(in: ctx)
@@ -35,6 +34,7 @@ struct StyleConsolidationMigratorRuleTests {
         let rules = try ctx.fetch(FetchDescriptor<ViewStyleRule>())
         #expect(rules.count == 1)
         let rule = try #require(rules.first)
+        #expect(rule.layerId == layer.id)
         #expect(rule.entityType == "school")
         #expect(rule.glyph == "重")
         #expect(rule.fillHex == "#FF3B30")
@@ -46,7 +46,7 @@ struct StyleConsolidationMigratorRuleTests {
         #expect(conds.first?.valueString == "重点")
     }
 
-    @Test func idempotentSkipsViewWithRules() throws {
+    @Test func idempotentSkipsLayerWithRules() throws {
         let ctx = try makeContext()
         let dataset = Dataset(name: "ds2")
         ctx.insert(dataset)
@@ -58,9 +58,8 @@ struct StyleConsolidationMigratorRuleTests {
         theme.styleRuleIds = [old.id]
         ctx.insert(theme)
         dataset.activeThemeId = theme.id
-        let view = MapView(datasetId: dataset.id, name: "v")
-        view.isActive = true
-        ctx.insert(view)
+        let layer = Layer(datasetId: dataset.id, name: "学校", entityType: "school")
+        ctx.insert(layer)
         try ctx.save()
 
         StyleConsolidationMigrator.run(in: ctx)
@@ -83,9 +82,8 @@ struct StyleConsolidationMigratorRuleTests {
         theme.styleRuleIds = [old.id]
         ctx.insert(theme)
         dataset.activeThemeId = theme.id
-        let view = MapView(datasetId: dataset.id, name: "v")
-        view.isActive = true
-        ctx.insert(view)
+        let layer = Layer(datasetId: dataset.id, name: "学校", entityType: "school")
+        ctx.insert(layer)
         try ctx.save()
 
         StyleConsolidationMigrator.run(in: ctx)
@@ -105,9 +103,8 @@ struct StyleConsolidationMigratorRuleTests {
         theme.styleRuleIds = [old.id]
         ctx.insert(theme)
         dataset.activeThemeId = theme.id
-        let view = MapView(datasetId: dataset.id, name: "v")
-        view.isActive = true
-        ctx.insert(view)
+        let layer = Layer(datasetId: dataset.id, name: "学校", entityType: "school")
+        ctx.insert(layer)
         try ctx.save()
 
         StyleConsolidationMigrator.run(in: ctx)
