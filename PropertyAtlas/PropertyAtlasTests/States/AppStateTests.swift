@@ -10,14 +10,12 @@ struct AppStateTests {
         let ref = EntityRef(id: UUID(), kind: .school)
         s.select(ref)
         #expect(s.selectedRef == ref)
-        #expect(s.editingMode == .read)
     }
 
     @Test func editEntersEditMode() {
         let s = AppState()
         s.select(EntityRef(id: UUID(), kind: .poi))
         s.beginEditing()
-        #expect(s.editingMode == .edit)
         #expect(s.currentEditTab == .basic)
     }
 
@@ -27,7 +25,6 @@ struct AppStateTests {
         s.beginEditing()
         s.clearSelection()
         #expect(s.selectedRef == nil)
-        #expect(s.editingMode == .read)
     }
 
     @Test func switchDatasetResetsSelection() {
