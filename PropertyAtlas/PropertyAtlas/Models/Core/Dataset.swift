@@ -25,8 +25,6 @@ final class Dataset {
     var copySubtitle: String?
     var copyWatermark: String?
     var watermarkQRData: Data?
-    // 图层中心化重构迁移闸(LayerMigratorV3)
-    var layerModelV3: Bool = false
     var sortOrder: Int = 0
     var version: Int = 1
     var createdAt: Date = Date()
