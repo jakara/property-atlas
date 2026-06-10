@@ -24,6 +24,8 @@ struct StyleEntity {
     /// 实体级 override（typed 列 → partial）。空 partial = 无 override。
     let overridePin: PartialPinStyle
     let overrideArea: PartialAreaStyle
+    /// 所属图层 id（由实体 layerId 属性透传）。
+    let layerId: UUID?
 
     init(
         entityType: String,
@@ -31,7 +33,8 @@ struct StyleEntity {
         baseFields: [String: AnyJSON],
         customFields: [String: AnyJSON],
         overridePin: PartialPinStyle = PartialPinStyle(),
-        overrideArea: PartialAreaStyle = PartialAreaStyle()
+        overrideArea: PartialAreaStyle = PartialAreaStyle(),
+        layerId: UUID? = nil
     ) {
         self.entityType = entityType
         self.id = id
@@ -39,6 +42,7 @@ struct StyleEntity {
         self.customFields = customFields
         self.overridePin = overridePin
         self.overrideArea = overrideArea
+        self.layerId = layerId
     }
 
     func field(_ name: String) -> AnyJSON? {
@@ -111,7 +115,8 @@ extension School {
             overridePin: StyleFieldConvert.pinPartial(
                 shape: styleShape, fillHex: styleFillHex, strokeHex: styleStrokeHex,
                 glyph: styleGlyph, glyphHex: styleGlyphHex, size: styleSize, labelVisible: styleLabelVisible
-            )
+            ),
+            layerId: layerId
         )
     }
 }
@@ -138,7 +143,8 @@ extension Compound {
             overridePin: StyleFieldConvert.pinPartial(
                 shape: styleShape, fillHex: styleFillHex, strokeHex: styleStrokeHex,
                 glyph: styleGlyph, glyphHex: styleGlyphHex, size: styleSize, labelVisible: styleLabelVisible
-            )
+            ),
+            layerId: layerId
         )
     }
 }
@@ -158,7 +164,8 @@ extension POI {
             overridePin: StyleFieldConvert.pinPartial(
                 shape: styleShape, fillHex: styleFillHex, strokeHex: styleStrokeHex,
                 glyph: styleGlyph, glyphHex: styleGlyphHex, size: styleSize, labelVisible: styleLabelVisible
-            )
+            ),
+            layerId: layerId
         )
     }
 }
@@ -179,7 +186,8 @@ extension Area {
             overrideArea: StyleFieldConvert.areaPartial(
                 fillHex: styleFillHex, fillOpacity: styleFillOpacity, strokeHex: styleStrokeHex,
                 strokeWidth: styleStrokeWidth, labelVisible: styleLabelVisible
-            )
+            ),
+            layerId: layerId
         )
     }
 }
