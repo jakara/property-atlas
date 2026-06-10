@@ -7,7 +7,7 @@ import SwiftData
 final class ViewStyleRule {
     var id: UUID = UUID()
     var datasetId: UUID = UUID()
-    var viewId: UUID = UUID()
+    var layerId: UUID = UUID()
     var entityType: String = ""
     var priority: Int = 0
     var enabled: Bool = true
@@ -27,10 +27,10 @@ final class ViewStyleRule {
     var updatedAt: Date = Date()
     var deleted: Bool = false
 
-    init(id: UUID = UUID(), datasetId: UUID, viewId: UUID, entityType: String) {
+    init(id: UUID = UUID(), datasetId: UUID, layerId: UUID, entityType: String) {
         self.id = id
         self.datasetId = datasetId
-        self.viewId = viewId
+        self.layerId = layerId
         self.entityType = entityType
     }
 }

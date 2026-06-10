@@ -5,7 +5,7 @@ import SwiftUI
 /// 某视图某 entityType 的条件规则列表 + 加规则。
 struct ViewStyleRulesSection: View {
     let datasetId: UUID
-    let viewId: UUID
+    let layerId: UUID
     let entityType: String
     @Environment(\.modelContext) private var context
     @State private var rules: [ViewStyleRule] = []
@@ -22,16 +22,16 @@ struct ViewStyleRulesSection: View {
     }
 
     private func fetchRules() -> [ViewStyleRule] {
-        let viewID = viewId
+        let layerID = layerId
         let entityT = entityType
         return (try? context.fetch(FetchDescriptor<ViewStyleRule>(
-            predicate: #Predicate { $0.viewId == viewID && $0.entityType == entityT && !$0.deleted },
+            predicate: #Predicate { $0.layerId == layerID && $0.entityType == entityT && !$0.deleted },
             sortBy: [SortDescriptor(\.priority)]
         ))) ?? []
     }
 
     private func addRule() {
-        let rule = ViewStyleRule(datasetId: datasetId, viewId: viewId, entityType: entityType)
+        let rule = ViewStyleRule(datasetId: datasetId, layerId: layerId, entityType: entityType)
         rule.priority = (rules.map(\.priority).max() ?? 0) + 1
         context.insert(rule)
         rules = fetchRules()

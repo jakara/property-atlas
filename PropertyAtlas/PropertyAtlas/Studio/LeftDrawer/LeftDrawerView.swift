@@ -7,10 +7,9 @@ struct LeftDrawerView: View {
     let layers: [Layer]
     let currentZoom: Double
     @Bindable var filterState: DimensionFilterState
-    @Bindable var layerState: LayerState
-    /// 切换图层启用(写回 active MapView.enabledLayerIds → 与视图设置联动)。
+    /// 切换图层启用(直接 mutate Layer.enabled)。
     var onToggleLayer: (UUID) -> Void = { _ in }
-    /// 切换普通过滤 chip 隐藏(持久到 active MapView.hiddenChipsJSON)。
+    /// 切换普通过滤 chip 隐藏(持久到所属图层 hiddenChipsJSON)。
     var onToggleChip: (String, String) -> Void = { _, _ in }
     /// 上层按屏高算出的上限(顶到指南针上方);内容撑不满则缩到 fit。
     var maxHeight: CGFloat = 640
@@ -19,7 +18,7 @@ struct LeftDrawerView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 14) {
-                LayersView(layers: layers, currentZoom: currentZoom, layerState: layerState, onToggle: onToggleLayer)
+                LayersView(layers: layers, currentZoom: currentZoom, onToggle: onToggleLayer)
                 Rectangle().fill(Studio.glassLine).frame(height: 1)
                 LegendView(sections: legendSections, filterState: filterState, onToggle: onToggleChip)
             }

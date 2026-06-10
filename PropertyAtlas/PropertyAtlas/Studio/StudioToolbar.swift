@@ -3,7 +3,6 @@ import MapKit
 import SwiftUI
 
 struct StudioToolbar: View {
-    @Bindable var viewContext: MapViewContext
     @Binding var aspect: CanvasAspect
     let onSnapshot: () -> Void
     var showSettings: Binding<Bool>
@@ -19,19 +18,9 @@ struct StudioToolbar: View {
 
     var body: some View {
         HStack(spacing: 4) {
-            // view switch
-            Menu {
-                ForEach(viewContext.allMapViews, id: \.id) { mv in
-                    Button(mv.name) { viewContext.switchView(to: mv) }
-                }
-            } label: {
-                DockLabel(icon: "map", text: viewContext.activeMapView?.name ?? "无视图", caret: true)
-            }
-            .menuStyle(.borderlessButton).fixedSize()
+            // 图层显隐已在左抽屉;工具栏不再做视图切换(layer-centric:无单 active 视图)。
 
-            // 画幅切换移到设置页(基本 tab),工具栏不再列。
-
-            // map style — 扁平按钮(同视图切换),点一下直接选,当前项打勾
+            // map style — 扁平按钮,点一下直接选,当前项打勾
             Menu {
                 ForEach(StudioMapStyle.allCases) { style in
                     Button {

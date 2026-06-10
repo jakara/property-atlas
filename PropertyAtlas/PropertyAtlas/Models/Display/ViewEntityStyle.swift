@@ -8,7 +8,7 @@ import SwiftData
 final class ViewEntityStyle {
     var id: UUID = UUID()
     var datasetId: UUID = UUID()
-    var viewId: UUID = UUID()
+    var layerId: UUID = UUID()
     var entityType: String = ""
 
     // pin 字段
@@ -28,10 +28,10 @@ final class ViewEntityStyle {
     var updatedAt: Date = Date()
     var deleted: Bool = false
 
-    init(id: UUID = UUID(), datasetId: UUID, viewId: UUID, entityType: String) {
+    init(id: UUID = UUID(), datasetId: UUID, layerId: UUID, entityType: String) {
         self.id = id
         self.datasetId = datasetId
-        self.viewId = viewId
+        self.layerId = layerId
         self.entityType = entityType
     }
 }

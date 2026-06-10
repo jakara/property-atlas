@@ -38,37 +38,6 @@ enum LegacyMigrator {
         purge(CustomFieldDef.self) { $0.datasetId }
     }
 
-    /// 把 layerId == nil 的实体补设为本 dataset 的【默认】图层。幂等,每次启动可调。
-    static func backfillLayerIds(in ctx: ModelContext) {
-        let datasets = (try? ctx.fetch(FetchDescriptor<Dataset>())) ?? []
-        let layers = (try? ctx.fetch(FetchDescriptor<Layer>())) ?? []
-        for ds in datasets {
-            // 兜底目标与 RootView.defaultLayerId 一致:isDefault 优先,否则 zIndex 最小的图层
-            let dsLayers = layers.filter { $0.datasetId == ds.id && !$0.deleted }
-            let homeLayer = dsLayers.first(where: { $0.isDefault })
-                ?? dsLayers.sorted { $0.zIndex < $1.zIndex }.first
-            // 旧库追溯改名:默认图层早期 seed 叫「全部」,现统一「默认」(幂等)。
-            if let homeLayer, homeLayer.name == "全部" {
-                homeLayer.name = "默认"
-                homeLayer.updatedAt = Date()
-            }
-            guard let home = homeLayer?.id else { continue }
-            assignNilToDefault(Compound.self, ds.id, home, ctx)
-            assignNilToDefault(School.self, ds.id, home, ctx)
-            assignNilToDefault(POI.self, ds.id, home, ctx)
-            assignNilToDefault(Area.self, ds.id, home, ctx)
-        }
-    }
-
-    private static func assignNilToDefault<T: PersistentModel & LayerAssignable>(
-        _ type: T.Type, _ dsId: UUID, _ home: UUID, _ ctx: ModelContext
-    ) {
-        let all = (try? ctx.fetch(FetchDescriptor<T>())) ?? []
-        for e in all where e.datasetId == dsId && e.layerId == nil && !e.deleted {
-            e.layerId = home
-        }
-    }
-
     static func run(seeds: SeedBundle, in ctx: ModelContext) throws {
         if try !ctx.fetch(FetchDescriptor<Dataset>()).isEmpty { return }
         let hasData = !seeds.zones.isEmpty || !seeds.schools.isEmpty || !seeds.compounds.isEmpty
@@ -579,128 +548,62 @@ enum LegacyMigrator {
             if idx == 0 { defaultPalette = palette } // default-rainbow
         }
 
-        let defaultLayer = Layer(datasetId: dataset.id, name: "默认")
-        defaultLayer.isDefault = true
-        defaultLayer.enabled = true
-        defaultLayer.dynamicQueryJSON = nil
-        defaultLayer.sortOrder = 0
-        ctx.insert(defaultLayer)
-
-        let baseVisibility = #"{"compound":true,"school":true,"poi":true,"area":true}"#
-        let onlyPOIAndArea = #"{"compound":false,"school":false,"poi":true,"area":true}"#
-        let onlyCompound = #"{"compound":true,"school":false,"poi":false,"area":false}"#
-
+        // Themes 保留(StyleConsolidationMigrator 仍消化 defaultStylesJSON/styleRuleIds)
         let t1 = Theme(datasetId: dataset.id, name: "字段总览")
         t1.sortOrder = 0
         t1.isActive = true
         ctx.insert(t1)
 
-        let t2 = Theme(datasetId: dataset.id, name: "学区视图")
-        t2.sortOrder = 1
-        ctx.insert(t2)
-
-        let t3 = Theme(datasetId: dataset.id, name: "商圈视图")
-        t3.sortOrder = 2
-        ctx.insert(t3)
-
-        let t4 = Theme(datasetId: dataset.id, name: "新房地图")
-        t4.sortOrder = 3
-        ctx.insert(t4)
-
-        // P8b: per-view literals (formerly stored on Theme, now written
-        // directly onto each MapView). Same order as themes [t1, t2, t3, t4].
-        let viewSeeds: [ViewSeed] = [
-            ViewSeed(visibilityJSON: baseVisibility),
-            ViewSeed(visibilityJSON: baseVisibility, copyTitle: "学区分布图", copySubtitle: "2026 招生季"),
-            ViewSeed(visibilityJSON: onlyPOIAndArea),
-            ViewSeed(visibilityJSON: onlyCompound),
-        ]
-
         // P5: 学校样式规则 — 名称标签 + 等级(grade)→ 重/普 glyph + tier 配色
         let schoolRuleIds = seedSchoolStyleRules(dataset: dataset, in: ctx)
-        t1.styleRuleIds = schoolRuleIds // 挂进"字段总览"
-        t2.styleRuleIds = schoolRuleIds // 挂进"学区视图"
+        t1.styleRuleIds = schoolRuleIds // 挂进活跃主题(StyleConsolidationMigrator 还原条件样式)
 
         dataset.activeThemeId = t1.id
 
-        // P8a: default layer zIndex + themeId (default layer → active theme)
-        defaultLayer.zIndex = 0
-        defaultLayer.themeId = t1.id
-
-        // P8a: seed one MapView per theme (additive)
-        try seedMapViews(
-            dataset: dataset,
-            defaultLayerId: defaultLayer.id,
-            themes: [t1, t2, t3, t4],
-            viewSeeds: viewSeeds,
-            palette: defaultPalette,
-            in: ctx
-        )
-    }
-
-    /// P8b: per-view literal values that used to live on Theme. Carries the
-    /// 9 former-global fields (minus defaultEnabledLayerIds, which is dropped
-    /// because views already set enabledLayerIds = [defaultLayerId]).
-    private struct ViewSeed {
-        var cameraPresetId: UUID?
-        var visibilityJSON: String
-        var spotlightOnSelect: Bool = true
-        var drawEdgeLines: [String] = []
-        var bgMapStyle: String = "standard"
-        var copyTitle: String?
-        var copySubtitle: String?
-        var copyWatermark: String?
-    }
-
-    /// P8a: seed one MapView per theme. normalFilters is a hardcoded list
-    /// (P9b: formerly derived from per-field config rows); primaryFilter empty
-    /// (no groupBy); paletteId = default palette; copy/camera/bg from theme.
-    private static func seedMapViews(
-        dataset: Dataset,
-        defaultLayerId: UUID,
-        themes: [Theme],
-        viewSeeds: [ViewSeed],
-        palette: Palette?,
-        in ctx: ModelContext
-    ) throws {
+        // 新模型:每 dataset seed 5 个默认图层(单一实体类型 + 过滤器派生成员)
         let dsId = dataset.id
-        // P9b: hardcoded NormalFilter list (formerly derived from per-field config
-        // rows sorted by slot). Order is behavior-equivalent to the prior
-        // slot-ascending derivation captured empirically before deletion.
-        func fieldFilter(_ name: String, _ key: String) -> NormalFilter {
+        func makeLayer(
+            _ name: String,
+            _ type: String,
+            icon: String?,
+            z: Int,
+            enabled: Bool,
+            primary: PrimaryFilter = PrimaryFilter(conditions: [], groupBy: nil)
+        ) {
+            let l = Layer(datasetId: dsId, name: name, entityType: type)
+            l.iconSF = icon
+            l.zIndex = z
+            l.sortOrder = z
+            l.enabled = enabled
+            l.paletteHex = defaultPalette?.colorsHex ?? []
+            l.primaryFilterJSON = (try? JSONHelpers.encode(primary)) ?? #"{"conditions":[],"groupBy":null}"#
+            l.normalFiltersJSON = (try? JSONHelpers.encode(defaultNormals(for: type))) ?? "[]"
+            ctx.insert(l)
+        }
+        func catFilter(_ value: String) -> PrimaryFilter {
+            PrimaryFilter(conditions: [FilterCondition(
+                dimension: MapDimension(kind: .field, fieldKey: "category", fieldSource: "base"),
+                op: .equals, value: .string(value)
+            )], groupBy: nil)
+        }
+        makeLayer("楼盘", "compound", icon: "building.2", z: 10, enabled: true)
+        makeLayer("学校", "school", icon: "graduationcap", z: 20, enabled: true)
+        makeLayer("POI", "poi", icon: "mappin", z: 30, enabled: false)
+        makeLayer("行政区", "area", icon: "map", z: 1, enabled: true, primary: catFilter("行政区"))
+        makeLayer("路网", "area", icon: "road.lanes", z: 2, enabled: true, primary: catFilter("道路"))
+    }
+
+    /// 按图层 entityType 选默认普通过滤(图例 chip)集。
+    private static func defaultNormals(for type: String) -> [NormalFilter] {
+        func f(_ name: String, _ key: String) -> NormalFilter {
             NormalFilter(name: name, dimension: MapDimension(kind: .field, fieldKey: key, fieldSource: "base"))
         }
-        let normals: [NormalFilter] = [
-            fieldFilter("精装类型", "finishType"),
-            fieldFilter("阶段", "category"),
-            fieldFilter("POI 类型", "category"),
-            fieldFilter("区域类型", "category"),
-            fieldFilter("等级", "grade"),
-            fieldFilter("新房/二手", "isNewHouse"),
-            fieldFilter("学制", "form"),
-        ]
-        let normalsJSON = (try? JSONHelpers.encode(normals)) ?? "[]"
-        let emptyPrimary = PrimaryFilter(conditions: [], groupBy: nil)
-        let primaryJSON = (try? JSONHelpers.encode(emptyPrimary)) ?? #"{"conditions":[],"groupBy":null}"#
-
-        for (idx, t) in themes.enumerated() {
-            let seed = viewSeeds[idx]
-            let v = MapView(datasetId: dsId, name: t.name)
-            v.enabledLayerIds = [defaultLayerId]
-            v.primaryFilterJSON = primaryJSON
-            v.normalFiltersJSON = normalsJSON
-            v.paletteId = palette?.id
-            v.cameraPresetId = seed.cameraPresetId
-            v.bgMapStyle = seed.bgMapStyle
-            v.drawEdgeLines = seed.drawEdgeLines
-            v.copyTitle = seed.copyTitle
-            v.copySubtitle = seed.copySubtitle
-            v.copyWatermark = seed.copyWatermark
-            v.spotlightOnSelect = seed.spotlightOnSelect
-            v.visibilityJSON = seed.visibilityJSON
-            v.sortOrder = idx
-            v.isActive = (idx == 0)
-            ctx.insert(v)
+        switch type {
+        case "compound": return [f("精装类型", "finishType"), f("新房/二手", "isNewHouse")]
+        case "school": return [f("阶段", "category"), f("等级", "grade"), f("学制", "form")]
+        case "poi": return [f("POI 类型", "category")]
+        case "area": return [f("区域类型", "category")]
+        default: return []
         }
     }
 

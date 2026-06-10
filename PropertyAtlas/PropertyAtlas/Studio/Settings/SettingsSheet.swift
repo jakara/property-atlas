@@ -23,7 +23,7 @@ enum SettingsTab: String, CaseIterable, Identifiable {
 }
 
 struct SettingsSheet: View {
-    @Bindable var viewContext: MapViewContext
+    @Bindable var layerCtx: LayerContext
     let onClose: () -> Void
     let onEntitySelect: (EntityRef, CLLocationCoordinate2D?, Bool) -> Void
     let onEntityEdit: (EntityRef, CLLocationCoordinate2D?, Bool) -> Void
@@ -41,14 +41,14 @@ struct SettingsSheet: View {
             ScrollView {
                 Group {
                     switch tab {
-                    case .view: ViewSettingsTab(viewContext: viewContext)
+                    case .view: Text("迁移中 — Phase C").font(Studio.sans(13)).foregroundStyle(Studio.on3)
                     case .layer: LayerSettingsTab(
-                            datasetId: viewContext.datasetIdValue,
+                            datasetId: layerCtx.datasetIdValue,
                             onSelect: onEntitySelect, onEdit: onEntityEdit
                         )
-                    case .enumOption: EnumOptionSettingsTab(datasetId: viewContext.datasetIdValue)
-                    case .camera: CameraSettingsTab(datasetId: viewContext.datasetIdValue)
-                    case .customField: CustomFieldSettingsTab(datasetId: viewContext.datasetIdValue)
+                    case .enumOption: EnumOptionSettingsTab(datasetId: layerCtx.datasetIdValue)
+                    case .camera: CameraSettingsTab(datasetId: layerCtx.datasetIdValue)
+                    case .customField: CustomFieldSettingsTab(datasetId: layerCtx.datasetIdValue)
                     case .freeDraw: FreeDrawSettingsTab()
                     }
                 }

@@ -17,15 +17,11 @@ final class Layer {
     var paletteHex: [String] = []
     var showLegend: Bool = true
     // 既有
-    var staticRefsJSON: String? // deprecated, Phase B 删
-    var dynamicQueryJSON: String? // deprecated, Phase B 删
     var minZoom: Double?
     var maxZoom: Double?
-    var isDefault: Bool = false // deprecated, Phase B 删
     var enabled: Bool = true
     var sortOrder: Int = 0
     var zIndex: Int = 0
-    var themeId: UUID? // deprecated, Phase B 删
     var version: Int = 1
     var createdAt: Date = Date()
     var updatedAt: Date = Date()

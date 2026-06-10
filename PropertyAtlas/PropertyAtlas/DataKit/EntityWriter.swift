@@ -13,26 +13,23 @@ enum EntityWriter {
         layerId: UUID?,
         in context: ModelContext
     ) -> EntityRef {
+        _ = layerId // 图层归属已由 entityType + 过滤器派生(layer-centric);形参保留兼容调用点
         let id: UUID
         switch kind {
         case .compound:
             let e = Compound(datasetId: datasetId, name: name, latitude: latitude, longitude: longitude)
-            e.layerId = layerId
             context.insert(e)
             id = e.id
         case .school:
             let e = School(datasetId: datasetId, name: name, latitude: latitude, longitude: longitude)
-            e.layerId = layerId
             context.insert(e)
             id = e.id
         case .poi:
             let e = POI(datasetId: datasetId, name: name, latitude: latitude, longitude: longitude)
-            e.layerId = layerId
             context.insert(e)
             id = e.id
         case .area:
             let e = Area(datasetId: datasetId, name: name)
-            e.layerId = layerId
             context.insert(e)
             id = e.id
         }
@@ -103,10 +100,6 @@ enum EntityWriter {
 
     static func softDelete(_ ref: EntityRef, in context: ModelContext) {
         touch(ref, in: context) { $0.deleted = true } s: { $0.deleted = true } p: { $0.deleted = true } a: { $0.deleted = true }
-    }
-
-    static func setLayer(_ ref: EntityRef, _ layerId: UUID?, in context: ModelContext) {
-        touch(ref, in: context) { $0.layerId = layerId } s: { $0.layerId = layerId } p: { $0.layerId = layerId } a: { $0.layerId = layerId }
     }
 
     /// 写单个 baseField（按 EntityFieldSchema 的 key）。未知 key 忽略。

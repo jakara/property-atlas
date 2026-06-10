@@ -3,7 +3,7 @@ import SwiftUI
 
 struct StudioOverlay: View {
     @Binding var aspect: CanvasAspect
-    @Bindable var viewContext: MapViewContext
+    @Bindable var layerCtx: LayerContext
     @Binding var showSettings: Bool
     @Binding var exportMode: Bool
     @Binding var showSafeFrame: Bool
@@ -17,8 +17,8 @@ struct StudioOverlay: View {
     /// 非出图模式下右抽屉打开时隐藏水印,避免与抽屉重叠。
     let hideWatermark: Bool
 
-    private var mv: MapView? {
-        viewContext.activeMapView
+    private var ds: Dataset {
+        layerCtx.dataset
     }
 
     var body: some View {
@@ -35,7 +35,7 @@ struct StudioOverlay: View {
                     VStack(alignment: .leading, spacing: 10) {
                         BrandMark()
                         if exportMode {
-                            StudioTitleCard(title: mv?.copyTitle ?? "", subtitle: mv?.copySubtitle ?? "")
+                            StudioTitleCard(title: ds.copyTitle ?? "", subtitle: ds.copySubtitle ?? "")
                         }
                     }
                     Spacer()
@@ -51,8 +51,8 @@ struct StudioOverlay: View {
                     HStack {
                         Spacer()
                         StudioWatermark(
-                            text: mv?.copyWatermark ?? "@公众号名 · PropertyAtlas",
-                            qrData: mv?.watermarkQRData
+                            text: ds.copyWatermark ?? "@公众号名 · PropertyAtlas",
+                            qrData: ds.watermarkQRData
                         )
                     }
                 }
@@ -64,7 +64,7 @@ struct StudioOverlay: View {
                 VStack {
                     Spacer()
                     StudioToolbar(
-                        viewContext: viewContext, aspect: $aspect,
+                        aspect: $aspect,
                         onSnapshot: { MapSnapshot.copyToClipboard() }, showSettings: $showSettings, exportMode: $exportMode,
                         showSafeFrame: $showSafeFrame, showSearch: $showSearch, mapStyle: $mapStyle,
                         poiEnabled: $poiEnabled, poiCategories: $poiCategories,

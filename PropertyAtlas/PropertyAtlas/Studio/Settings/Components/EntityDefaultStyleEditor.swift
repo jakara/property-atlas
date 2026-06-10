@@ -5,7 +5,7 @@ import SwiftUI
 /// 单实体类型的视图默认样式编辑(ViewEntityStyle 一行)。空行 = builtin。
 struct EntityDefaultStyleEditor: View {
     let datasetId: UUID
-    let viewId: UUID
+    let layerId: UUID
     let entityType: String
     let title: String
     @Environment(\.modelContext) private var context
@@ -124,46 +124,46 @@ struct EntityDefaultStyleEditor: View {
     }
 
     private func fetchRow() -> ViewEntityStyle? {
-        let targetView = viewId
+        let targetLayer = layerId
         let targetType = entityType
         return (try? context.fetch(FetchDescriptor<ViewEntityStyle>(
-            predicate: #Predicate { $0.viewId == targetView && $0.entityType == targetType && !$0.deleted }
+            predicate: #Predicate { $0.layerId == targetLayer && $0.entityType == targetType && !$0.deleted }
         )))?.first
     }
 
     private func getOrCreateRow() -> ViewEntityStyle {
         if let existing = row { return existing }
-        let created = ViewEntityStyle(datasetId: datasetId, viewId: viewId, entityType: entityType)
+        let created = ViewEntityStyle(datasetId: datasetId, layerId: layerId, entityType: entityType)
         context.insert(created)
         row = created
         return created
     }
 }
 
-/// 视图分组染色色板编辑(MapView.paletteHex 字符串数组)。
+/// 图层分组染色色板编辑(Layer.paletteHex 字符串数组)。
 struct PaletteHexEditor: View {
-    @Bindable var view: MapView
+    @Bindable var layer: Layer
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
-            ForEach(Array(view.paletteHex.enumerated()), id: \.offset) { index, _ in
+            ForEach(Array(layer.paletteHex.enumerated()), id: \.offset) { index, _ in
                 HStack {
                     ColorHexField(title: "颜色 \(index + 1)", hex: Binding(
-                        get: { view.paletteHex[index] },
-                        set: { view.paletteHex[index] = $0
-                            view.updatedAt = Date()
+                        get: { layer.paletteHex[index] },
+                        set: { layer.paletteHex[index] = $0
+                            layer.updatedAt = Date()
                         }
                     ))
                     Button(role: .destructive) {
-                        view.paletteHex.remove(at: index)
-                        view.updatedAt = Date()
+                        layer.paletteHex.remove(at: index)
+                        layer.updatedAt = Date()
                     } label: { Image(systemName: "minus.circle") }
                         .buttonStyle(.plain)
                 }
             }
             Button {
-                view.paletteHex.append("#888888")
-                view.updatedAt = Date()
+                layer.paletteHex.append("#888888")
+                layer.updatedAt = Date()
             } label: { Label("加颜色", systemImage: "plus") }
                 .buttonStyle(.tbtn(.ghost))
         }

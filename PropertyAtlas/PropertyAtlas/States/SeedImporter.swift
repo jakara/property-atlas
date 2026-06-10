@@ -32,10 +32,10 @@ enum SeedImporter {
     ) throws -> Bool {
         // 每次启动清理无主实体(独立于 seed 守卫)
         LegacyMigrator.cleanupOrphans(in: context)
-        LegacyMigrator.backfillLayerIds(in: context) // 旧库兜底:nil → 默认层
         // 已有 Dataset → 已 seed,跳过
         if try !context.fetch(FetchDescriptor<Dataset>()).isEmpty {
             StyleConsolidationMigrator.run(in: context)
+            LayerMigratorV3.run(in: context)
             normalizeAreaNamesIfNeeded(in: context)
             seedDistrictBoundariesIfNeeded(in: context)
             seedRoadLinesIfNeeded(in: context)
@@ -63,10 +63,10 @@ enum SeedImporter {
 
         progress(0.70, "迁移写入实体")
         try LegacyMigrator.run(seeds: bundle, in: context)
-        LegacyMigrator.backfillLayerIds(in: context) // 新库:全部实体归默认层
 
         progress(0.95, "保存")
         StyleConsolidationMigrator.run(in: context)
+        LayerMigratorV3.run(in: context)
         seedDistrictBoundariesIfNeeded(in: context)
         seedRoadLinesIfNeeded(in: context)
         migrateFilterEntityTypesIfNeeded(in: context)
@@ -112,9 +112,6 @@ enum SeedImporter {
         guard !items.isEmpty else { return }
         for ds in pending {
             let dsId = ds.id
-            let defaultLayerId = (try? context.fetch(FetchDescriptor<Layer>(
-                predicate: #Predicate { $0.datasetId == dsId && !$0.deleted }
-            )))?.first(where: { $0.isDefault })?.id
             for it in items {
                 let aid = uuid(from: "dist_bound_\(dsId.uuidString)_\(it.adcode)")
                 let exists = ((try? context.fetch(FetchDescriptor<Area>(
@@ -123,8 +120,7 @@ enum SeedImporter {
                 if exists { continue }
                 let area = Area(datasetId: dsId, name: it.name, geometryKind: "polygon", geometryJSON: it.geometryJSON)
                 area.id = aid
-                area.layerId = defaultLayerId
-                area.category = "行政区"
+                area.category = "行政区" // 「行政区」图层按 category 过滤命中
                 area.fillOpacity = 0.08
                 context.insert(area)
             }
@@ -133,7 +129,8 @@ enum SeedImporter {
     }
 
     /// 幂等播种天津"三环十四射"道路为 Area 折线(GCJ-02)。确定性 id 防重复;
-    /// 归默认图层;category="道路";ring/radial → tags;闸门 roadLinesSeededV1。
+    /// category="道路"(「路网」图层按 category 过滤命中);ring/radial → tags;
+    /// per-road 颜色靠 styleFillHex override;闸门 roadLinesSeededV1。
     private static func seedRoadLinesIfNeeded(in context: ModelContext) {
         let datasets = (try? context.fetch(FetchDescriptor<Dataset>())) ?? []
         let pending = datasets.filter { !$0.roadLinesSeededV1 }
@@ -142,7 +139,6 @@ enum SeedImporter {
         guard !items.isEmpty else { return }
         for ds in pending {
             let dsId = ds.id
-            let roadLayerId = roadNetworkLayerId(dsId: dsId, in: context)
             for it in items {
                 let aid = uuid(from: "road_line_\(dsId.uuidString)_\(it.name)")
                 let exists = ((try? context.fetch(FetchDescriptor<Area>(
@@ -151,28 +147,13 @@ enum SeedImporter {
                 if exists { continue }
                 let area = Area(datasetId: dsId, name: it.name, geometryKind: "line", geometryJSON: it.geometryJSON)
                 area.id = aid
-                area.layerId = roadLayerId // 三环十四射 + 快速路 → 「路网」图层
-                area.category = "道路"
+                area.category = "道路" // 「路网」图层按 category 过滤命中
                 area.tags = it.tags // 三环十四射:总标签+环名/射线;快速路:["快速路"]
-                area.styleFillHex = roadFillHex(tags: it.tags) // 三环各色 + 射线一色 + 快速路一色
+                area.styleFillHex = roadFillHex(tags: it.tags) // per-road 颜色 override
                 context.insert(area)
             }
             ds.roadLinesSeededV1 = true
         }
-    }
-
-    /// 「路网」图层 id:存在则复用,否则建一个。所有道路(三环十四射+快速路)归此层。
-    private static func roadNetworkLayerId(dsId: UUID, in context: ModelContext) -> UUID? {
-        let layers = (try? context.fetch(FetchDescriptor<Layer>(
-            predicate: #Predicate { $0.datasetId == dsId && !$0.deleted }
-        ))) ?? []
-        if let existing = layers.first(where: { $0.name == "路网" }) { return existing.id }
-        let layer = Layer(datasetId: dsId, name: "路网")
-        layer.enabled = true
-        layer.iconSF = "road.lanes"
-        layer.sortOrder = (layers.map(\.sortOrder).max() ?? 0) + 1
-        context.insert(layer)
-        return layer.id
     }
 
     /// 道路按类上色:三环各一色,射线一色,快速路一色。线渲染取 fillHex 作线色。

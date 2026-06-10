@@ -5,7 +5,6 @@ import SwiftUI
 struct LayersView: View {
     let layers: [Layer]
     let currentZoom: Double
-    @Bindable var layerState: LayerState
     var onToggle: (UUID) -> Void = { _ in }
 
     var body: some View {
@@ -17,7 +16,7 @@ struct LayersView: View {
 
     private func row(_ layer: Layer) -> some View {
         let inZoom = zoomOK(layer)
-        let on = layerState.isEnabled(layer.id)
+        let on = layer.enabled
         let hasZoom = layer.minZoom != nil || layer.maxZoom != nil
         return HStack(spacing: 10) {
             if let icon = layer.iconSF {

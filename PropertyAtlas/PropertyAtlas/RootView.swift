@@ -67,8 +67,7 @@ struct StudioRootView: View {
     @Query private var viewStyleConditions: [ViewStyleCondition]
 
     @State private var filterState = DimensionFilterState()
-    @State private var layerState = LayerState()
-    @State private var viewContext: MapViewContext?
+    @State private var layerCtx: LayerContext?
     @State private var camera: MKMapCamera = .init(
         lookingAtCenter: CLLocationCoordinate2D(latitude: 39.125, longitude: 117.205),
         fromDistance: 12000, pitch: 0, heading: 0
@@ -90,61 +89,61 @@ struct StudioRootView: View {
     /// 从设置页导航到实体详情时置位;详情关闭(selectedRef→nil)后据此重新唤起设置页。
     @State private var reopenSettingsOnDeselect = false
 
-    /// 视图配置(底图样式 / 画幅 / Apple 地点)持有在 active MapView 上 → 工具栏与设置「基本」tab 联动。
-    private var activeMV: MapView? {
-        viewContext?.activeMapView
+    /// 全局展示设置(底图样式 / 画幅 / Apple 地点)持有在 dataset 上 → 工具栏与设置「展示」tab 联动。
+    private var ds: Dataset? {
+        layerCtx?.dataset
     }
 
-    private func touchMV() {
-        activeMV?.updatedAt = Date()
+    private func touchDS() {
+        ds?.updatedAt = Date()
     }
 
     private var mapStyle: StudioMapStyle {
-        StudioMapStyle.resolve(activeMV?.studioMapStyleRaw ?? "")
+        StudioMapStyle.resolve(ds?.studioMapStyleRaw ?? "")
     }
 
     private var mapStyleBinding: Binding<StudioMapStyle> {
-        Binding(get: { mapStyle }, set: { activeMV?.studioMapStyleRaw = $0.rawValue
-            touchMV()
+        Binding(get: { mapStyle }, set: { ds?.studioMapStyleRaw = $0.rawValue
+            touchDS()
         })
     }
 
     private var aspect: CanvasAspect {
-        CanvasAspect(rawValue: activeMV?.canvasAspectRaw ?? "") ?? .ratio16x9
+        CanvasAspect(rawValue: ds?.canvasAspectRaw ?? "") ?? .ratio16x9
     }
 
     private var aspectBinding: Binding<CanvasAspect> {
-        Binding(get: { aspect }, set: { activeMV?.canvasAspectRaw = $0.rawValue
-            touchMV()
+        Binding(get: { aspect }, set: { ds?.canvasAspectRaw = $0.rawValue
+            touchDS()
         })
     }
 
     private var selectedPOIOptions: Set<StudioPOIOption> {
-        Set((activeMV?.poiCategoriesRaw ?? "").split(separator: ",").compactMap { StudioPOIOption(rawValue: String($0)) })
+        Set((ds?.poiCategoriesRaw ?? "").split(separator: ",").compactMap { StudioPOIOption(rawValue: String($0)) })
     }
 
     /// 未开 POI → 全不显示;开了但没选类别 → 全部;选了 → 仅这些类别。
     private var poiFilter: MKPointOfInterestFilter {
-        guard activeMV?.poiEnabled ?? false else { return .excludingAll }
+        guard ds?.poiEnabled ?? false else { return .excludingAll }
         let cats = selectedPOIOptions
         return cats.isEmpty ? .includingAll : MKPointOfInterestFilter(including: cats.map(\.category))
     }
 
     private var poiSignature: String {
-        "\(mapStyle.rawValue)|\(activeMV?.poiEnabled ?? false)|\(activeMV?.poiCategoriesRaw ?? "")"
+        "\(mapStyle.rawValue)|\(ds?.poiEnabled ?? false)|\(ds?.poiCategoriesRaw ?? "")"
     }
 
     private var poiEnabledBinding: Binding<Bool> {
-        Binding(get: { activeMV?.poiEnabled ?? false }, set: { activeMV?.poiEnabled = $0
-            touchMV()
+        Binding(get: { ds?.poiEnabled ?? false }, set: { ds?.poiEnabled = $0
+            touchDS()
         })
     }
 
     private var poiCategoriesBinding: Binding<Set<StudioPOIOption>> {
         Binding(
             get: { selectedPOIOptions },
-            set: { activeMV?.poiCategoriesRaw = $0.map(\.rawValue).sorted().joined(separator: ",")
-                touchMV()
+            set: { ds?.poiCategoriesRaw = $0.map(\.rawValue).sorted().joined(separator: ",")
+                touchDS()
             }
         )
     }
@@ -159,22 +158,13 @@ struct StudioRootView: View {
     @State private var createPrefillName: String?
 
     var body: some View {
-        let dsId = viewContext?.datasetIdValue ?? UUID()
-        let activeMapView = viewContext?.activeMapView
-        let visibility = viewContext?.visibility ?? ["compound": true, "school": true, "poi": true, "area": true]
-        let primary = viewContext?.primaryFilter ?? PrimaryFilter(conditions: [], groupBy: nil)
-        let normals = viewContext?.normalFilters ?? []
-
+        let dsId = layerCtx?.datasetIdValue ?? UUID()
         let zoom = visibleRegion.map { ZoomLevel.from(region: $0) } ?? 12
-        let _: Void = layerState.initializeIfNeeded(enabledIds: activeMapView?.enabledLayerIds ?? [])
 
         // ── 内容签名(不含 visibleRegion)未变 → 复用缓存,跳过整条重算管线 ──
         // 手势停稳后只在内容真变(数据/过滤/图层/缩放档/选中)时重建 pins/overlays/图例规格;
         // 纯 pan/zoom 仅走下方廉价的图例视口重计数。(在 ViewBuilder 外做副作用 → 包成 Void 方法)
-        let _: Void = refreshCacheIfNeeded(
-            dsId: dsId, visibility: visibility, activeMapView: activeMapView,
-            primary: primary, normals: normals, zoom: zoom
-        )
+        let _: Void = refreshCacheIfNeeded(dsId: dsId, zoom: zoom)
 
         // 廉价:仅按 region 对预解析 entries 做 bbox 计数(无 styleEntity / resolve)
         let legendSections = renderLegendSections(cache.legendSpecs, region: visibleRegion)
@@ -279,9 +269,9 @@ struct StudioRootView: View {
                     .ignoresSafeArea()
             }
 
-            if let ctx = viewContext {
+            if let ctx = layerCtx {
                 StudioOverlay(
-                    aspect: aspectBinding, viewContext: ctx, showSettings: $showSettings,
+                    aspect: aspectBinding, layerCtx: ctx, showSettings: $showSettings,
                     exportMode: $exportMode, showSafeFrame: $showSafeFrame, showSearch: $showSearch,
                     mapStyle: mapStyleBinding,
                     poiEnabled: poiEnabledBinding,
@@ -397,10 +387,9 @@ struct StudioRootView: View {
                     HStack {
                         LeftDrawerView(
                             legendSections: legendSections,
-                            layers: layersForDataset(dsId),
+                            layers: layerCtx?.allLayers ?? [],
                             currentZoom: zoom,
                             filterState: filterState,
-                            layerState: layerState,
                             onToggleLayer: { toggleLayer($0) },
                             onToggleChip: { toggleChip($0, $1) },
                             // 顶到指南针上方:屏高 − 顶距80 − 指南针区(88+22)− 间隙16。
@@ -428,7 +417,7 @@ struct StudioRootView: View {
 
             // 设置抽屉:右侧浮层,宽=屏×0.382,上下占满,浮于一切之上。
             // 点 scrim / 完成 关闭。出图模式下隐藏(与其它 chrome 一致)。
-            if !exportMode, showSettings, let ctx = viewContext {
+            if !exportMode, showSettings, let ctx = layerCtx {
                 Color.black.opacity(0.12)
                     .ignoresSafeArea()
                     .contentShape(Rectangle())
@@ -440,7 +429,7 @@ struct StudioRootView: View {
                     HStack(spacing: 0) {
                         Spacer(minLength: 0)
                         SettingsSheet(
-                            viewContext: ctx,
+                            layerCtx: ctx,
                             onClose: { showSettings = false },
                             onEntitySelect: { ref, coord, hasCoord in
                                 appState.select(ref)
@@ -470,23 +459,14 @@ struct StudioRootView: View {
         }
         .animation(.easeInOut(duration: 0.22), value: exportMode)
         .animation(.easeInOut(duration: 0.25), value: showSettings)
-        .onChange(of: viewContext?.activeMapView?.id) { _, _ in
-            layerState.resetForTheme(enabledIds: viewContext?.activeMapView?.enabledLayerIds ?? [])
+        .onChange(of: layerCtx?.allLayers.count) { _, _ in
             restoreChips()
-            searchMarker = nil
-            searchPlace = nil
-            showPlaceDetail = false
-            showSearch = false
         }
-        .onAppear { ensureViewContext()
+        .onAppear { ensureLayerContext()
             restoreChips()
             configureTitlebar()
         }
-        .onChange(of: datasets.first?.id) { _, _ in ensureViewContext() }
-        // 视图设置改「启用图层」→ 同步 layerState(与左抽屉图层开关联动)
-        .onChange(of: viewContext?.activeMapView?.enabledLayerIds) { _, new in
-            if let new { layerState.initialize(enabledIds: new) }
-        }
+        .onChange(of: datasets.first?.id) { _, _ in ensureLayerContext() }
         .onChange(of: appState.selectedRef) { _, newValue in
             // 从设置导航来的详情关闭(esc/×)→ 重新唤起设置页。
             if newValue == nil, reopenSettingsOnDeselect {
@@ -506,7 +486,6 @@ struct StudioRootView: View {
     private struct Cand {
         let id: UUID
         let type: String
-        let layerId: UUID?
         let name: String
         let entity: StyleEntity
         let coordinate: CLLocationCoordinate2D
@@ -532,46 +511,36 @@ struct StudioRootView: View {
         return index
     }
 
-    private func buildCandidates(
-        dsId: UUID, visibility: [String: Bool], entityById: [UUID: StyleEntity]
-    ) -> [Cand] {
+    private func buildCandidates(dsId: UUID, entityById: [UUID: StyleEntity]) -> [Cand] {
         var out: [Cand] = []
-        if visibility["compound"] == true {
-            for c in compounds where !c.deleted && c.datasetId == dsId {
-                out.append(.init(
-                    id: c.id, type: "compound", layerId: c.layerId, name: c.name,
-                    entity: entityById[c.id] ?? c.styleEntity,
-                    coordinate: c.coordinate, hasCoordinate: c.latitude != 0 || c.longitude != 0
-                ))
-            }
+        for c in compounds where !c.deleted && c.datasetId == dsId {
+            out.append(.init(
+                id: c.id, type: "compound", name: c.name,
+                entity: entityById[c.id] ?? c.styleEntity,
+                coordinate: c.coordinate, hasCoordinate: c.latitude != 0 || c.longitude != 0
+            ))
         }
-        if visibility["school"] == true {
-            for s in schools where !s.deleted && s.datasetId == dsId {
-                out.append(.init(
-                    id: s.id, type: "school", layerId: s.layerId, name: s.name,
-                    entity: entityById[s.id] ?? s.styleEntity,
-                    coordinate: s.coordinate, hasCoordinate: s.latitude != 0 || s.longitude != 0
-                ))
-            }
+        for s in schools where !s.deleted && s.datasetId == dsId {
+            out.append(.init(
+                id: s.id, type: "school", name: s.name,
+                entity: entityById[s.id] ?? s.styleEntity,
+                coordinate: s.coordinate, hasCoordinate: s.latitude != 0 || s.longitude != 0
+            ))
         }
-        if visibility["poi"] == true {
-            for p in pois where !p.deleted && p.datasetId == dsId {
-                out.append(.init(
-                    id: p.id, type: "poi", layerId: p.layerId, name: p.name,
-                    entity: entityById[p.id] ?? p.styleEntity,
-                    coordinate: p.coordinate, hasCoordinate: p.latitude != 0 || p.longitude != 0
-                ))
-            }
+        for p in pois where !p.deleted && p.datasetId == dsId {
+            out.append(.init(
+                id: p.id, type: "poi", name: p.name,
+                entity: entityById[p.id] ?? p.styleEntity,
+                coordinate: p.coordinate, hasCoordinate: p.latitude != 0 || p.longitude != 0
+            ))
         }
         // areas 加入候选(供 layer 归属/可见集);无点坐标,buildPins 跳过
-        if visibility["area"] == true {
-            for a in areas where !a.deleted && a.datasetId == dsId {
-                out.append(.init(
-                    id: a.id, type: "area", layerId: a.layerId, name: a.name,
-                    entity: entityById[a.id] ?? a.styleEntity,
-                    coordinate: CLLocationCoordinate2D(), hasCoordinate: false
-                ))
-            }
+        for a in areas where !a.deleted && a.datasetId == dsId {
+            out.append(.init(
+                id: a.id, type: "area", name: a.name,
+                entity: entityById[a.id] ?? a.styleEntity,
+                coordinate: CLLocationCoordinate2D(), hasCoordinate: false
+            ))
         }
         return out
     }
@@ -579,74 +548,53 @@ struct StudioRootView: View {
     // MARK: - 内容签名 + 缓存重建
 
     /// 算签名并在变化时重建缓存。副作用包在普通方法里(ViewBuilder body 内不能写带副作用的 if)。
-    private func refreshCacheIfNeeded(
-        dsId: UUID, visibility: [String: Bool], activeMapView: MapView?,
-        primary: PrimaryFilter, normals: [NormalFilter], zoom: Double
-    ) {
-        let sig = contentSignature(
-            dsId: dsId, visibility: visibility, activeMapView: activeMapView,
-            primary: primary, normals: normals, zoom: zoom
-        )
+    private func refreshCacheIfNeeded(dsId: UUID, zoom: Double) {
+        let sig = contentSignature(dsId: dsId, zoom: zoom)
         guard cache.sig != sig else { return }
         cache.sig = sig
-        rebuildContent(
-            dsId: dsId, visibility: visibility, activeMapView: activeMapView,
-            primary: primary, normals: normals, zoom: zoom
-        )
+        rebuildContent(dsId: dsId, zoom: zoom)
     }
 
     /// 内容签名:涵盖一切影响 pins/overlays/图例规格的输入,但**不含** visibleRegion。
     /// pan/zoom 不改 → 签名不变 → 复用缓存。zoom 取整数档(= 图层 zoom 阈值边界)。
-    private func contentSignature(
-        dsId: UUID, visibility: [String: Bool], activeMapView: MapView?,
-        primary: PrimaryFilter, normals: [NormalFilter], zoom: Double
-    ) -> Int {
+    private func contentSignature(dsId: UUID, zoom: Double) -> Int {
         var hasher = Hasher()
         hasher.combine(dsId)
-        for key in visibility.keys.sorted() {
-            hasher.combine(key)
-            hasher.combine(visibility[key] ?? false)
+        hasher.combine(ds?.spotlightOnSelect ?? false)
+        hasher.combine((ds?.drawEdgeLines ?? []).sorted().joined(separator: ","))
+        let layers = layerCtx?.allLayers ?? []
+        hasher.combine(layers.count)
+        for l in layers {
+            hasher.combine(l.id)
+            hasher.combine(l.updatedAt)
+            hasher.combine(l.enabled)
+            hasher.combine(l.zIndex)
+            hasher.combine(l.primaryFilterJSON)
+            hasher.combine(l.normalFiltersJSON)
+            hasher.combine(l.paletteHex.joined(separator: ","))
+            hasher.combine(l.showLegend)
         }
-        hasher.combine(activeMapView?.id)
-        hasher.combine(activeMapView?.primaryFilterJSON)
-        hasher.combine(activeMapView?.normalFiltersJSON)
-        hasher.combine(activeMapView?.spotlightOnSelect ?? false)
-        hasher.combine((activeMapView?.drawEdgeLines ?? []).sorted().joined(separator: ","))
-        hasher.combine((activeMapView?.paletteHex ?? []).joined(separator: ","))
-        hasher.combine(activeMapView?.showLegend ?? true)
-        let activeViewId = activeMapView?.id ?? UUID()
-        let styleFetch = FetchDescriptor<ViewEntityStyle>(
-            predicate: #Predicate { $0.datasetId == dsId && $0.viewId == activeViewId && !$0.deleted }
-        )
+        // 样式表(全 dataset)
+        let styleFetch = FetchDescriptor<ViewEntityStyle>(predicate: #Predicate { $0.datasetId == dsId && !$0.deleted })
         for row in (try? modelContext.fetch(styleFetch)) ?? [] {
-            hasher.combine(row.viewId)
+            hasher.combine(row.layerId)
             hasher.combine(row.entityType)
             hasher.combine(row.updatedAt)
         }
-        combineRuleSignature(&hasher, dsId: dsId, activeViewId: activeViewId)
+        combineRuleSignature(&hasher, dsId: dsId)
         for (key, values) in filterState.hidden.sorted(by: { $0.key < $1.key }) {
             hasher.combine(key)
             for value in values.sorted() {
                 hasher.combine(value)
             }
         }
-        for id in layerState.enabledIds.sorted(by: { $0.uuidString < $1.uuidString }) {
-            hasher.combine(id)
-        }
-        let dsLayers = layersForDataset(dsId)
-        // zoom 仅在有图层设了 minZoom/maxZoom 时影响可见集 —— 否则缩放不该触发重建。
-        let zoomMatters = dsLayers.contains { $0.minZoom != nil || $0.maxZoom != nil }
+        let zoomMatters = layers.contains { $0.minZoom != nil || $0.maxZoom != nil }
         if zoomMatters { hasher.combine(Int(zoom)) }
         hasher.combine(appState.selectedRef?.id)
         combineVersion(&hasher, compounds, dsId)
         combineVersion(&hasher, schools, dsId)
         combineVersion(&hasher, pois, dsId)
         combineVersion(&hasher, areas, dsId)
-        hasher.combine(dsLayers.count)
-        for layer in dsLayers {
-            hasher.combine(layer.id)
-            hasher.combine(layer.updatedAt)
-        }
         return hasher.finalize()
     }
 
@@ -664,134 +612,122 @@ struct StudioRootView: View {
 
     /// 活跃视图的样式规则 + 条件签名(纯内存,走 @Query)。count 抓增删,maxUpdatedAt 抓改,
     /// priority/enabled 单独并入 —— 改任一即触发 rebuild,但 pan/zoom 不打 DB。
-    private func combineRuleSignature(_ hasher: inout Hasher, dsId: UUID, activeViewId: UUID) {
-        let activeRules = viewStyleRules.filter { $0.viewId == activeViewId && $0.datasetId == dsId && !$0.deleted }
-        hasher.combine(activeRules.count)
+    private func combineRuleSignature(_ hasher: inout Hasher, dsId: UUID) {
+        let rules = viewStyleRules.filter { $0.datasetId == dsId && !$0.deleted }
+        hasher.combine(rules.count)
         var rulesMaxUpdated = Date.distantPast
-        for rule in activeRules {
+        for rule in rules {
             hasher.combine(rule.priority)
             hasher.combine(rule.enabled)
             if rule.updatedAt > rulesMaxUpdated { rulesMaxUpdated = rule.updatedAt }
         }
         hasher.combine(rulesMaxUpdated)
-        let activeRuleIds = Set(activeRules.map(\.id))
-        let activeConds = viewStyleConditions.filter { activeRuleIds.contains($0.ruleId) && !$0.deleted }
-        hasher.combine(activeConds.count)
+        let ruleIds = Set(rules.map(\.id))
+        let conds = viewStyleConditions.filter { ruleIds.contains($0.ruleId) && !$0.deleted }
+        hasher.combine(conds.count)
         var condsMaxUpdated = Date.distantPast
-        for condition in activeConds {
+        for condition in conds {
             if condition.updatedAt > condsMaxUpdated { condsMaxUpdated = condition.updatedAt }
         }
         hasher.combine(condsMaxUpdated)
     }
 
     /// 重算整条内容管线写入 cache(只在内容签名变化时调用)。
-    private func rebuildContent(
-        dsId: UUID, visibility: [String: Bool], activeMapView: MapView?,
-        primary: PrimaryFilter, normals: [NormalFilter], zoom: Double
-    ) {
+    private func rebuildContent(dsId: UUID, zoom: Double) {
+        let layers = layerCtx?.allLayers ?? []
         // spotlight 高亮(含 EdgeStore 查询)只在内容变化时算,避免每次 pan 打 store
         let relatedIds: [UUID] = appState.selectedRef.map {
             EdgeStore.relations(of: $0, datasetId: dsId, in: modelContext).flatMap { $0.items.map(\.other.id) }
         } ?? []
         let highlight = SpotlightResolver.highlightedIds(
             selected: appState.selectedRef?.id, relatedIds: relatedIds,
-            enabled: activeMapView?.spotlightOnSelect ?? false
+            enabled: ds?.spotlightOnSelect ?? false
         )
 
         // 全实体 styleEntity 只解析一次,candidates 与 edgeProjection 共用(去重复 JSON decode)。
         let entityById = buildEntityIndex(dsId: dsId)
-        let cands = buildCandidates(dsId: dsId, visibility: visibility, entityById: entityById)
+        let cands = buildCandidates(dsId: dsId, entityById: entityById)
 
         // edgeField 维度的 per-entity DB fetch 是 ON 卡顿主因 —— 一次性建内存投影 + 解析缓存,
-        // 供 visibility/groupColors/legend 共享(同维度同实体只算一次,且不再打 DB)。
+        // 供 resolve/groupColors/legend 共享(同维度同实体只算一次,且不再打 DB)。
         let edgeProjection = buildEdgeProjection(dsId: dsId, entityById: entityById)
         let dimCache = DimResolveCache()
-        let defaultLayerId = layersForDataset(dsId).first(where: { $0.isDefault })?.id
-            ?? layersForDataset(dsId).first?.id ?? dsId
-        let namedLayers = layersForDataset(dsId).map {
-            LayerEvaluator.NamedLayer(
-                name: $0.name,
-                layer: LayerEvaluator.ActiveLayer(
-                    id: $0.id, enabled: layerState.isEnabled($0.id),
-                    minZoom: $0.minZoom, maxZoom: $0.maxZoom
-                )
+
+        let activeLayers: [LayerResolver.ActiveLayer] = layers.map {
+            LayerResolver.ActiveLayer(
+                id: $0.id, name: $0.name, entityType: $0.entityType, zIndex: $0.zIndex,
+                enabled: $0.enabled, minZoom: $0.minZoom, maxZoom: $0.maxZoom,
+                primary: ViewConfigCodec.decodePrimary($0.primaryFilterJSON),
+                normals: ViewConfigCodec.decodeNormals($0.normalFiltersJSON)
             )
         }
-        let evalCands = cands.map { LayerEvaluator.Candidate(id: $0.id, layerId: $0.layerId) }
-        let layerVisible = LayerEvaluator.visibleIds(
-            layers: namedLayers.map(\.layer), zoom: zoom, candidates: evalCands,
-            defaultLayerId: defaultLayerId
+        let resolveCands = cands.map { LayerResolver.Candidate(id: $0.id, entity: $0.entity) }
+        let entityToLayer = LayerResolver.resolve(
+            candidates: resolveCands, layers: activeLayers, zoom: zoom, filterState: filterState,
+            context: modelContext, datasetId: dsId, edgeProjection: edgeProjection, cache: dimCache
         )
-        let membership = LayerEvaluator.membership(
-            layers: namedLayers, zoom: zoom, candidates: evalCands, defaultLayerId: defaultLayerId
+        // 不含 chip 隐藏的成员集 —— 普通过滤图例列全部可切换值(隐藏态仍列出、可再点亮)
+        let entityToLayerNoChips = LayerResolver.resolve(
+            candidates: resolveCands, layers: activeLayers, zoom: zoom, filterState: DimensionFilterState(),
+            context: modelContext, datasetId: dsId, edgeProjection: edgeProjection, cache: dimCache
         )
-        let visCands = cands.map {
-            VisibilityResolver.Candidate(id: $0.id, entity: $0.entity, layerNames: membership[$0.id] ?? [])
+        let layerById = Dictionary(layers.map { ($0.id, $0) }, uniquingKeysWith: { a, _ in a })
+
+        // 预取每图层的样式 + 规则
+        let stylesByLayer = buildStylesByLayer(dsId: dsId, layerIds: layers.map(\.id))
+        let rulesByLayer = buildRulesByLayer(dsId: dsId, layerIds: layers.map(\.id))
+
+        // 分组染色:逐图层独立(各自 groupBy + paletteHex)
+        var groupColors: [UUID: String] = [:]
+        for layer in layers {
+            let primary = ViewConfigCodec.decodePrimary(layer.primaryFilterJSON)
+            guard primary.groupBy != nil else { continue }
+            let palette = layer.paletteHex.isEmpty ? PaletteAssigner.highContrast : layer.paletteHex
+            let items = cands
+                .filter { entityToLayer[$0.id] == layer.id }
+                .map { GroupColorResolver.Item(id: $0.id, entity: $0.entity, layerNames: [layer.name]) }
+            let colors = GroupColorResolver.colors(
+                items: items, groupBy: primary.groupBy, palette: palette,
+                context: modelContext, datasetId: dsId, edgeProjection: edgeProjection, cache: dimCache
+            )
+            groupColors.merge(colors) { _, new in new }
         }
-        let visibleIds = VisibilityResolver.visibleIds(
-            candidates: visCands, layerVisible: layerVisible,
-            primary: primary, normals: normals, filterState: filterState,
-            context: modelContext, datasetId: dsId,
-            edgeProjection: edgeProjection, cache: dimCache
-        )
-        // layer ∩ primary 但不含 chip 隐藏 —— 普通过滤图例列全部可切换值(隐藏态仍列出、可再点亮)
-        let normalLegendIds = VisibilityResolver.visibleIds(
-            candidates: visCands, layerVisible: layerVisible,
-            primary: primary, normals: [], filterState: DimensionFilterState(),
-            context: modelContext, datasetId: dsId,
-            edgeProjection: edgeProjection, cache: dimCache
-        )
-        let viewStyles = buildViewStyles(dsId: dsId, viewId: activeMapView?.id)
-        let viewRules = buildViewStyleRules(dsId: dsId, viewId: activeMapView?.id)
-        let palette = activeMapView.flatMap { $0.paletteHex.isEmpty ? nil : $0.paletteHex }
-            ?? PaletteAssigner.highContrast
-        // 分组染色只作用于主过滤器绑定的实体类型(空 entityType → 不染)
-        let groupItems = cands
-            .filter { visibleIds.contains($0.id) }
-            .map { GroupColorResolver.Item(id: $0.id, entity: $0.entity, layerNames: membership[$0.id] ?? []) }
-        let groupColors = GroupColorResolver.colors(
-            items: groupItems, groupBy: primary.groupBy, palette: palette,
-            context: modelContext, datasetId: dsId,
-            edgeProjection: edgeProjection, cache: dimCache
-        )
+
         let pins = buildPins(
-            cands: cands, visibleIds: visibleIds, groupColors: groupColors,
-            viewStyles: viewStyles, viewRules: viewRules, highlight: highlight
+            cands: cands, entityToLayer: entityToLayer, groupColors: groupColors,
+            stylesByLayer: stylesByLayer, rulesByLayer: rulesByLayer, highlight: highlight
         )
         // 选中片区 → 即便所在层/过滤隐藏也强制绘制(配合 focusArea 自动 focus)
         let selectedAreaId = appState.selectedRef?.kind == .area ? appState.selectedRef?.id : nil
         let dsAreas = areas.filter { $0.datasetId == dsId }
         let (areaOverlays, styleMap) = buildAreaOverlays(
-            areas: visibility["area"] == true ? dsAreas : dsAreas.filter { $0.id == selectedAreaId },
-            visibleIds: visibleIds, viewStyles: viewStyles, viewRules: viewRules,
-            groupColors: groupColors, forceId: selectedAreaId
+            areas: dsAreas, entityToLayer: entityToLayer, stylesByLayer: stylesByLayer,
+            rulesByLayer: rulesByLayer, groupColors: groupColors, layerById: layerById, forceId: selectedAreaId
         )
-        let edgeLines = buildEdgeLines(labels: activeMapView?.drawEdgeLines ?? [], datasetId: dsId)
+        let edgeLines = buildEdgeLines(labels: ds?.drawEdgeLines ?? [], datasetId: dsId)
 
         cache.pins = pins
         cache.overlays = areaOverlays + edgeLines
         cache.styleMap = styleMap
         cache.legendSpecs = buildLegendSpecs(
-            cands: cands, visibleIds: visibleIds, normalLegendIds: normalLegendIds,
-            membership: membership, primary: primary, normals: normals, palette: palette, dsId: dsId,
-            edgeProjection: edgeProjection, dimCache: dimCache
+            cands: cands, entityToLayer: entityToLayer, entityToLayerNoChips: entityToLayerNoChips,
+            layers: layers, dsId: dsId, edgeProjection: edgeProjection, dimCache: dimCache
         )
     }
 
     // MARK: - 图例
 
-    /// 预解析图例规格:每个 item 的维度值 resolve 一次存入 entries。settle/pan 时只按 region bbox 计数。
+    /// 预解析图例规格:逐图层分段。groupBy 段用应用了 chip 隐藏的成员集;普通过滤段用未隐藏成员集
+    /// (隐藏值仍列出、可再点亮)。dimensionKey 带 "layerId|" 前缀,与 LayerResolver.isHidden / toggleChip 一致。
     private func buildLegendSpecs(
-        cands: [Cand], visibleIds: Set<UUID>, normalLegendIds: Set<UUID>, membership: [UUID: [String]],
-        primary: PrimaryFilter, normals: [NormalFilter], palette: [String], dsId: UUID,
+        cands: [Cand], entityToLayer: [UUID: UUID], entityToLayerNoChips: [UUID: UUID],
+        layers: [Layer], dsId: UUID,
         edgeProjection: EdgeProjection? = nil, dimCache: DimResolveCache? = nil
     ) -> [LegendSpec] {
-        /// entityType 非空时只计入该类型实体(图例/计数按实体 scope)
-        func entriesFor(_ ids: Set<UUID>, _ dim: MapDimension, entityType: String, prefixOne: Bool) -> [LegendSpec.Entry] {
-            cands.filter { ids.contains($0.id) && (entityType.isEmpty || $0.type == entityType) }.map { cand in
+        func entries(_ ids: Set<UUID>, _ dim: MapDimension, layerName: String, prefixOne: Bool) -> [LegendSpec.Entry] {
+            cands.filter { ids.contains($0.id) }.map { cand in
                 let input = MapDimension.Input(
-                    entity: cand.entity, layerNames: membership[cand.id] ?? [],
-                    context: modelContext, datasetId: dsId,
+                    entity: cand.entity, layerNames: [layerName], context: modelContext, datasetId: dsId,
                     edgeProjection: edgeProjection, cache: dimCache
                 )
                 var values = dim.resolve(input)
@@ -800,21 +736,31 @@ struct StudioRootView: View {
             }
         }
         var specs: [LegendSpec] = []
-        if let gb = primary.groupBy {
-            let entries = entriesFor(visibleIds, gb, entityType: "", prefixOne: true)
-            let distinct = Array(Set(entries.flatMap(\.values)))
-            let assign = PaletteAssigner.assign(values: distinct, palette: palette)
-            specs.append(LegendSpec(
-                title: legendTitle(for: gb, fallback: "分组"), dimensionKey: gb.key,
-                togglable: false, dropZeroViewport: true, swatch: assign, entries: entries
-            ))
-        }
-        for nf in normals {
-            let entries = entriesFor(normalLegendIds, nf.dimension, entityType: "", prefixOne: false)
-            specs.append(LegendSpec(
-                title: nf.name, dimensionKey: nf.dimension.key,
-                togglable: true, dropZeroViewport: false, swatch: [:], entries: entries
-            ))
+        for layer in layers where layer.showLegend {
+            let memberIds = Set(entityToLayer.filter { $0.value == layer.id }.map(\.key))
+            let memberIdsNoChips = Set(entityToLayerNoChips.filter { $0.value == layer.id }.map(\.key))
+            guard !memberIdsNoChips.isEmpty else { continue }
+            let primary = ViewConfigCodec.decodePrimary(layer.primaryFilterJSON)
+            let normals = ViewConfigCodec.decodeNormals(layer.normalFiltersJSON)
+            let palette = layer.paletteHex.isEmpty ? PaletteAssigner.highContrast : layer.paletteHex
+            let ns = "\(layer.id.uuidString)|"
+            if let gb = primary.groupBy {
+                let e = entries(memberIds, gb, layerName: layer.name, prefixOne: true)
+                let distinct = Array(Set(e.flatMap(\.values)))
+                let assign = PaletteAssigner.assign(values: distinct, palette: palette)
+                specs.append(LegendSpec(
+                    title: "\(layer.name)·\(legendTitle(for: gb, fallback: "分组"))",
+                    dimensionKey: ns + gb.key, togglable: false, dropZeroViewport: true,
+                    swatch: assign, entries: e
+                ))
+            }
+            for nf in normals {
+                let e = entries(memberIdsNoChips, nf.dimension, layerName: layer.name, prefixOne: false)
+                specs.append(LegendSpec(
+                    title: "\(layer.name)·\(nf.name)", dimensionKey: ns + nf.dimension.key,
+                    togglable: true, dropZeroViewport: false, swatch: [:], entries: e
+                ))
+            }
         }
         return specs
     }
@@ -844,15 +790,16 @@ struct StudioRootView: View {
     // MARK: - pins / overlays
 
     private func buildPins(
-        cands: [Cand], visibleIds: Set<UUID>, groupColors: [UUID: String],
-        viewStyles: [String: ViewEntityStyle], viewRules: [String: [ResolvedStyleRule]],
+        cands: [Cand], entityToLayer: [UUID: UUID], groupColors: [UUID: String],
+        stylesByLayer: [UUID: ViewEntityStyle], rulesByLayer: [UUID: [ResolvedStyleRule]],
         highlight: Set<UUID>?
     ) -> [MKAnnotation] {
         var result: [MKAnnotation] = []
-        for c in cands where c.type != "area" && c.hasCoordinate && visibleIds.contains(c.id) {
+        for c in cands where c.type != "area" && c.hasCoordinate {
+            guard let lid = entityToLayer[c.id] else { continue }
             let style = StyleResolver.resolvePin(
-                entity: c.entity, viewStyle: viewStyles[c.type],
-                rules: viewRules[c.type] ?? [], groupFillHex: groupColors[c.id]
+                entity: c.entity, viewStyle: stylesByLayer[lid],
+                rules: rulesByLayer[lid] ?? [], groupFillHex: groupColors[c.id]
             )
             let pin = PinAnnotation(
                 entityId: c.id,
@@ -871,23 +818,27 @@ struct StudioRootView: View {
     }
 
     private func buildAreaOverlays(
-        areas: [Area], visibleIds: Set<UUID>, viewStyles: [String: ViewEntityStyle],
-        viewRules: [String: [ResolvedStyleRule]], groupColors: [UUID: String] = [:], forceId: UUID? = nil
+        areas: [Area], entityToLayer: [UUID: UUID], stylesByLayer: [UUID: ViewEntityStyle],
+        rulesByLayer: [UUID: [ResolvedStyleRule]], groupColors: [UUID: String],
+        layerById: [UUID: Layer], forceId: UUID? = nil
     ) -> ([MKOverlay], [ObjectIdentifier: AreaStyle]) {
-        var built: [(overlay: MKOverlay, style: AreaStyle)] = []
-        for a in areas where !a.deleted && (visibleIds.contains(a.id) || a.id == forceId) {
+        var built: [(overlay: MKOverlay, style: AreaStyle, zIndex: Int)] = []
+        for a in areas where !a.deleted {
+            let lid = entityToLayer[a.id]
+            guard lid != nil || a.id == forceId else { continue }
             let style = StyleResolver.resolveArea(
-                entity: a.styleEntity, viewStyle: viewStyles["area"], rules: viewRules["area"] ?? [],
-                groupFillHex: groupColors[a.id]
+                entity: a.styleEntity, viewStyle: lid.flatMap { stylesByLayer[$0] },
+                rules: lid.flatMap { rulesByLayer[$0] } ?? [], groupFillHex: groupColors[a.id]
             )
             if let r = AreaOverlayFactory.makeOverlay(for: a, style: style) {
-                built.append((r.overlay, r.style))
+                built.append((r.overlay, r.style, lid.flatMap { layerById[$0]?.zIndex } ?? 0))
             }
         }
-        // 共线道路的染色优先级:外环(底) < 中环 < 内环 < 快速路 < 射线(顶)。
-        // 让铁东路/西青道(射线·绿)盖过快速路(紫),东外环弧(快速路·紫)盖过外环(蓝)。
+        // 跨图层按 zIndex;同 zIndex(同层,如「路网」全部道路)用 roadDrawPriority 处理共线道路类色;再 stable。
         let stable = built.enumerated().sorted {
-            let pa = roadDrawPriority($0.element.style.fillHex), pb = roadDrawPriority($1.element.style.fillHex)
+            let (a, b) = ($0.element, $1.element)
+            if a.zIndex != b.zIndex { return a.zIndex < b.zIndex }
+            let pa = roadDrawPriority(a.style.fillHex), pb = roadDrawPriority(b.style.fillHex)
             return pa != pb ? pa < pb : $0.offset < $1.offset
         }
         var overlays: [MKOverlay] = []
@@ -981,22 +932,13 @@ struct StudioRootView: View {
     }
 
     /// 新建实体抽屉(右侧,与实体详情一致)。原为居中 .sheet,现做成抽屉。
-    @ViewBuilder
     private func createDrawer(dsId: UUID) -> some View {
-        let layers = layersForDataset(dsId)
-        let defaultId = layers.first(where: { $0.isDefault })?.id
-        // 列全部图层(非仅已启用);未在当前视图启用的标注提示——选中后需到视图设置启用才会显示
-        let pickable = layers.map {
-            (id: $0.id, name: layerState.isEnabled($0.id) ? $0.name : "\($0.name)(未启用)")
-        }
         CreateEntitySheet(
-            enabledLayers: pickable,
-            defaultLayerId: defaultId,
             prefillName: createPrefillName,
             defaultKind: createPrefillName != nil ? .poi : .compound,
-            onCreate: { kind, layerId, name in
+            onCreate: { kind, name in
                 showCreateMenu = false
-                createPin(kind, layerId: layerId, name: name)
+                createPin(kind, name: name)
             },
             onCancel: { showCreateMenu = false
                 createPrefillName = nil
@@ -1004,12 +946,12 @@ struct StudioRootView: View {
         )
     }
 
-    private func createPin(_ kind: EntityKind, layerId: UUID?, name: String = "") {
-        guard let coord = pendingCoordinate, let dsId = viewContext?.datasetIdValue else { return }
+    private func createPin(_ kind: EntityKind, name: String = "") {
+        guard let coord = pendingCoordinate, let dsId = layerCtx?.datasetIdValue else { return }
         let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
         let ref = EntityWriter.createPin(
             kind: kind, datasetId: dsId, name: trimmed.isEmpty ? "未命名" : trimmed,
-            latitude: coord.latitude, longitude: coord.longitude, layerId: layerId, in: modelContext
+            latitude: coord.latitude, longitude: coord.longitude, layerId: nil, in: modelContext
         )
         searchMarker = nil
         searchPlace = nil
@@ -1030,7 +972,7 @@ struct StudioRootView: View {
 
     /// 完成绘制:顶点 → GeoJSON(Polygon / LineString)。重绘态替换原几何;否则新建 Area(默认层)。
     private func finishAreaDraw() {
-        guard areaDrawPoints.count >= areaDrawKind.minPoints, let dsId = viewContext?.datasetIdValue else { return }
+        guard areaDrawPoints.count >= areaDrawKind.minPoints, let dsId = layerCtx?.datasetIdValue else { return }
         let isLine = areaDrawKind == .line
         let geo = (
             isLine
@@ -1052,10 +994,9 @@ struct StudioRootView: View {
             return // 保留原选中 + 编辑态,抽屉随 areaDrawMode=false 恢复
         }
 
-        let layerId = layersForDataset(dsId).first(where: { $0.isDefault })?.id
         let ref = EntityWriter.createPin(
             kind: .area, datasetId: dsId, name: isLine ? "新折线" : "新区域",
-            latitude: 0, longitude: 0, layerId: layerId, in: modelContext
+            latitude: 0, longitude: 0, layerId: nil, in: modelContext
         )
         if let a = EntityReader.fetch(Area.self, ref.id, modelContext) {
             a.geometryJSON = geo
@@ -1070,41 +1011,41 @@ struct StudioRootView: View {
         appState.beginEditing()
     }
 
-    /// 切换普通过滤 chip 隐藏 + 持久到 active MapView.hiddenChipsJSON。
+    /// 切换普通过滤 chip 隐藏 + 持久到所属图层 hiddenChipsJSON。
+    /// chip key 已带 "layerId|" 前缀(legend 拼好)→ 解析图层、去前缀存。
     private func toggleChip(_ dimKey: String, _ value: String) {
         filterState.toggle(dimensionKey: dimKey, value: value)
-        guard let mv = viewContext?.activeMapView,
-              let data = try? JSONEncoder().encode(filterState.snapshot()),
-              let s = String(data: data, encoding: .utf8) else { return }
-        mv.hiddenChipsJSON = s
-        mv.updatedAt = Date()
+        let parts = dimKey.split(separator: "|", maxSplits: 1).map(String.init)
+        guard parts.count == 2, let lid = UUID(uuidString: parts[0]),
+              let layer = (layerCtx?.allLayers ?? []).first(where: { $0.id == lid }) else { return }
+        var dict: [String: [String]] = [:]
+        let prefix = "\(lid.uuidString)|"
+        for (k, set) in filterState.hidden where k.hasPrefix(prefix) {
+            dict[String(k.dropFirst(prefix.count))] = Array(set).sorted()
+        }
+        layer.hiddenChipsJSON = (try? JSONHelpers.encode(dict)) ?? "{}"
+        layer.updatedAt = Date()
     }
 
-    /// 从 active MapView.hiddenChipsJSON 恢复 chip 隐藏态(切视图/启动)。
+    /// 从各图层 hiddenChipsJSON 还原(键加 "layerId|" 前缀)。
     private func restoreChips() {
-        guard let mv = viewContext?.activeMapView,
-              let data = mv.hiddenChipsJSON.data(using: .utf8),
-              let dict = try? JSONDecoder().decode([String: [String]].self, from: data)
-        else {
-            filterState.reset()
-            return
+        filterState.reset()
+        var merged: [String: [String]] = [:]
+        for layer in layerCtx?.allLayers ?? [] {
+            guard let data = layer.hiddenChipsJSON.data(using: .utf8),
+                  let dict = try? JSONDecoder().decode([String: [String]].self, from: data) else { continue }
+            for (k, v) in dict {
+                merged["\(layer.id.uuidString)|\(k)"] = v
+            }
         }
-        filterState.load(dict)
+        filterState.load(merged)
     }
 
-    /// 切换图层启用:写回 active MapView.enabledLayerIds(持久,单一数据源)+ 同步 layerState。
-    /// 视图设置「启用图层」也改同一字段 → 两处联动。
+    /// 切换图层启用:直接 mutate Layer.enabled(单一数据源)。
     private func toggleLayer(_ id: UUID) {
-        guard let mv = viewContext?.activeMapView else { layerState.toggle(id)
-            return
-        }
-        if mv.enabledLayerIds.contains(id) {
-            mv.enabledLayerIds.removeAll { $0 == id }
-        } else {
-            mv.enabledLayerIds.append(id)
-        }
-        mv.updatedAt = Date()
-        layerState.initialize(enabledIds: mv.enabledLayerIds)
+        guard let layer = (layerCtx?.allLayers ?? []).first(where: { $0.id == id }) else { return }
+        layer.enabled.toggle()
+        layer.updatedAt = Date()
     }
 
     private func idKind(for id: UUID, in pins: [MKAnnotation]) -> EntityKind? {
@@ -1114,26 +1055,23 @@ struct StudioRootView: View {
         return nil
     }
 
-    /// 按 viewId 预取该视图的 ViewEntityStyle → [entityType: ViewEntityStyle]。
-    private func buildViewStyles(dsId: UUID, viewId: UUID?) -> [String: ViewEntityStyle] {
-        guard let viewId else { return [:] }
-        let fetch = FetchDescriptor<ViewEntityStyle>(
-            predicate: #Predicate { $0.datasetId == dsId && $0.viewId == viewId && !$0.deleted }
-        )
-        let rows = (try? modelContext.fetch(fetch)) ?? []
-        return Dictionary(rows.map { ($0.entityType, $0) }, uniquingKeysWith: { first, _ in first })
+    /// layerId → ViewEntityStyle(每图层一行)。
+    private func buildStylesByLayer(dsId: UUID, layerIds: [UUID]) -> [UUID: ViewEntityStyle] {
+        let idSet = Set(layerIds)
+        let fetch = FetchDescriptor<ViewEntityStyle>(predicate: #Predicate { $0.datasetId == dsId && !$0.deleted })
+        let rows = ((try? modelContext.fetch(fetch)) ?? []).filter { idSet.contains($0.layerId) }
+        return Dictionary(rows.map { ($0.layerId, $0) }, uniquingKeysWith: { a, _ in a })
     }
 
-    /// 按 viewId 预取该视图全部 ViewStyleRule(+ 各自 ViewStyleCondition)→ 按 entityType 分组、
-    /// priority 升序的 ResolvedStyleRule。resolver 纯内存,不再查 DB。
-    private func buildViewStyleRules(dsId: UUID, viewId: UUID?) -> [String: [ResolvedStyleRule]] {
-        guard let viewId else { return [:] }
+    /// layerId → [ResolvedStyleRule](priority 升序)。resolver 纯内存,不再查 DB。
+    private func buildRulesByLayer(dsId: UUID, layerIds: [UUID]) -> [UUID: [ResolvedStyleRule]] {
+        let idSet = Set(layerIds)
         let ruleFetch = FetchDescriptor<ViewStyleRule>(
-            predicate: #Predicate { $0.datasetId == dsId && $0.viewId == viewId && !$0.deleted },
+            predicate: #Predicate { $0.datasetId == dsId && !$0.deleted },
             sortBy: [SortDescriptor(\.priority)]
         )
-        let rules = (try? modelContext.fetch(ruleFetch)) ?? []
-        var out: [String: [ResolvedStyleRule]] = [:]
+        let rules = ((try? modelContext.fetch(ruleFetch)) ?? []).filter { idSet.contains($0.layerId) }
+        var out: [UUID: [ResolvedStyleRule]] = [:]
         for rule in rules {
             let ruleId = rule.id
             let condFetch = FetchDescriptor<ViewStyleCondition>(
@@ -1158,7 +1096,7 @@ struct StudioRootView: View {
                 ),
                 priority: rule.priority, enabled: rule.enabled, conditions: conditions
             )
-            out[rule.entityType, default: []].append(resolved)
+            out[rule.layerId, default: []].append(resolved)
         }
         return out
     }
@@ -1195,9 +1133,9 @@ struct StudioRootView: View {
         return EdgeLineFactory.polylines(from: segs)
     }
 
-    private func ensureViewContext() {
-        guard viewContext == nil, let ds = datasets.first(where: { !$0.deleted }) else { return }
-        viewContext = MapViewContext(dataset: ds, modelContext: modelContext)
+    private func ensureLayerContext() {
+        guard layerCtx == nil, let ds = datasets.first(where: { !$0.deleted }) else { return }
+        layerCtx = LayerContext(dataset: ds, modelContext: modelContext)
     }
 
     /// 隐藏标题文字 + 去 toolbar/分隔线(公开 API),再经 NSWindow 反射去毛玻璃材质。
@@ -1235,10 +1173,6 @@ struct StudioRootView: View {
                 window.setValue(clearColor, forKey: "backgroundColor")
             }
         }
-    }
-
-    private func layersForDataset(_ dsId: UUID) -> [Layer] {
-        layersQuery.filter { $0.datasetId == dsId && !$0.deleted }.sorted { $0.zIndex < $1.zIndex }
     }
 }
 #else

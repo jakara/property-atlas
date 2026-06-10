@@ -68,9 +68,7 @@ struct LayerSettingsTab: View {
                     Toggle("启用", isOn: Binding(get: { l.enabled }, set: { l.enabled = $0
                         l.updatedAt = Date()
                     })).font(Studio.sans(13)).tint(Studio.cool).fixedSize()
-                    if l.isDefault {
-                        Text("默认图层").font(Studio.sans(11, .medium)).foregroundStyle(Studio.on3)
-                    }
+                    Text("类型 \(l.entityType)").font(Studio.sans(11, .medium)).foregroundStyle(Studio.on3)
                     Spacer()
                 }
                 HStack(spacing: 10) {
@@ -81,9 +79,6 @@ struct LayerSettingsTab: View {
                         l.updatedAt = Date()
                     })
                 }
-                RowDivider().padding(.top, 2)
-                SectionLabel(text: "成员")
-                LayerMembersView(layerId: l.id, datasetId: datasetId, onSelect: onSelect, onEdit: onEdit)
             }
             .padding(.horizontal, 13).padding(.bottom, 12)
         }
@@ -94,12 +89,10 @@ struct LayerSettingsTab: View {
             TextField("名称", text: Binding(get: { l.name }, set: { l.name = $0
                 l.updatedAt = Date()
             })).glassField()
-            if !l.isDefault {
-                Button(role: .destructive) { deleteLayer(l)
-                } label: {
-                    Image(systemName: "trash").font(.system(size: 12)).foregroundStyle(Studio.bad)
-                }.buttonStyle(.plain)
-            }
+            Button(role: .destructive) { deleteLayer(l)
+            } label: {
+                Image(systemName: "trash").font(.system(size: 12)).foregroundStyle(Studio.bad)
+            }.buttonStyle(.plain)
         }
     }
 
@@ -126,25 +119,9 @@ struct LayerSettingsTab: View {
     }
 
     private func deleteLayer(_ l: Layer) {
-        guard !l.isDefault else { return }
-        if let home = dsLayers.first(where: { $0.isDefault })?.id {
-            reassignMembers(from: l.id, to: home)
-        }
-        modelContext.delete(l)
+        l.deleted = true
+        l.updatedAt = Date()
         try? modelContext.save()
-    }
-
-    private func reassignMembers(from old: UUID, to home: UUID) {
-        func move<T: PersistentModel & LayerAssignable>(_ type: T.Type) {
-            let all = (try? modelContext.fetch(FetchDescriptor<T>())) ?? []
-            for e in all where e.layerId == old {
-                e.layerId = home
-            }
-        }
-        move(Compound.self)
-        move(School.self)
-        move(POI.self)
-        move(Area.self)
     }
 }
 #endif

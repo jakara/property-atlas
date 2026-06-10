@@ -103,15 +103,6 @@ enum EntityReader {
         }
     }
 
-    static func layerId(_ ref: EntityRef, in context: ModelContext) -> UUID? {
-        switch ref.kind {
-        case .compound: fetch(Compound.self, ref.id, context)?.layerId
-        case .school: fetch(School.self, ref.id, context)?.layerId
-        case .poi: fetch(POI.self, ref.id, context)?.layerId
-        case .area: fetch(Area.self, ref.id, context)?.layerId
-        }
-    }
-
     private static func styleEntity(_ ref: EntityRef, in context: ModelContext) -> StyleEntity? {
         switch ref.kind {
         case .compound: fetch(Compound.self, ref.id, context)?.styleEntity

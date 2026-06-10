@@ -15,33 +15,29 @@ enum StyleConsolidationMigrator {
     }
 
     private static func migrateViews(in context: ModelContext) {
-        let views = (try? context.fetch(FetchDescriptor<MapView>(
+        let layers = (try? context.fetch(FetchDescriptor<Layer>(
             predicate: #Predicate { !$0.deleted }
         ))) ?? []
-        for view in views {
-            let viewId = view.id
-            let datasetId = view.datasetId
+        for layer in layers {
+            let lid = layer.id
             let existing = (try? context.fetch(FetchDescriptor<ViewEntityStyle>(
-                predicate: #Predicate { $0.viewId == viewId && !$0.deleted }
+                predicate: #Predicate { $0.layerId == lid && !$0.deleted }
             ))) ?? []
-            let existingTypes = Set(existing.map(\.entityType))
-            let missing = ["compound", "school", "poi", "area"].filter { !existingTypes.contains($0) }
-            if missing.isEmpty { continue } // 全 4 类已有 → 跳过整视图(含 palette/legend),不覆盖用户编辑
+            if !existing.isEmpty { continue } // 该图层已有样式行 → 跳过,不覆盖用户编辑
 
-            let theme = resolveTheme(for: view, in: context)
+            let theme = activeTheme(datasetId: layer.datasetId, in: context)
             let parsed = theme.flatMap { try? StyleDefaults.parseThemeDefaults($0.defaultStylesJSON) }
-
-            for entityType in missing {
-                let row = ViewEntityStyle(datasetId: datasetId, viewId: viewId, entityType: entityType)
-                applyParsedDefaults(parsed, entityType: entityType, to: row)
-                context.insert(row)
-            }
-
-            // palette/legend 仅在全新视图(此前零行)搬运,避免部分迁移时覆盖用户已编辑的 palette/legend
-            if existing.isEmpty {
-                applyPaletteAndLegend(view: view, theme: theme, in: context)
-            }
+            let row = ViewEntityStyle(datasetId: layer.datasetId, layerId: lid, entityType: layer.entityType)
+            applyParsedDefaults(parsed, entityType: layer.entityType, to: row)
+            context.insert(row)
         }
+    }
+
+    private static func activeTheme(datasetId: UUID, in context: ModelContext) -> Theme? {
+        guard let aid = (try? context.fetch(FetchDescriptor<Dataset>(
+            predicate: #Predicate { $0.id == datasetId }
+        )))?.first?.activeThemeId else { return nil }
+        return themeById(aid, in: context)
     }
 
     private static func applyParsedDefaults(
@@ -64,36 +60,6 @@ enum StyleConsolidationMigrator {
             row.size = pinPartial.size.map { Int($0) }
             row.labelVisible = pinPartial.labelVisible
         }
-    }
-
-    private static func applyPaletteAndLegend(view: MapView, theme: Theme?, in context: ModelContext) {
-        if let paletteId = view.paletteId {
-            let palette = (try? context.fetch(FetchDescriptor<Palette>(
-                predicate: #Predicate { $0.id == paletteId && !$0.deleted }
-            )))?.first
-            if let palette { view.paletteHex = palette.colorsHex }
-        }
-        if let resolvedTheme = theme { view.showLegend = resolvedTheme.showLegend }
-    }
-
-    private static func resolveTheme(for view: MapView, in context: ModelContext) -> Theme? {
-        let datasetId = view.datasetId
-        let enabledIds = Set(view.enabledLayerIds)
-        let allLayers = (try? context.fetch(FetchDescriptor<Layer>(
-            predicate: #Predicate { $0.datasetId == datasetId && !$0.deleted }
-        ))) ?? []
-        let topThemeId = allLayers
-            .filter { enabledIds.contains($0.id) }
-            .sorted { $0.zIndex > $1.zIndex }
-            .compactMap(\.themeId)
-            .first
-        if let themeId = topThemeId, let theme = themeById(themeId, in: context) {
-            return theme
-        }
-        let activeThemeId = (try? context.fetch(FetchDescriptor<Dataset>(
-            predicate: #Predicate { $0.id == datasetId }
-        )))?.first?.activeThemeId
-        return activeThemeId.flatMap { themeById($0, in: context) }
     }
 
     private static func themeById(_ themeId: UUID, in context: ModelContext) -> Theme? {
@@ -178,26 +144,29 @@ enum StyleConsolidationMigrator {
     /// 旧 StyleRule(挂 theme.styleRuleIds)→ ViewStyleRule + ViewStyleCondition。
     /// 每视图闸 = 已有 ViewStyleRule 行则跳过。
     private static func migrateStyleRules(in context: ModelContext) {
-        let views = (try? context.fetch(FetchDescriptor<MapView>(
+        let layers = (try? context.fetch(FetchDescriptor<Layer>(
             predicate: #Predicate { !$0.deleted }
         ))) ?? []
-        for view in views {
-            let viewId = view.id
+        for layer in layers {
+            let lid = layer.id
             let existing = (try? context.fetch(FetchDescriptor<ViewStyleRule>(
-                predicate: #Predicate { $0.viewId == viewId && !$0.deleted }
+                predicate: #Predicate { $0.layerId == lid && !$0.deleted }
             ))) ?? []
             if !existing.isEmpty { continue }
-            guard let theme = resolveTheme(for: view, in: context) else { continue }
+            guard let theme = activeTheme(datasetId: layer.datasetId, in: context) else { continue }
+            let layerType = layer.entityType
             for styleRuleId in theme.styleRuleIds {
                 guard let old = styleRuleById(styleRuleId, in: context) else { continue }
-                migrateStyleRule(old, viewId: viewId, datasetId: view.datasetId, in: context)
+                // 单类型图层:只搬运匹配本图层 entityType 的旧规则
+                guard old.entityType == layerType else { continue }
+                migrateStyleRule(old, layerId: lid, datasetId: layer.datasetId, in: context)
             }
         }
     }
 
     private static func migrateStyleRule(
         _ old: StyleRule,
-        viewId: UUID,
+        layerId: UUID,
         datasetId: UUID,
         in context: ModelContext
     ) {
@@ -207,7 +176,7 @@ enum StyleConsolidationMigrator {
         } catch {
             return // conditionsJSON 损坏 → 跳过整条规则,避免产生 match-all
         }
-        let rule = ViewStyleRule(datasetId: datasetId, viewId: viewId, entityType: old.entityType)
+        let rule = ViewStyleRule(datasetId: datasetId, layerId: layerId, entityType: old.entityType)
         rule.priority = old.priority
         rule.enabled = old.enabled
         rule.shape = old.appliesShape
