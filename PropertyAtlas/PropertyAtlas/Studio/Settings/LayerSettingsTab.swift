@@ -60,6 +60,7 @@ struct LayerSettingsTab: View {
             LayerPrimaryFilterSection(layer: l)
             LayerNormalFilterSection(layer: l)
             LayerStyleSection(layer: l)
+            LayerBulkAssignSection(layer: l)
         }
         .id(l.id)
     }
