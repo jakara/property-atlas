@@ -1,8 +1,10 @@
 import Foundation
 import SwiftData
 
-/// 图层中心化可见性:每个候选实体落到「类型匹配 + 层内 AND 过滤通过 + chip 未隐藏」的
-/// 启用图层中 zIndex 最高者。返回 entityId → 命中图层 id。多图层之间天然 OR(并集 = 映射 keys)。
+/// 图层中心化可见性:每个候选实体落到「显式归属(entity.layerId == layer.id)+ 类型匹配
+/// + primaryFilter 显示门通过 + chip 未隐藏」的启用图层中 zIndex 最高者。
+/// 归属由 entity.layerId 决定（容器判定）；primaryFilter 是显示门而非成员选择器。
+/// 返回 entityId → 命中图层 id。多图层之间天然 OR（并集 = 映射 keys）。
 @MainActor
 enum LayerResolver {
     struct Candidate {
@@ -46,11 +48,13 @@ enum LayerResolver {
         for c in candidates {
             let type = c.entity.entityType
             for layer in active where layer.entityType == type {
+                // 显式归属:实体 layerId 必须等于本层 id（容器判定）
+                guard c.entity.layerId == layer.id else { continue }
                 let input = MapDimension.Input(
                     entity: c.entity, layerNames: [layer.name], context: context, datasetId: datasetId,
                     edgeProjection: edgeProjection, cache: cache
                 )
-                guard layer.primary.matches(input) else { continue }
+                guard layer.primary.matches(input) else { continue } // primaryFilter = 显示门
                 if isHidden(input: input, layer: layer, filterState: filterState) { continue }
                 if let existing = winner[c.id], existing.zIndex >= layer.zIndex { continue }
                 winner[c.id] = (layer.id, layer.zIndex)
