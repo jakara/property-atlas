@@ -37,6 +37,8 @@ final class Area {
     var createdAt: Date = Date()
     var updatedAt: Date = Date()
     var deleted: Bool = false
+    /// 显式图层归属。可空仅为轻量迁移加列方便;迁移后业务上恒非空(默认层不变式保证)。
+    var layerId: UUID?
 
     init(
         id: UUID = UUID(),

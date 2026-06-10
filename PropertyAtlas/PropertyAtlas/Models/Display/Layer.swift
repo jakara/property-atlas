@@ -16,6 +16,9 @@ final class Layer {
     var hiddenChipsJSON: String = "{}"
     var paletteHex: [String] = []
     var showLegend: Bool = true
+    /// 该 entityType 的默认图层标记。每 entityType 恰一个 true。
+    /// 默认层不可删;删其他层时成员回落于此;新建实体落于此。
+    var isDefault: Bool = false
     // 既有
     var minZoom: Double?
     var maxZoom: Double?
