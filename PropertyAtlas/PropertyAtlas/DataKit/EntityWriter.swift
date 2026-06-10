@@ -12,24 +12,28 @@ enum EntityWriter {
         longitude: Double,
         in context: ModelContext
     ) -> EntityRef {
-        // 图层归属已由 entityType + 过滤器派生(layer-centric),创建时不再指派图层。
+        // 显式归属:新建实体落入该 entityType 的默认图层(默认层不变式)。
         let id: UUID
         switch kind {
         case .compound:
             let e = Compound(datasetId: datasetId, name: name, latitude: latitude, longitude: longitude)
             context.insert(e)
+            e.layerId = LayerAssign.defaultLayer(entityType: "compound", datasetId: datasetId, in: context)?.id
             id = e.id
         case .school:
             let e = School(datasetId: datasetId, name: name, latitude: latitude, longitude: longitude)
             context.insert(e)
+            e.layerId = LayerAssign.defaultLayer(entityType: "school", datasetId: datasetId, in: context)?.id
             id = e.id
         case .poi:
             let e = POI(datasetId: datasetId, name: name, latitude: latitude, longitude: longitude)
             context.insert(e)
+            e.layerId = LayerAssign.defaultLayer(entityType: "poi", datasetId: datasetId, in: context)?.id
             id = e.id
         case .area:
             let e = Area(datasetId: datasetId, name: name)
             context.insert(e)
+            e.layerId = LayerAssign.defaultLayer(entityType: "area", datasetId: datasetId, in: context)?.id
             id = e.id
         }
         return EntityRef(id: id, kind: kind)
