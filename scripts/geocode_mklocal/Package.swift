@@ -5,6 +5,11 @@ let package = Package(
     name: "GeocodeMK",
     platforms: [.macOS(.v14)],
     targets: [
-        .executableTarget(name: "GeocodeMK"),
+        .executableTarget(
+            name: "GeocodeMK",
+            linkerSettings: [
+                .linkedLibrary("sqlite3"),
+            ]
+        ),
     ]
 )
