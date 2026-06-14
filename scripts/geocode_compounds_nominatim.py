@@ -33,11 +33,15 @@ def search(name: str) -> tuple[float, float] | None:
     })
     url = f"{NOMINATIM}?{q}"
     req = urllib.request.Request(url, headers={"User-Agent": UA})
+    t0 = time.time()
     try:
         with urllib.request.urlopen(req, timeout=10) as resp:
             data = json.loads(resp.read())
+        elapsed = time.time() - t0
+        print(f"    HTTP {elapsed:.2f}s items={len(data)}", flush=True)
     except Exception as e:
-        print(f"  ⚠ error for {name}: {e}", file=sys.stderr)
+        elapsed = time.time() - t0
+        print(f"    HTTP {elapsed:.2f}s ERROR {type(e).__name__}: {e}", file=sys.stderr, flush=True)
         return None
     if data and "lat" in data[0] and "lon" in data[0]:
         try:
@@ -47,19 +51,23 @@ def search(name: str) -> tuple[float, float] | None:
             return None
         if in_tianjin(lat, lon):
             return (lat, lon)
+        else:
+            print(f"    out_of_bounds: {lat},{lon}", file=sys.stderr, flush=True)
     return None
 
 
 def main() -> None:
+    print(f"START nominatim_retry pid={__import__('os').getpid()}", flush=True)
     rows = json.loads(JSON_PATH.read_text(encoding="utf-8"))
     failed = [i for i, r in enumerate(rows) if r.get("geocode_confidence") == "failed"]
-    print(f"loaded {len(rows)} rows, retrying {len(failed)} failed via Nominatim")
+    print(f"loaded {len(rows)} rows, retrying {len(failed)} failed via Nominatim", flush=True)
 
     hit = 0
     miss = 0
     for n, i in enumerate(failed, 1):
         row = rows[i]
         name = row["name"]
+        print(f"[{n}/{len(failed)}] {name}", flush=True)
         result = search(name)
         row["geocode_source"] = "nominatim"
         if result is not None:
@@ -68,15 +76,17 @@ def main() -> None:
             row["lon"] = lon
             row["geocode_confidence"] = "name"
             hit += 1
+            print(f"  HIT  {lat:.5f} {lon:.5f}", flush=True)
         else:
             row["geocode_confidence"] = "failed"
             miss += 1
-        if n % 10 == 0 or n == len(failed):
-            print(f"progress {n}/{len(failed)} hit={hit} miss={miss}")
+            print(f"  MISS", flush=True)
+        if n % 10 == 0:
+            print(f"--- checkpoint n={n} hit={hit} miss={miss} ---", flush=True)
         time.sleep(THROTTLE_S)
 
     JSON_PATH.write_text(json.dumps(rows, ensure_ascii=False, indent=2), encoding="utf-8")
-    print(f"DONE hit={hit} miss={miss} out={JSON_PATH}")
+    print(f"DONE hit={hit} miss={miss} out={JSON_PATH}", flush=True)
 
 
 if __name__ == "__main__":
