@@ -83,6 +83,8 @@ def main() -> None:
             print(f"  MISS", flush=True)
         if n % 10 == 0:
             print(f"--- checkpoint n={n} hit={hit} miss={miss} ---", flush=True)
+            JSON_PATH.write_text(json.dumps(rows, ensure_ascii=False, indent=2), encoding="utf-8")
+            print(f"    wrote {JSON_PATH}", flush=True)
         time.sleep(THROTTLE_S)
 
     JSON_PATH.write_text(json.dumps(rows, ensure_ascii=False, indent=2), encoding="utf-8")

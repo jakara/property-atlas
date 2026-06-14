@@ -50,7 +50,7 @@ def load_rows(json_path: Path) -> list[dict]:
     return rows
 
 
-def apply(json_path: Path, store_path: Path) -> tuple[int, int, int]:
+def apply(json_path: Path, store_path: Path) -> tuple[int, int, int, int]:
     rows = load_rows(json_path)
     skipped = sum(1 for r in rows if r.get("geocode_confidence") == "failed")
     actionable = [r for r in rows if r.get("geocode_confidence") != "failed"]
@@ -66,14 +66,24 @@ def apply(json_path: Path, store_path: Path) -> tuple[int, int, int]:
         now = cocoa_timestamp()
         sql = "UPDATE ZCOMPOUND SET ZLATITUDE = ?, ZLONGITUDE = ?, ZUPDATEDAT = ? WHERE Z_PK = ?"
         updated = 0
+        warned = 0
         for r in actionable:
-            pk = r["pk"]
-            lat = float(r["lat"])
-            lon = float(r["lon"])
+            try:
+                pk = r["pk"]
+                lat = float(r["lat"])
+                lon = float(r["lon"])
+            except (KeyError, ValueError, TypeError) as e:
+                print(f"WARN skip row missing/bad field {e}: {r.get('name', '?')}", file=sys.stderr)
+                warned += 1
+                continue
             cur.execute(sql, (lat, lon, now, pk))
-            updated += cur.rowcount
+            if cur.rowcount == 0:
+                print(f"WARN pk={pk} {r.get('name', '?')} not found in ZCOMPOUND", file=sys.stderr)
+                warned += 1
+                continue
+            updated += 1
         conn.commit()
-        return updated, len(actionable), skipped
+        return updated, len(actionable), skipped, warned
     finally:
         conn.close()
 
@@ -90,9 +100,9 @@ def main() -> None:
         sys.exit(1)
 
     t0 = time.time()
-    updated, total, skipped = apply(args.json, args.store)
+    updated, total, skipped, warned = apply(args.json, args.store)
     dt = time.time() - t0
-    print(f"updated {updated}/{total} rows in {dt:.2f}s (skipped {skipped} failed)")
+    print(f"updated {updated}/{total} rows in {dt:.2f}s (skipped {skipped} failed, warned {warned})")
 
 
 if __name__ == "__main__":
