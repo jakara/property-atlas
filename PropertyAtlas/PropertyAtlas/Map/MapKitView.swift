@@ -125,6 +125,8 @@ struct MapKitView: UIViewRepresentable {
         private var regionSettle: DispatchWorkItem?
         /// 低于此 zoom 隐藏所有文字标签(只留圆点)。城市概览 ~11-12,街区 ~15+。
         private static let labelMinZoom: Double = 13
+        /// 视口内可见 pin 少于此数 → 无视 zoom 强制显示标签(稀疏时不怕重叠)。
+        private static let labelForceShowMaxPins = 10
         private var lastLabelsAllowed: Bool?
 
         /// shift + 移动鼠标 → 平移地图;control + 上下移动 → 缩放。其余 hover 忽略。
@@ -277,14 +279,25 @@ struct MapKitView: UIViewRepresentable {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.12, execute: work)
         }
 
-        /// region settle 时按 zoom 跨阈值切换标签显隐。仅刷新当前可见的 pin view,不重建 annotation。
+        /// region settle 时切换标签显隐。门控 = zoom 过线 或 视口可见 pin 稀疏(见 LabelGate)。
+        /// 仅刷新当前可见的 pin view,不重建 annotation。
         private func updateLabelVisibility(region: MKCoordinateRegion) {
             #if targetEnvironment(macCatalyst)
-            let allowed = ZoomLevel.from(region: region) >= Self.labelMinZoom
+            guard let mv = mapViewRef else { return }
+            let rect = mv.visibleMapRect
+            let visibleCount = mv.annotations.reduce(into: 0) { acc, ann in
+                guard ann is PinAnnotation else { return }
+                if rect.contains(MKMapPoint(ann.coordinate)) { acc += 1 }
+            }
+            let allowed = LabelGate.allowed(
+                visiblePinCount: visibleCount,
+                zoom: ZoomLevel.from(region: region),
+                minZoom: Self.labelMinZoom,
+                threshold: Self.labelForceShowMaxPins
+            )
             guard allowed != lastLabelsAllowed else { return }
             lastLabelsAllowed = allowed
             PinAnnotationView.labelsAllowed = allowed
-            guard let mv = mapViewRef else { return }
             for annotation in mv.annotations {
                 (mv.view(for: annotation) as? PinAnnotationView)?.applyLabelVisibility()
             }
