@@ -257,6 +257,22 @@ struct StudioRootView: View {
             )
             .ignoresSafeArea()
 
+            // ESC 关最上层右侧抽屉(隐藏快捷键宿主)。仅当有抽屉可关才存在 → 不抢占空闲 ESC;
+            // 出图模式让位给其自身 ESC(且此时抽屉本就隐藏)。
+            if !exportMode,
+               DrawerDismiss.topmost(
+                   settings: showSettings, create: showCreateMenu,
+                   placeDetail: showPlaceDetail, hasSelection: appState.selectedRef != nil
+               ) != nil
+            {
+                Button("") { dismissTopDrawer() }
+                    .keyboardShortcut(.cancelAction)
+                    .opacity(0)
+                    .frame(width: 1, height: 1)
+                    .allowsHitTesting(false)
+                    .accessibilityHidden(true)
+            }
+
             // 自由绘图层:盖在地图上方、chrome 下方(无 zIndex → 按顺序在 StudioOverlay 之下,工具栏仍可点)
             if drawMode {
                 FreeDrawCanvas(active: $drawMode)
@@ -477,6 +493,21 @@ struct StudioRootView: View {
             // Studio 菜单「跳到 …」机位 → 飞到该预设相机。
             guard let preset = note.object as? StudioCameraPreset else { return }
             camera = preset.camera
+        }
+    }
+
+    /// ESC 关最上层右侧抽屉。实体详情走 clearSelection(),与 × 按钮一致
+    /// (从设置导航来的会经 selectedRef onChange 重唤设置)。
+    private func dismissTopDrawer() {
+        switch DrawerDismiss.topmost(
+            settings: showSettings, create: showCreateMenu,
+            placeDetail: showPlaceDetail, hasSelection: appState.selectedRef != nil
+        ) {
+        case .settings: showSettings = false
+        case .create: showCreateMenu = false
+        case .placeDetail: showPlaceDetail = false
+        case .entity: appState.clearSelection()
+        case nil: break
         }
     }
 
