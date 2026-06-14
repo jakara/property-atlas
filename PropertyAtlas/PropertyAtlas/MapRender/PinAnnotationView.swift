@@ -83,6 +83,7 @@ final class PinAnnotationView: MKAnnotationView {
             nameLabel.isHidden = false
             nameLabel.text = "  \(a.name)  "
             nameLabel.backgroundColor = fill.withAlphaComponent(0.92)
+            nameLabel.textColor = HexColor.parse(ContrastText.labelHex(onFill: style.fillHex)) ?? .white
             let nameSize = nameLabel.intrinsicContentSize
             let h: CGFloat = max(dotSize, nameSize.height + 2)
             dot.frame = CGRect(x: 0, y: (h - dotSize) / 2, width: dotSize, height: dotSize)
