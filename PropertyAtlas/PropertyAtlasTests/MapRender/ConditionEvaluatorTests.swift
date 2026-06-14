@@ -60,4 +60,22 @@ struct ConditionEvaluatorTests {
         let c = StyleCondition(field: "isMarketKey", op: .equals, value: .bool(true))
         #expect(ConditionEvaluator.matches(entity: s.styleEntity, condition: c))
     }
+
+    @Test func boolEqualsConditionMatchesFalseEntity() {
+        let entity = StyleEntity(
+            entityType: "compound", id: UUID(),
+            baseFields: ["isNewHouse": .bool(false)], customFields: [:]
+        )
+        let cond = StyleCondition(field: "isNewHouse", op: .equals, value: .bool(false))
+        #expect(ConditionEvaluator.matches(entity: entity, condition: cond))
+    }
+
+    @Test func boolEqualsConditionRejectsTrueEntity() {
+        let entity = StyleEntity(
+            entityType: "compound", id: UUID(),
+            baseFields: ["isNewHouse": .bool(true)], customFields: [:]
+        )
+        let cond = StyleCondition(field: "isNewHouse", op: .equals, value: .bool(false))
+        #expect(!ConditionEvaluator.matches(entity: entity, condition: cond))
+    }
 }

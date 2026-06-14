@@ -21,6 +21,12 @@ enum ViewStyleConditionCodec {
             } else {
                 .string(valueString ?? "")
             }
+        case .equals, .notEquals:
+            switch valueString {
+            case "true": .bool(true)
+            case "false": .bool(false)
+            default: .string(valueString ?? "")
+            }
         default:
             .string(valueString ?? "")
         }

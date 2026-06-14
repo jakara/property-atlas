@@ -49,4 +49,33 @@ struct ViewStyleConditionCodecTests {
         let cols = ViewStyleConditionCodec.columns(from: .int(100), op: .gte)
         #expect(cols.valueString == "100")
     }
+
+    @Test func equalsFalseBuildsBoolCondition() {
+        let cond = ViewStyleConditionCodec.styleCondition(
+            field: "isNewHouse", op: .equals, valueString: "false", valueList: []
+        )
+        #expect(cond.value == .bool(false))
+    }
+
+    @Test func equalsTrueBuildsBoolCondition() {
+        let cond = ViewStyleConditionCodec.styleCondition(
+            field: "isNewHouse", op: .equals, valueString: "true", valueList: []
+        )
+        #expect(cond.value == .bool(true))
+    }
+
+    @Test func boolRoundTripThroughColumns() {
+        let cols = ViewStyleConditionCodec.columns(from: .bool(false), op: .equals)
+        let cond = ViewStyleConditionCodec.styleCondition(
+            field: "isNewHouse", op: .equals, valueString: cols.valueString, valueList: cols.valueList
+        )
+        #expect(cond.value == .bool(false))
+    }
+
+    @Test func equalsNonBoolStringStaysString() {
+        let cond = ViewStyleConditionCodec.styleCondition(
+            field: "grade", op: .equals, valueString: "重点", valueList: []
+        )
+        #expect(cond.value == .string("重点"))
+    }
 }
