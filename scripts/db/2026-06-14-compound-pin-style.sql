@@ -2,6 +2,8 @@
 -- 幂等:重跑结果一致。前置:app 关闭、库已备份。
 -- Core Data: ViewStyleRule Z_ENT=20、ViewStyleCondition Z_ENT=19;UUID 列=16-byte blob(randomblob(16));
 -- 时间=自 2001 秒(strftime('%s','now')-978307200);ZVALUELIST 复制现有空数组归档 blob。
+-- 前置条件:库内须已存在至少一条 ZVALUELIST 非空的条件(学校 StyleRule 条件)供步骤 5/6 子查询复制;
+--   否则 ZVALUELIST 会插成 NULL(本机库有学校 3 条条件,成立)。
 BEGIN;
 
 -- 1. 幂等清理:删楼盘图层现有条件 + 规则(首次 0 条)
